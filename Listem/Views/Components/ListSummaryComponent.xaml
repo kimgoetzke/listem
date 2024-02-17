@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Listem.Models"
+             xmlns:viewmodel="clr-namespace:Listem.ViewModel"
+             x:Class="Listem.Views.Components.ListSummaryComponent">
+    
+    <CollectionView ItemsSource="{Binding Lists}"
+                    ItemsLayout="HorizontalList"
+                    VerticalOptions="Fill"
+                    SelectionMode="None"
+                    x:DataType="viewmodel:MainViewModel">
+
+        <!-- Content: Box -->
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="{x:Type models:ItemList}">
+                <FlexLayout Margin="0">
+
+                    <!-- Box -->
+                    <Frame FlexLayout.Grow="1"
+                           Margin="10"
+                           MinimumWidthRequest="100"
+                           MaximumWidthRequest="275"
+                           BorderColor="Transparent"
+                           BackgroundColor="{DynamicResource White}">
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapListCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <!-- Box: List summary -->
+                        <Grid>
+                            <VerticalStackLayout Grid.Row="0" HorizontalOptions="Start">
+
+                                <!-- List summary: List name -->
+                                <Label VerticalTextAlignment="Start"
+                                       VerticalOptions="Fill"
+                                       Style="{DynamicResource SubHeadline}"
+                                       Text="{Binding Name}"
+                                       HorizontalOptions="Start" />
+
+                                <!-- List summary: Items inside the list -->
+                                <CollectionView ItemsSource="{Binding Items}"
+                                                VerticalOptions="Fill"
+                                                Margin="0,10,0,0"
+                                                BackgroundColor="Transparent"
+                                                SelectionMode="None">
+
+                                    <!-- Items inside the list: Content -->
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate x:DataType="{x:Type models:Item}">
+                                            <HorizontalStackLayout HorizontalOptions="Start">
+                                                <CheckBox Scale="1" IsEnabled="False" />
+                                                <Label Text="{Binding Title}"
+                                                       VerticalOptions="Center"
+                                                       TextColor="{DynamicResource TextColor}" />
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+
+                                    <!-- Items inside the list: Fallback if empty (TODO: Make it show correctly) -->
+                                    <CollectionView.EmptyView>
+                                        <ContentView>
+                                            <FlexLayout AlignItems="Stretch" BackgroundColor="Blue">
+                                                <Label Text="Open this list and add items"
+                                                       FontSize="18"
+                                                       TextColor="{DynamicResource LightTextColor}"
+                                                       HorizontalTextAlignment="Start"
+                                                       VerticalTextAlignment="Start" />
+                                            </FlexLayout>
+                                        </ContentView>
+                                    </CollectionView.EmptyView>
+                                    
+                                </CollectionView>
+                            </VerticalStackLayout>
+
+                            <!-- Box:: Gradient transparent to white -->
+                            <BoxView Grid.Row="0"
+                                     HorizontalOptions="Fill"
+                                     VerticalOptions="Fill"
+                                     HeightRequest="400">
+                                <BoxView.Background>
+                                    <LinearGradientBrush StartPoint="0.9,0" EndPoint="1,0">
+                                        <GradientStop Color="Transparent" Offset="0.1" />
+                                        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </BoxView.Background>
+                            </BoxView>
+
+                        </Grid>
+
+                    </Frame>
+
+                </FlexLayout>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+
+        <!-- Content: Fallback if there are no lists -->
+        <CollectionView.EmptyView>
+            <ContentView>
+                <Grid Padding="30">
+                    <StackLayout HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+                        <Label Text="You have no lists yet"
+                               Margin="10"
+                               FontSize="18"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalOptions="Fill"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Create a list to get started"
+                               FontSize="12"
+                               HorizontalOptions="Fill"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalTextAlignment="Center" />
+                    </StackLayout>
+                </Grid>
+            </ContentView>
+        </CollectionView.EmptyView>
+
+    </CollectionView>
+</ContentView>

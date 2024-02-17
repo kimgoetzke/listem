@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+             x:Class="Listem.Views.StoresPage"
+             xmlns:viewmodel="clr-namespace:Listem.ViewModel"
+             xmlns:models="clr-namespace:Listem.Models"
+             xmlns:models1="clr-namespace:Listem.Models"
+             xmlns:viewModel="clr-namespace:Listem.ViewModel"
+             x:DataType="viewmodel:StoresViewModel"
+             Title="Manage stores">
+
+    <ContentPage.Content>
+        <Grid Padding="0" RowDefinitions="*, Auto, Auto" VerticalOptions="Fill">
+
+            <!-- Title & stores list -->
+            <CollectionView Grid.Row="0"
+                            ItemsSource="{Binding Stores}"
+                            SelectionMode="None"
+                            VerticalScrollBarVisibility="Always"
+                            VerticalOptions="Start">
+
+                <!-- Title -->
+                <CollectionView.Header>
+                    <Grid RowDefinitions="Auto,Auto">
+                        <Label Grid.Row="0" Text="Your stores" Style="{DynamicResource Headline}"
+                               Padding="0, 10, 0,10" />
+                        <BoxView Grid.Row="1" Style="{DynamicResource ThinLineSeparator}" />
+                    </Grid>
+                </CollectionView.Header>
+
+                <!-- Stores list -->
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="{x:Type models1:ConfigurableStore}">
+                        <Grid RowDefinitions="Auto">
+                            <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+                                <SwipeView.RightItems>
+                                    <SwipeItems SwipeBehaviorOnInvoked="Close">
+                                        <SwipeItemView
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=RemoveStoreCommand}"
+                                            CommandParameter="{Binding .}"
+                                            HeightRequest="{DynamicResource StandardSwipeItemHeight}">
+                                            <Frame BackgroundColor="{DynamicResource Pink}"
+                                                   BorderColor="Transparent"
+                                                   Padding="0"
+                                                   VerticalOptions="Center"
+                                                   HeightRequest="100"
+                                                   WidthRequest="100">
+                                                <Image Source="bin_white.png"
+                                                       Aspect="AspectFit"
+                                                       WidthRequest="25"
+                                                       HeightRequest="25"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Frame>
+                                        </SwipeItemView>
+                                    </SwipeItems>
+                                </SwipeView.RightItems>
+                                <Grid HeightRequest="{DynamicResource StandardSwipeItemHeightPlusLineHeight}"
+                                      VerticalOptions="Start">
+                                    <VerticalStackLayout
+                                        HeightRequest="{DynamicResource StandardSwipeItemHeightPlusLineHeight}">
+                                        <Grid ColumnDefinitions="*">
+                                            <Label Text="{Binding Name}"
+                                                   Style="{DynamicResource StoreSwipeItem}"
+                                                   VerticalOptions="Fill"
+                                                   VerticalTextAlignment="Center"
+                                                   HorizontalTextAlignment="Center" />
+                                            <ImageButton x:Name="BinImageButton"
+                                                         Source="bin_neutral.png"
+                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=RemoveStoreCommand}"
+                                                         CommandParameter="{Binding .}"
+                                                         Aspect="AspectFit"
+                                                         HorizontalOptions="End"
+                                                         Padding="3"
+                                                         BorderWidth="1"
+                                                         Pressed="ImageButton_OnPressed"
+                                                         Released="ImageButton_OnReleased"
+                                                         IsVisible="{OnPlatform WinUI=True, Default=False}"
+                                                         WidthRequest="34"
+                                                         HeightRequest="34"
+                                                         Margin="5, 5, 25 ,5"
+                                                         VerticalOptions="Center">
+                                                <ImageButton.Triggers>
+                                                    <DataTrigger TargetType="ImageButton"
+                                                                 Binding="{Binding Name}"
+                                                                 Value="{x:Static viewModel:StoresViewModel.DefaultStoreName}">
+                                                        <Setter Property="IsVisible" Value="False" />
+                                                    </DataTrigger>
+                                                </ImageButton.Triggers>
+                                            </ImageButton>
+                                        </Grid>
+                                        <BoxView Style="{DynamicResource ThinLineSeparator}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </SwipeView>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Separator (only visible when larger than threshold) -->
+            <BoxView Grid.Row="1" HeightRequest="{DynamicResource ThickLineHeight}">
+                <BoxView.Triggers>
+                    <DataTrigger TargetType="BoxView"
+                                 Binding="{Binding IsCollectionViewLargerThanThreshold}"
+                                 Value="True">
+                        <Setter Property="Color" Value="{DynamicResource ThickLineSeparatorColor}" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="BoxView"
+                                 Binding="{Binding IsCollectionViewLargerThanThreshold}"
+                                 Value="False">
+                        <Setter Property="Color" Value="{DynamicResource BackgroundColor}" />
+                    </DataTrigger>
+                </BoxView.Triggers>
+            </BoxView>
+
+            <!-- Buttons -->
+            <VerticalStackLayout Grid.Row="2" Padding="50,20" MinimumWidthRequest="200" MaximumWidthRequest="850">
+                <Grid ColumnDefinitions="*, Auto" Margin="0, 20">
+                    <Entry Placeholder="Enter store name"
+                           Grid.Column="0"
+                           Text="{Binding NewStore.Name}"
+                           Margin="5"
+                           FontSize="16"
+                           VerticalOptions="Fill"
+                           x:Name="StoreNameEntry"
+                           Unfocused="OnEntryUnfocused" />
+                    <Button Text="Add Store"
+                            Grid.Column="1"
+                            x:Name="AddStoreButton"
+                            Style="{DynamicResource StandardButton}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=AddStoreCommand}"
+                            CommandParameter="{Binding Source={x:Reference StoreNameEntry}}" />
+                </Grid>
+                <Button Text="Reset stores"
+                        Margin="0, 20"
+                        Style="{DynamicResource StandardButton}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=ResetStoresCommand}"
+                        CommandParameter="{Binding .}" />
+
+                <Button Text="Back"
+                        Margin="0, 20"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=GoBackCommand}"
+                        Style="{DynamicResource StandardButton}" />
+            </VerticalStackLayout>
+
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Views.MainPage"
+             xmlns:viewmodel="clr-namespace:Listem.ViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:components="clr-namespace:Listem.Views.Components"
+             x:DataType="viewmodel:MainViewModel"
+             Title="">
+
+    <!-- The color has to be static for some reason. It will be white if any DynamicResource is used. -->
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior
+            StatusBarColor="{StaticResource StatusBarColor}"
+            StatusBarStyle="LightContent" />
+    </ContentPage.Behaviors>
+
+    <!-- Content -->
+    <Grid RowDefinitions="Auto, .4*, *, Auto"
+          x:Name="PageContentGrid"
+          VerticalOptions="Fill"
+          IgnoreSafeArea="True">
+
+        <!-- Content: Menu button -->
+        <ImageButton x:Name="MenuButton"
+                     Source="menu_neutral.png"
+                     Aspect="AspectFit"
+                     HorizontalOptions="Start"
+                     BorderWidth="0"
+                     WidthRequest="34"
+                     HeightRequest="34"
+                     Margin="15, 40, 15 ,5"
+                     VerticalOptions="Center" />
+
+        <!-- Content: Title -->
+        <Grid Grid.Row="1">
+            <Label Text="Your lists" Style="{StaticResource Headline}" VerticalOptions="Start" />
+        </Grid>
+
+        <!-- Content: Collection view with list of lists -->
+        <components:ListSummaryComponent Grid.Row="2" BindingContext="{Binding}" />
+
+        <!-- Content: Add button -->
+        <Grid Grid.Row="3">
+            <Button AbsoluteLayout.LayoutBounds="1,1,60,60"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"
+                    Command="{Binding AddListCommand}"
+                    HorizontalOptions="End"
+                    Margin="20"
+                    CornerRadius="50"
+                    HeightRequest="60"
+                    Text="+"
+                    FontSize="30"
+                    Style="{StaticResource StandardButton}"
+                    WidthRequest="60">
+            </Button>
+        </Grid>
+        
+    </Grid>
+</ContentPage>

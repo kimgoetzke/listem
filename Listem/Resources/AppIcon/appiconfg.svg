@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="256" height="256" viewBox="0 0 512 512">
+  <defs>
+    <style>
+      .cls-1 {
+        font-size: 200px;
+        filter: url(#filter);
+        fill: #fff;
+        text-anchor: middle;
+        font-family: "Yanone Kaffeesatz";
+        font-weight: 700;
+      }
+    </style>
+    <filter id="filter" x="48" y="179" width="418" height="179" filterUnits="userSpaceOnUse">
+      <feGaussianBlur result="blur" stdDeviation="5.333" in="SourceAlpha"/>
+      <feComposite result="composite"/>
+      <feComposite result="composite-2"/>
+      <feComposite result="composite-3"/>
+      <feFlood result="flood" flood-opacity="0.38"/>
+      <feComposite result="composite-4" operator="in" in2="composite-3"/>
+      <feBlend result="blend" in2="SourceGraphic"/>
+      <feBlend result="blend-2" in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="appiconfg">
+    <image id="_" data-name="✔️" x="102" y="100" width="322" height="319" xlink:href="data:img/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKEAAACgCAYAAABkDQwTAAAE3ElEQVR4nO3d6ZHTQBBA4fYWCZEHuRALuZAHIZky1PjUOVdf7/sPC9JTSxrJ3sv1ehVgy5+fP1Yj+f7r96V14xEhPmxFd8TZMIkQd63xPTsTIhGia3zPjoZIhMmNCvDZXoxf2XdCZjMClAM/hwiTmhVgsfXziDCh2QEWaz+XCJPRCrBY+vlEiOneQyTCRLSn4BoiTMJagM//HiKEmhIiESZg9TRcEGFw1gMUIoQFRAh1vMAQmIdTsTAJ4/ISoBAhLCDCgDxNQSFCWECEwXibgkKEsIAIA/E4BW+fPyHCIDwGWBAh1BFhAJ6noBAhNJXPIxOhc96noBChb54DfP5WBiKEOiJ0KsoUFCKEBUToUKQpKESImda+Io4InYmwJPOOCDHF1hdlEqEjEaegECFm4OuCg4g6BYUIfYi2JPOOCDHM0V8hQYTGRT4NF0QIdURoWPRrwYIIjcoSoBAhLCBCdFXz+4+J0CCvp+LaX8BNhMZkWJJ5R4ToonYKChHaknEKChGih5YpKERoR9YpKESIVq1TUIjQhsxTUIhQX6bHc2uIEFV6BShEqCv7abggQpzWcwoKEephCj4QIU7pPQWFCHUwBV8RIQ4bMQWFCOdjCn4iwolYmF5GhFBHhJMwBdcR4QQEuI0IoY4IsWrGFBQiHI8lmX1EOBDXgscQIT7MDPDmW+0fPHuUz/6PwY/L9Xq8pV6nlwxBZvsqjxaHT8c9N2r0i3VuRs7ZPR2P2qDl7+U0bYfWvtichDOO6GhTgyl43uI1odaG9D4VWZKpY2qJhimS00eE2iF4DZEpWO8lQisbkomYyz1CazveU4hMwTamH9sxEceyciP4L0LLO9t6iBwo7Vy8wHDb0ezsviwth/EWTQMOjD5cRWhpInIz0s+Xx43JBKpn8amU29OxZogcBH25viYkhhjc35jMDpFrwf5C3B0zEfdZfkMpzBLNjDtnYh8j3Drh6DfBPbL+nmbIxWom1oOHF4XDPjEhRD9CP7brFSJBj/UV/dNurQFxLTheihcYMk4yT8MlzVs0NUs4nIbn4FUuqLt/7jjbUb93uuJacJ77JMz2dRxbkRHgXKlPx1zz2fASYcYvJ3oPkSk438ckzBqi96noeb8tno6zfl0bp2cdq9eEfG+gH9731eaNCSFiht27Y0K0LcL+ObREc/uPEiNGObVOSIi2RNkfpxerCRG9VT0xIUR9kfZB9WM7QtQTbds3PTsmRPRw6teKbeFpwxwRD3xeaoW6bhFyah4v6jbuOglZ1EaNIadjQuwv8jYddk1IiP1E35ZDb0wIEUcMvzsmROyZskRDiPUybLtp64SEeF6WbTZ1sZolHCxReWJCiPsybSO1x3aEiEL12TEhLsu2XdRfYCDEVxm3h4m3aAgxt27vE/aS+b3ErAcj7xNCnblJWPClnXmYnYRcJ+Zh+nScJcTsB5z5a8LsOygDs9eESyJeJ3KQcXcMA1xNwiLKRGQK/udyEkbYeQT44PZ0zE6Mw/U1odcQOYBeub8xYYf6F+Lu2FOIHDSfwizReNi5BLgs1DohH6TyKeRitcUQOTjWhX1iYmmnE+C20I/tLOx8AtwX/tmxZgQEeEyKFxg0YiDA41y+wNBi9MsPxHdeugiL3jESX720EUqnEImvXeoIl+yFSXSdichfDiFASoMqO6IAAAAASUVORK5CYII="/>
+    <text id="LISTEM" class="cls-1" x="256.001" y="338">LISTEM</text>
+  </g>
+</svg>

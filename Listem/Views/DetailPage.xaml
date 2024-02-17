@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Views.DetailPage"
+             xmlns:viewModel="clr-namespace:Listem.ViewModel"
+             xmlns:converters="clr-namespace:Listem.Converters"
+             x:DataType="viewModel:DetailViewModel"
+             Title="Item details">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToYesNoConverter x:Key="BoolToTextConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <VerticalStackLayout Padding="40, 10"
+                         MinimumWidthRequest="400" MaximumWidthRequest="850"
+                         VerticalOptions="Start"
+                         HorizontalOptions="Fill">
+
+        <Entry Text="{Binding Item.Title, Mode=TwoWay}"
+               Style="{DynamicResource HeadlineEntry}"
+               VerticalOptions="Center"
+               HorizontalOptions="Center" />
+
+        <Grid Margin="5"
+              RowDefinitions="1*"
+              ColumnDefinitions=".5*, .5*">
+            <VerticalStackLayout Grid.Column="0" Padding="5">
+                <Label Text="Important" Style="{DynamicResource ItemPropertyLabel}" />
+                <Label x:Name="IsImportantProperty"
+                       Text="{Binding Item.IsImportant, Converter={StaticResource BoolToTextConverter}}"
+                       Style="{DynamicResource ItemProperty}" />
+            </VerticalStackLayout>
+            <Switch IsToggled="{Binding Item.IsImportant, Mode=TwoWay}"
+                    Grid.Column="1"
+                    VerticalOptions="Center"
+                    Toggled="IsImportantSwitch_OnToggled"
+                    HorizontalOptions="{OnPlatform WinUI='Start', Default='Center'}" />
+        </Grid>
+
+        <Grid Margin="5"
+              RowDefinitions="1*"
+              ColumnDefinitions=".5*, .5*">
+            <VerticalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
+                <Label Text="Quantity" Style="{DynamicResource ItemPropertyLabel}" />
+                <Label x:Name="QuantityProperty"
+                       Text="{Binding Item.Quantity}" Style="{DynamicResource ItemProperty}" />
+            </VerticalStackLayout>
+            <Stepper Value="{Binding Item.Quantity}"
+                     Grid.Column="1"
+                     Minimum="1" Maximum="99" Increment="1"
+                     VerticalOptions="Center"
+                     ValueChanged="QuantityStepper_OnValueChanged"
+                     HorizontalOptions="{OnPlatform WinUI='Start', Default='Center'}" />
+        </Grid>
+
+        <Grid Margin="5"
+              RowDefinitions="1*">
+            <VerticalStackLayout Padding="5">
+                <Label Text="From" Style="{DynamicResource ItemPropertyLabel}" />
+                <Picker Title="{OnPlatform WinUI='', Default='Select store'}"
+                        SelectedItem="{Binding CurrentStore, Mode=TwoWay}"
+                        ItemsSource="{Binding Stores}"
+                        TextColor="{DynamicResource TextColor}"
+                        TitleColor="{DynamicResource PickerTitleColor}"
+                        MinimumWidthRequest="400" MaximumWidthRequest="850"
+                        HorizontalOptions="Fill" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <VerticalStackLayout Padding="5, 5, 5, 40" Margin="5" VerticalOptions="Center">
+            <Label Text="Added on" Style="{DynamicResource ItemPropertyLabel}" />
+            <Label Text="{Binding Item.AddedOn}" Style="{DynamicResource ItemProperty}" />
+        </VerticalStackLayout>
+        <Button Text="Save changes"
+                Style="{DynamicResource StandardButton}"
+                Command="{Binding GoBackCommand}" />
+
+    </VerticalStackLayout>
+
+</ContentPage>
