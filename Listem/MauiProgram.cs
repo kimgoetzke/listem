@@ -16,8 +16,9 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("Jost-Regular.ttf", "JostRegular");
-                fonts.AddFont("Jost-SemiBold.ttf", "JostSemiBold");
+                fonts.AddFont("Mulish-Black.ttf", "MulishBlack");
+                fonts.AddFont("Mulish-Bold.ttf", "MulishBold");
+                fonts.AddFont("Mulish-Regular.ttf", "MulishRegular");
             })
             .UseMauiCommunityToolkit()
             .RegisterServices()

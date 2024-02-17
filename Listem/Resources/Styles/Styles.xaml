@@ -7,7 +7,7 @@
     <!-- Buttons -->
     <Style TargetType="Button" x:Key="StandardButton">
         <Setter Property="Margin" Value="5" />
-        <Setter Property="FontFamily" Value="JostRegular" />
+        <Setter Property="FontFamily" Value="MulishRegular" />
         <Setter Property="FontAttributes" Value="{OnPlatform WinUI=None, Default=Bold}" />
         <Setter Property="TextTransform" Value="Uppercase" />
         <Setter Property="Background" Value="{DynamicResource Secondary}" />
@@ -73,7 +73,7 @@
     <Style TargetType="Entry">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="JostRegular" />
+        <Setter Property="FontFamily" Value="MulishRegular" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource PlaceholderColor}" />
         <Setter Property="MinimumHeightRequest" Value="44" />
@@ -102,8 +102,8 @@
     <Style TargetType="Label">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="JostRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="MulishRegular" />
+        <Setter Property="FontSize" Value="12" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -120,8 +120,8 @@
     <Style TargetType="Label" x:Key="Headline">
         <Setter Property="TextColor" Value="{DynamicResource HeadlineColor}" />
         <Setter Property="FontSize" Value="26" />
-        <Setter Property="Padding" Value="15" />
-        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontFamily" Value="MulishBlack" />
+        <Setter Property="Padding" Value="25" />
         <Setter Property="TextTransform" Value="Uppercase" />
         <Setter Property="HorizontalOptions" Value="Start" />
         <Setter Property="HorizontalTextAlignment" Value="Start" />
@@ -129,6 +129,7 @@
     <Style TargetType="Label" x:Key="SubHeadline">
         <Setter Property="TextColor" Value="{DynamicResource SubHeadlineColor}" />
         <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontFamily" Value="MulishBold" />
         <Setter Property="TextTransform" Value="Uppercase" />
         <Setter Property="HorizontalOptions" Value="Center" />
     </Style>
@@ -165,7 +166,7 @@
     <Style TargetType="Span" x:Key="StandardSpan">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="JostRegular" />
+        <Setter Property="FontFamily" Value="MulishRegular" />
     </Style>
     <Style TargetType="Span">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
@@ -206,7 +207,7 @@
         <Setter Property="TextColor" Value="{DynamicResource TextColorVariant}" />
         <Setter Property="TitleColor" Value="{DynamicResource PickerTitleColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="JostRegular" />
+        <Setter Property="FontFamily" Value="MulishRegular" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="44" />
