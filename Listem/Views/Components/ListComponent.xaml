@@ -105,7 +105,7 @@
                                                          Binding="{Binding IsImportant}"
                                                          Value="True">
                                                 <Setter Property="TextColor"
-                                                        Value="{DynamicResource Pink}" />
+                                                        Value="{DynamicResource Secondary}" />
                                             </DataTrigger>
                                         </Label.Triggers>
                                     </Label>
