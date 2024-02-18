@@ -2,9 +2,9 @@ using Listem.ViewModel;
 
 namespace Listem.Views;
 
-public partial class StoresPage
+public partial class CategoryPage
 {
-    public StoresPage(StoresViewModel viewModel)
+    public CategoryPage(CategoryViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
@@ -12,14 +12,14 @@ public partial class StoresPage
 
     private void OnEntryUnfocused(object sender, FocusEventArgs e)
     {
-        AddStoreButton.Focus();
+        AddCategoryButton.Focus();
     }
 
     private void ImageButton_OnPressed(object? sender, EventArgs e)
     {
         if (sender is not ImageButton button)
             return;
-        
+
         button.Source = "bin_pink.png";
     }
 
@@ -27,7 +27,7 @@ public partial class StoresPage
     {
         if (sender is not ImageButton button)
             return;
-        
+
         button.Source = "bin_neutral.png";
     }
 }

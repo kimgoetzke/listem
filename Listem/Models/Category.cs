@@ -2,7 +2,7 @@ using SQLite;
 
 namespace Listem.Models;
 
-public class ConfigurableStore
+public class Category
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; set; }

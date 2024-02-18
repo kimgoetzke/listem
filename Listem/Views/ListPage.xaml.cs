@@ -3,7 +3,6 @@ using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
 using Listem.ViewModel;
-using Listem.Views;
 
 // ReSharper disable UnusedMember.Local
 
@@ -12,7 +11,6 @@ namespace Listem.Views;
 public partial class ListPage
 {
     private const uint AnimationDuration = 400u;
-    private bool _isMenuOpen;
     private readonly ListViewModel _viewModel;
     private Entry EntryField { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
@@ -22,7 +20,7 @@ public partial class ListPage
         InitializeComponent();
         var services = new List<IService?>
         {
-            IPlatformApplication.Current?.Services.GetService<IStoreService>(),
+            IPlatformApplication.Current?.Services.GetService<ICategoryService>(),
             IPlatformApplication.Current?.Services.GetService<IItemService>(),
             IPlatformApplication.Current?.Services.GetService<IClipboardService>()
         };
@@ -33,113 +31,22 @@ public partial class ListPage
         AddMenuToAddItems();
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-        try
-        {
-            await _viewModel.LoadStoresFromDatabase();
-            await _viewModel.LoadItemsFromDatabase();
-        }
-        catch (Exception e)
-        {
-            Logger.Log($"Failed fetching data from database: {e}");
-            Notifier.ShowToast("Failed to load data");
-        }
-    }
-
-    private void ToolbarItem_CopyOnClicked(object? sender, EventArgs e) =>
-        _viewModel.CopyToClipboard();
-
-    private void ToolbarItem_ImportOnClicked(object? sender, EventArgs e) =>
-        _viewModel.InsertFromClipboard();
-
-    private async void SettingsGrid_OnTapGridArea(object sender, EventArgs e)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-        await CloseMenu(cancellationTokenSource);
-    }
-
-    private async void ToolbarItem_OnTapSettings(object sender, EventArgs e)
-    {
-        var cancellationTokenSource = new CancellationTokenSource();
-        if (!_isMenuOpen)
-        {
-            await OpenSettings(cancellationTokenSource);
-            _isMenuOpen = true;
-            return;
-        }
-
-        await CloseMenu(cancellationTokenSource);
-        _isMenuOpen = false;
-    }
-
-    private async Task OpenSettings(CancellationTokenSource cancellationTokenSource)
-    {
-#if WINDOWS || __MACOS__
-        var x = (Width - 250) / Width;
-        var resize = PageContentGrid.ScaleTo(x, AnimationDuration);
-        var move = PageContentGrid.TranslateTo(-Width * ((1 - x) / 2), 0, AnimationDuration);
-        var tasks = new List<Task> { resize, move };
-#elif __ANDROID__ || __IOS__
-        var resize = PageContentGrid.TranslateTo(-Width * 0.25, 0, AnimationDuration);
-        var scaleDown = PageContentGrid.ScaleTo(0.75, AnimationDuration);
-        var rotate = PageContentGrid.RotateYTo(35, AnimationDuration, Easing.CubicIn);
-        var tasks = new List<Task> { resize, scaleDown, rotate };
-#endif
-        await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
-    }
-
-    private async Task CloseMenu(CancellationTokenSource cancellationTokenSource)
-    {
-#if WINDOWS || __MACOS__
-        var scaleBack = PageContentGrid.ScaleTo(1, AnimationDuration / 2);
-        var resize = PageContentGrid.TranslateTo(0, 0, AnimationDuration / 2);
-        var tasks = new List<Task> { scaleBack, resize };
-#elif __ANDROID__ || __IOS__
-        await PageContentGrid.RotateYTo(0, AnimationDuration / 2);
-        var fadeIn = PageContentGrid.FadeTo(1, AnimationDuration / 2);
-        var scaleBack = PageContentGrid.ScaleTo(1, AnimationDuration / 2);
-        var resize = PageContentGrid.TranslateTo(0, 0, AnimationDuration / 2);
-        var tasks = new List<Task> { fadeIn, scaleBack, resize };
-#endif
-        await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
-    }
-
-    private void SwipeItemView_OnInvoked(object? sender, EventArgs e)
-    {
-        // TODO: Give user feedback through particles or animation
-        Logger.Log("OnInvokedSwipeItem");
-    }
-
-    private async void CheckBox_OnTaskCompleted(object? sender, CheckedChangedEventArgs e)
-    {
-        if (sender is not CheckBox { IsChecked: true } checkBox)
-            return;
-
-        if (checkBox.BindingContext is not Item item)
-            return;
-
-        await _viewModel.RemoveItem(item);
-        await Task.Delay(200);
-    }
-
     private void AddMenuToAddItems()
     {
         EntryField = GetEntryField();
-        var storePicker = GetStorePicker();
+        var categoryPicker = GetCategoryPicker();
         var quantityGrid = GetQuantityGrid();
         var importantGrid = GetImportantGrid();
         AddButton = GetAddButton();
 #if WINDOWS || __MACOS__
-        var menuGrid = CreateGridOnDesktop(storePicker, quantityGrid, importantGrid);
+        var menuGrid = CreateGridOnDesktop(categoryPicker, quantityGrid, importantGrid);
 #elif __IOS__ || __ANDROID__
-        var menuGrid = CreateGridOnMobile(storePicker, quantityGrid, importantGrid);
+        var menuGrid = CreateGridOnMobile(categoryPicker, quantityGrid, importantGrid);
 #endif
         PageContentGrid.Add(menuGrid, 0, 1);
     }
 
-    private Grid CreateGridOnDesktop(IView storePicker, IView quantityGrid, IView importantGrid)
+    private Grid CreateGridOnDesktop(IView categoryPicker, IView quantityGrid, IView importantGrid)
     {
         var menuGrid = new Grid
         {
@@ -157,14 +64,14 @@ public partial class ListPage
         };
 
         menuGrid.Add(EntryField, 0);
-        menuGrid.Add(storePicker, 1);
+        menuGrid.Add(categoryPicker, 1);
         menuGrid.Add(quantityGrid, 2);
         menuGrid.Add(importantGrid, 3);
         menuGrid.Add(AddButton, 4);
         return menuGrid;
     }
 
-    private Grid CreateGridOnMobile(IView storePicker, IView quantityGrid, IView importantGrid)
+    private Grid CreateGridOnMobile(IView categoryPicker, IView quantityGrid, IView importantGrid)
     {
         var menuGrid = new Grid
         {
@@ -186,7 +93,7 @@ public partial class ListPage
         menuGrid.Add(EntryField, 0);
         Grid.SetColumnSpan(EntryField, 2);
         menuGrid.Add(AddButton, 2);
-        menuGrid.Add(storePicker, 0, 1);
+        menuGrid.Add(categoryPicker, 0, 1);
         menuGrid.Add(quantityGrid, 1, 1);
         menuGrid.Add(importantGrid, 2, 1);
         return menuGrid;
@@ -214,7 +121,7 @@ public partial class ListPage
         var importantCheckBox = new CheckBox
         {
             HorizontalOptions = LayoutOptions.Start,
-            AutomationId = "MainPageIsImportantCheckBox",
+            AutomationId = "ListPageIsImportantCheckBox",
         };
         importantCheckBox.SetBinding(CheckBox.IsCheckedProperty, "NewItem.IsImportant");
         importantGrid.Add(importantCheckBox, 1);
@@ -232,7 +139,7 @@ public partial class ListPage
             HorizontalOptions = LayoutOptions.Fill,
 #endif
             Text = "Add",
-            AutomationId = "MainPageAddButton",
+            AutomationId = "ListPageAddButton",
             Style = (Style)Application.Current!.Resources["StandardButton"],
             Command = new Command(async () =>
             {
@@ -265,7 +172,7 @@ public partial class ListPage
         quantityGrid.Add(quantityLabel, 0);
         var quantityStepper = new Stepper
         {
-            AutomationId = "MainPageQuantityStepper",
+            AutomationId = "ListPageQuantityStepper",
             Minimum = 1,
             Maximum = 99,
             Increment = 1,
@@ -280,16 +187,16 @@ public partial class ListPage
         return quantityGrid;
     }
 
-    private Picker GetStorePicker()
+    private Picker GetCategoryPicker()
     {
         var storePicker = new Picker
         {
 #if WINDOWS || __MACOS__
             Title = "",
 #elif __ANDROID__ || __IOS__
-            Title = "Select store",
+            Title = "Select category",
 #endif
-            AutomationId = "MainPageStorePicker",
+            AutomationId = "ListPageCategoryPicker",
             TextColor = (Color)Application.Current!.Resources["TextColor"],
             TitleColor = (Color)Application.Current.Resources["PickerTitleColor"],
             HeightRequest = (double)Application.Current.Resources["StandardSwipeItemHeight"],
@@ -302,11 +209,11 @@ public partial class ListPage
             if (sender is not Picker picker)
                 return;
 
-            if (picker.SelectedItem is not ConfigurableStore store)
+            if (picker.SelectedItem is not Category store)
                 return;
 
             _viewModel.CurrentStore = store;
-            Logger.Log("Current store updated to: " + _viewModel.CurrentStore.Name);
+            Logger.Log("Current category updated to: " + _viewModel.CurrentStore.Name);
         };
         return storePicker;
     }
@@ -316,7 +223,7 @@ public partial class ListPage
         var entryField = new Entry
         {
             Placeholder = "Enter item name",
-            AutomationId = "MainPageEntryField",
+            AutomationId = "ListPageEntryField",
             Text = _viewModel.NewItem.Title,
             Margin = new Thickness(5),
             FontSize = 16,

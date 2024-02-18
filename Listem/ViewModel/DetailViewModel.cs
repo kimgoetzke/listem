@@ -11,22 +11,22 @@ namespace Listem.ViewModel;
 public partial class DetailViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ConfigurableStore> _stores = [];
+    private ObservableCollection<Category> _stores = [];
 
     [ObservableProperty]
     private Item _item;
 
     [ObservableProperty]
-    private ConfigurableStore _currentStore;
+    private Category _currentStore;
 
-    private readonly IStoreService _storeService;
+    private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
 
-    public DetailViewModel(Item item, IStoreService storeService, IItemService itemService)
+    public DetailViewModel(Item item, ICategoryService categoryService, IItemService itemService)
     {
         Item = item;
-        CurrentStore = new ConfigurableStore();
-        _storeService = storeService;
+        CurrentStore = new Category();
+        _categoryService = categoryService;
         _itemService = itemService;
         SetStoreOptions();
     }
@@ -34,7 +34,7 @@ public partial class DetailViewModel : ObservableObject
     [RelayCommand]
     private async Task GoBack()
     {
-        Item.StoreName = CurrentStore.Name;
+        Item.CategoryName = CurrentStore.Name;
         await _itemService.CreateOrUpdateAsync(Item);
         Notifier.ShowToast($"Updated: {Item.Title}");
         await Shell.Current.GoToAsync("..", true);
@@ -42,12 +42,12 @@ public partial class DetailViewModel : ObservableObject
 
     private async void SetStoreOptions()
     {
-        var loadedStores = await _storeService.GetAllAsync();
+        var loadedStores = await _categoryService.GetAllAsync();
         Stores.Clear();
         foreach (var s in loadedStores)
         {
             Stores.Add(s);
-            if (s.Name == Item.StoreName)
+            if (s.Name == Item.CategoryName)
             {
                 CurrentStore = s;
             }

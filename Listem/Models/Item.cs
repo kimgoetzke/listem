@@ -6,12 +6,12 @@ public class Item
 {
     [PrimaryKey, AutoIncrement]
     public int Id { get; init; }
-    public string ListId { get; init; } = string.Empty;
+    public string ListId { get; init; }
     public string Title { get; set; } = string.Empty;
     public int Quantity { get; set; } = 1;
     public bool IsImportant { get; set; }
     public DateTime AddedOn { get; init; } = DateTime.Now;
-    public string StoreName { get; set; } = "<Not set>";
+    public string CategoryName { get; set; } = "<Not set>";
 
     public override string ToString()
     {
@@ -20,6 +20,6 @@ public class Item
 
     public string ToLoggableString()
     {
-        return $"{Title} #{Id} #{ListId} (store: {StoreName}, quantity: {Quantity}, important: {IsImportant})";
+        return $"{Title} #{Id} #{ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant})";
     }
 }

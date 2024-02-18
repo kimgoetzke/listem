@@ -3,20 +3,18 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
-             x:Class="Listem.Views.StoresPage"
+             x:Class="Listem.Views.CategoryPage"
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
              xmlns:models="clr-namespace:Listem.Models"
-             xmlns:models1="clr-namespace:Listem.Models"
-             xmlns:viewModel="clr-namespace:Listem.ViewModel"
-             x:DataType="viewmodel:StoresViewModel"
-             Title="Manage stores">
+             x:DataType="viewmodel:CategoryViewModel"
+             Title="Manage categories">
 
     <ContentPage.Content>
         <Grid Padding="0" RowDefinitions="*, Auto, Auto" VerticalOptions="Fill">
 
-            <!-- Title & stores list -->
+            <!-- Title & categories list -->
             <CollectionView Grid.Row="0"
-                            ItemsSource="{Binding Stores}"
+                            ItemsSource="{Binding Categories}"
                             SelectionMode="None"
                             VerticalScrollBarVisibility="Always"
                             VerticalOptions="Start">
@@ -24,21 +22,21 @@
                 <!-- Title -->
                 <CollectionView.Header>
                     <Grid RowDefinitions="Auto,Auto">
-                        <Label Grid.Row="0" Text="Your stores" Style="{DynamicResource Headline}"
+                        <Label Grid.Row="0" Text="Your categories" Style="{DynamicResource Headline}"
                                Padding="0, 10, 0,10" />
                         <BoxView Grid.Row="1" Style="{DynamicResource ThinLineSeparator}" />
                     </Grid>
                 </CollectionView.Header>
 
-                <!-- Stores list -->
+                <!-- Category list -->
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="{x:Type models1:ConfigurableStore}">
+                    <DataTemplate x:DataType="{x:Type models:Category}">
                         <Grid RowDefinitions="Auto">
                             <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
                                 <SwipeView.RightItems>
                                     <SwipeItems SwipeBehaviorOnInvoked="Close">
                                         <SwipeItemView
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=RemoveStoreCommand}"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CategoryViewModel}}, Path=RemoveCategoryCommand}"
                                             CommandParameter="{Binding .}"
                                             HeightRequest="{DynamicResource StandardSwipeItemHeight}">
                                             <Frame BackgroundColor="{DynamicResource Pink}"
@@ -63,13 +61,13 @@
                                         HeightRequest="{DynamicResource StandardSwipeItemHeightPlusLineHeight}">
                                         <Grid ColumnDefinitions="*">
                                             <Label Text="{Binding Name}"
-                                                   Style="{DynamicResource StoreSwipeItem}"
+                                                   Style="{DynamicResource CategorySwipeItem}"
                                                    VerticalOptions="Fill"
                                                    VerticalTextAlignment="Center"
                                                    HorizontalTextAlignment="Center" />
                                             <ImageButton x:Name="BinImageButton"
                                                          Source="bin_neutral.png"
-                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=RemoveStoreCommand}"
+                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CategoryViewModel}}, Path=RemoveCategoryCommand}"
                                                          CommandParameter="{Binding .}"
                                                          Aspect="AspectFit"
                                                          HorizontalOptions="End"
@@ -85,7 +83,7 @@
                                                 <ImageButton.Triggers>
                                                     <DataTrigger TargetType="ImageButton"
                                                                  Binding="{Binding Name}"
-                                                                 Value="{x:Static viewModel:StoresViewModel.DefaultStoreName}">
+                                                                 Value="{x:Static viewmodel:CategoryViewModel.DefaultCategoryName}">
                                                         <Setter Property="IsVisible" Value="False" />
                                                     </DataTrigger>
                                                 </ImageButton.Triggers>
@@ -119,30 +117,30 @@
             <!-- Buttons -->
             <VerticalStackLayout Grid.Row="2" Padding="50,20" MinimumWidthRequest="200" MaximumWidthRequest="850">
                 <Grid ColumnDefinitions="*, Auto" Margin="0, 20">
-                    <Entry Placeholder="Enter store name"
+                    <Entry Placeholder="Enter category name"
                            Grid.Column="0"
-                           Text="{Binding NewStore.Name}"
+                           Text="{Binding NewCategory.Name}"
                            Margin="5"
                            FontSize="16"
                            VerticalOptions="Fill"
-                           x:Name="StoreNameEntry"
+                           x:Name="CategoryNameEntry"
                            Unfocused="OnEntryUnfocused" />
-                    <Button Text="Add Store"
+                    <Button Text="Add category"
                             Grid.Column="1"
-                            x:Name="AddStoreButton"
+                            x:Name="AddCategoryButton"
                             Style="{DynamicResource StandardButton}"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=AddStoreCommand}"
-                            CommandParameter="{Binding Source={x:Reference StoreNameEntry}}" />
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CategoryViewModel}}, Path=AddCategoryCommand}"
+                            CommandParameter="{Binding Source={x:Reference CategoryNameEntry}}" />
                 </Grid>
-                <Button Text="Reset stores"
+                <Button Text="Reset categories"
                         Margin="0, 20"
                         Style="{DynamicResource StandardButton}"
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=ResetStoresCommand}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CategoryViewModel}}, Path=ResetCategoriesCommand}"
                         CommandParameter="{Binding .}" />
 
                 <Button Text="Back"
                         Margin="0, 20"
-                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:StoresViewModel}}, Path=GoBackCommand}"
+                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:CategoryViewModel}}, Path=GoBackCommand}"
                         Style="{DynamicResource StandardButton}" />
             </VerticalStackLayout>
 

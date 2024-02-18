@@ -10,7 +10,7 @@ public partial class DetailPage
     public DetailPage(Item item)
     {
         InitializeComponent();
-        var storeService = IPlatformApplication.Current?.Services.GetService<IStoreService>();
+        var storeService = IPlatformApplication.Current?.Services.GetService<ICategoryService>();
         var itemService = IPlatformApplication.Current?.Services.GetService<IItemService>();
         if (itemService is null || storeService is null)
             throw new NullReferenceException("ItemService or StoreService is null");

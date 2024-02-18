@@ -8,12 +8,12 @@ public interface IClipboardService : IService
     ServiceType IService.Type => ServiceType.Clipboard;
 
     void InsertFromClipboardAsync(
-        ObservableCollection<ConfigurableStore> stores,
+        ObservableCollection<Category> stores,
         ObservableCollection<Item> items
     );
 
     void CopyToClipboard(
         ObservableCollection<Item> items,
-        ObservableCollection<ConfigurableStore> stores
+        ObservableCollection<Category> stores
     );
 }

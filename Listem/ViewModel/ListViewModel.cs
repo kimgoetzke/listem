@@ -17,7 +17,7 @@ public partial class ListViewModel : ObservableObject
     private ObservableCollection<Item> _items = [];
 
     [ObservableProperty]
-    private ObservableCollection<ConfigurableStore> _stores = [];
+    private ObservableCollection<Category> _stores = [];
 
     [ObservableProperty]
     private ItemList _itemList;
@@ -26,7 +26,7 @@ public partial class ListViewModel : ObservableObject
     private Item _newItem;
 
     [ObservableProperty]
-    private ConfigurableStore? _currentStore;
+    private Category? _currentStore;
 
     [ObservableProperty]
     private ObservableCollection<Theme> _themes = [];
@@ -34,19 +34,22 @@ public partial class ListViewModel : ObservableObject
     [ObservableProperty]
     private Theme _currentTheme;
 
-    private readonly IStoreService _storeService;
+    private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
     private readonly IClipboardService _clipboardService;
 
-    public ListViewModel(List<IService> services, ItemList itemList)
+    public ListViewModel(IReadOnlyCollection<IService> services, ItemList itemList)
     {
-        _storeService = (services.First(s => s.Type == ServiceType.Store) as IStoreService)!;
+        _categoryService = (
+            services.First(s => s.Type == ServiceType.Category) as ICategoryService
+        )!;
         _itemService = (services.First(s => s.Type == ServiceType.Item) as IItemService)!;
         _clipboardService = (
             services.First(s => s.Type == ServiceType.Clipboard) as IClipboardService
         )!;
         ItemList = itemList;
-        NewItem = new Item();
+        Items = new ObservableCollection<Item>(itemList.Items);
+        NewItem = new Item { ListId = ItemList.Id };
         Themes = Settings.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
     }
@@ -62,8 +65,8 @@ public partial class ListViewModel : ObservableObject
 
         // Pre-process item
         NewItem.Title = StringProcessor.TrimAndCapitaliseFirstChar(NewItem.Title);
-        NewItem.StoreName =
-            CurrentStore != null ? CurrentStore.Name : IStoreService.DefaultStoreName;
+        NewItem.CategoryName =
+            CurrentStore != null ? CurrentStore.Name : ICategoryService.DefaultCategoryName;
 
         // Add to list and database
         await _itemService.CreateOrUpdateAsync(NewItem);
@@ -72,7 +75,7 @@ public partial class ListViewModel : ObservableObject
         Logger.Log($"Added item: {NewItem.ToLoggableString()}");
 
         // Make sure the UI is reset/updated
-        NewItem = new Item();
+        NewItem = new Item { ListId = ItemList.Id };
         SortItems();
         OnPropertyChanged(nameof(NewItem));
     }
@@ -121,7 +124,7 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private async Task ManageStores()
     {
-        await Shell.Current.GoToAsync(nameof(StoresPage), true);
+        await Shell.Current.GoToAsync(nameof(CategoryPage), true);
     }
 
     [RelayCommand]
@@ -188,7 +191,7 @@ public partial class ListViewModel : ObservableObject
     private void SortItems()
     {
         Items = new ObservableCollection<Item>(
-            Items.OrderBy(i => i.StoreName).ThenByDescending(i => i.AddedOn)
+            Items.OrderBy(i => i.CategoryName).ThenByDescending(i => i.AddedOn)
         );
         OnPropertyChanged(nameof(Items));
     }
@@ -203,12 +206,12 @@ public partial class ListViewModel : ObservableObject
 
     public async Task LoadStoresFromDatabase()
     {
-        var loadedStores = await _storeService.GetAllAsync();
-        Stores = new ObservableCollection<ConfigurableStore>(loadedStores);
+        var loadedStores = await _categoryService.GetAllAsync();
+        Stores = new ObservableCollection<Category>(loadedStores);
         Logger.Log($"Loaded {loadedStores.Count} stores, new collection size: {Stores.Count}");
         foreach (var store in Stores)
         {
-            if (store.Name != IStoreService.DefaultStoreName)
+            if (store.Name != ICategoryService.DefaultCategoryName)
                 continue;
 
             CurrentStore = store;

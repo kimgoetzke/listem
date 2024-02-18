@@ -9,6 +9,6 @@ public interface IItemService : IService
     Task CreateOrUpdateAsync(Item item);
     Task DeleteAsync(Item item);
     Task DeleteAllAsync();
-    Task UpdateAllToDefaultStoreAsync();
-    Task UpdateAllUsingStoreAsync(string storeName);
+    Task UpdateAllToDefaultCategoryAsync();
+    Task UpdateAllUsingCategoryAsync(string storeName);
 }

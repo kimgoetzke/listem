@@ -40,27 +40,31 @@ public class ItemService(IDatabaseProvider db) : IItemService
         Logger.Log("Removed all items");
     }
 
-    public async Task UpdateAllToDefaultStoreAsync()
+    public async Task UpdateAllToDefaultCategoryAsync()
     {
         var connection = await db.GetConnection();
         var items = await connection.Table<Item>().ToListAsync();
-        foreach (var item in items.Where(item => item.StoreName != IStoreService.DefaultStoreName))
+        foreach (
+            var item in items.Where(item =>
+                item.CategoryName != ICategoryService.DefaultCategoryName
+            )
+        )
         {
             Logger.Log($"Updating item to use default store: {item.ToLoggableString()}");
-            item.StoreName = IStoreService.DefaultStoreName;
+            item.CategoryName = ICategoryService.DefaultCategoryName;
             await connection.UpdateAsync(item);
         }
 
         Logger.Log($"Updated all items to use default store");
     }
 
-    public async Task UpdateAllUsingStoreAsync(string storeName)
+    public async Task UpdateAllUsingCategoryAsync(string storeName)
     {
         var connection = await db.GetConnection();
         var items = await connection.Table<Item>().ToListAsync();
-        foreach (var item in items.Where(item => item.StoreName == storeName))
+        foreach (var item in items.Where(item => item.CategoryName == storeName))
         {
-            item.StoreName = IStoreService.DefaultStoreName;
+            item.CategoryName = ICategoryService.DefaultCategoryName;
             await connection.UpdateAsync(item);
         }
     }

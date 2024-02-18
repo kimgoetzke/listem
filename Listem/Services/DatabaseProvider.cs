@@ -42,13 +42,13 @@ public class DatabaseProvider : IDatabaseProvider
 
     private static async Task InitialiseStoreTable(SQLiteAsyncConnection connection)
     {
-        await connection.CreateTableAsync<ConfigurableStore>();
-        if (await connection.Table<ConfigurableStore>().CountAsync() != 0)
+        await connection.CreateTableAsync<Category>();
+        if (await connection.Table<Category>().CountAsync() != 0)
             return;
 
         await connection
-            .InsertAsync(new ConfigurableStore { Name = IStoreService.DefaultStoreName })
+            .InsertAsync(new Category { Name = ICategoryService.DefaultCategoryName })
             .ConfigureAwait(false);
-        Logger.Log($"Added default store(s): {IStoreService.DefaultStoreName}");
+        Logger.Log($"Added default store(s): {ICategoryService.DefaultCategoryName}");
     }
 }

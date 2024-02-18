@@ -5,18 +5,18 @@ using Listem.Utilities;
 
 namespace Listem.Services;
 
-public class ClipboardService(IStoreService storeService, IItemService itemService)
+public class ClipboardService(ICategoryService categoryService, IItemService itemService)
     : IClipboardService
 {
     public async void InsertFromClipboardAsync(
-        ObservableCollection<ConfigurableStore> observableStores,
+        ObservableCollection<Category> observableStores,
         ObservableCollection<Item> observableItems
     )
     {
         var import = await Clipboard.GetTextAsync();
         if (IsClipboardEmpty(import))
             return;
-        var stores = await storeService.GetAllAsync();
+        var stores = await categoryService.GetAllAsync();
         if (
             !WasAbleToConvertToItemList(
                 import!,
@@ -45,15 +45,15 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
 
     private static bool WasAbleToConvertToItemList(
         string import,
-        List<ConfigurableStore> stores,
+        List<Category> stores,
         out int itemCount,
         out int storeCount,
         out List<Item> itemList,
-        out List<ConfigurableStore> storeList
+        out List<Category> storeList
     )
     {
         Logger.Log("Extracted from clipboard: " + import.Replace(Environment.NewLine, ","));
-        var storeName = IStoreService.DefaultStoreName;
+        var storeName = ICategoryService.DefaultCategoryName;
         itemCount = 0;
         storeCount = 0;
         itemList = [];
@@ -90,7 +90,7 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
         var item = new Item
         {
             Title = processedTitle,
-            StoreName = storeName,
+            CategoryName = storeName,
             Quantity = quantity,
             IsImportant = isImportant
         };
@@ -99,9 +99,9 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
     }
 
     private static string AddStore(
-        List<ConfigurableStore> stores,
+        List<Category> stores,
         ref int storeCount,
-        List<ConfigurableStore> storeList,
+        List<Category> storeList,
         string s
     )
     {
@@ -109,7 +109,7 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
         var matchingStore = stores.Find(store => store.Name == extractedName);
         if (matchingStore != null)
             return extractedName;
-        storeList.Add(new ConfigurableStore { Name = extractedName });
+        storeList.Add(new Category { Name = extractedName });
         storeCount++;
         return extractedName;
     }
@@ -137,13 +137,13 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
     }
 
     private async Task CreateMissingStores(
-        ObservableCollection<ConfigurableStore> stores,
-        List<ConfigurableStore> toCreate
+        ObservableCollection<Category> stores,
+        List<Category> toCreate
     )
     {
         foreach (var store in toCreate)
         {
-            await storeService.CreateOrUpdateAsync(store);
+            await categoryService.CreateOrUpdateAsync(store);
             stores.Add(store);
         }
     }
@@ -159,7 +159,7 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
 
     public void CopyToClipboard(
         ObservableCollection<Item> items,
-        ObservableCollection<ConfigurableStore> stores
+        ObservableCollection<Category> stores
     )
     {
         var text = BuildStringFromList(items, stores);
@@ -170,13 +170,13 @@ public class ClipboardService(IStoreService storeService, IItemService itemServi
 
     private static string BuildStringFromList(
         ObservableCollection<Item> items,
-        ObservableCollection<ConfigurableStore> stores
+        ObservableCollection<Category> stores
     )
     {
         var builder = new StringBuilder();
         foreach (var store in stores)
         {
-            var itemsFromStore = items.Where(item => item.StoreName == store.Name).ToList();
+            var itemsFromStore = items.Where(item => item.CategoryName == store.Name).ToList();
             if (itemsFromStore.Count == 0)
                 continue;
             builder.AppendLine($"[{store.Name}]:");
