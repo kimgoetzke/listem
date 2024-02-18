@@ -189,7 +189,7 @@ public partial class ListPage
 
     private Picker GetCategoryPicker()
     {
-        var storePicker = new Picker
+        var categoryPicker = new Picker
         {
 #if WINDOWS || __MACOS__
             Title = "",
@@ -202,20 +202,20 @@ public partial class ListPage
             HeightRequest = (double)Application.Current.Resources["StandardSwipeItemHeight"],
             Margin = new Thickness(5)
         };
-        storePicker.SetBinding(Picker.SelectedItemProperty, "CurrentStore");
-        storePicker.SetBinding(Picker.ItemsSourceProperty, "Stores");
-        storePicker.SelectedIndexChanged += (sender, _) =>
+        categoryPicker.SetBinding(Picker.SelectedItemProperty, "CurrentCategory");
+        categoryPicker.SetBinding(Picker.ItemsSourceProperty, "Categories");
+        categoryPicker.SelectedIndexChanged += (sender, _) =>
         {
             if (sender is not Picker picker)
                 return;
 
-            if (picker.SelectedItem is not Category store)
+            if (picker.SelectedItem is not Category category)
                 return;
 
-            _viewModel.CurrentStore = store;
-            Logger.Log("Current category updated to: " + _viewModel.CurrentStore.Name);
+            _viewModel.CurrentCategory = category;
+            Logger.Log("Current category updated to: " + _viewModel.CurrentCategory.Name);
         };
-        return storePicker;
+        return categoryPicker;
     }
 
     private Entry GetEntryField()

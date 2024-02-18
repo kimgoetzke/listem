@@ -22,11 +22,6 @@ public partial class MainViewModel : ObservableObject
         var list1 = new ItemList { Name = "Shopping list" };
         list1.Items =
         [
-            new Item
-            {
-                Title = "This is a very long item name that should be cut off",
-                ListId = list1.Id
-            },
             new Item { Title = "Bread", ListId = list1.Id },
             new Item { Title = "Milk", ListId = list1.Id },
             new Item { Title = "Eggs", ListId = list1.Id },
@@ -43,14 +38,16 @@ public partial class MainViewModel : ObservableObject
             new Item { Title = "Pineapple", ListId = list1.Id },
             new Item { Title = "Peaches", ListId = list1.Id },
         ];
-        var list2 = new ItemList
-        {
-            Name = "Todo list with a very, very long title that should be cut off"
-        };
+        var list2 = new ItemList { Name = "Todo list with a very, very long title" };
         list2.Items =
         [
             new Item { Title = "Do this", ListId = list2.Id },
-            new Item { Title = "Do that", ListId = list2.Id }
+            new Item { Title = "Do that", ListId = list2.Id },
+            new Item
+            {
+                Title = "Do something that is very difficult to explain succinctly",
+                ListId = list1.Id
+            }
         ];
         Lists = [list1, list2];
     }

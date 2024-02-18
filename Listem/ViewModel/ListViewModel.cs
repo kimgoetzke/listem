@@ -17,7 +17,7 @@ public partial class ListViewModel : ObservableObject
     private ObservableCollection<Item> _items = [];
 
     [ObservableProperty]
-    private ObservableCollection<Category> _stores = [];
+    private ObservableCollection<Category> _categories = [];
 
     [ObservableProperty]
     private ItemList _itemList;
@@ -26,7 +26,7 @@ public partial class ListViewModel : ObservableObject
     private Item _newItem;
 
     [ObservableProperty]
-    private Category? _currentStore;
+    private Category? _currentCategory;
 
     [ObservableProperty]
     private ObservableCollection<Theme> _themes = [];
@@ -66,7 +66,7 @@ public partial class ListViewModel : ObservableObject
         // Pre-process item
         NewItem.Title = StringProcessor.TrimAndCapitaliseFirstChar(NewItem.Title);
         NewItem.CategoryName =
-            CurrentStore != null ? CurrentStore.Name : ICategoryService.DefaultCategoryName;
+            CurrentCategory != null ? CurrentCategory.Name : ICategoryService.DefaultCategoryName;
 
         // Add to list and database
         await _itemService.CreateOrUpdateAsync(NewItem);
@@ -122,21 +122,21 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ManageStores()
+    private async Task ManageCategories()
     {
         await Shell.Current.GoToAsync(nameof(CategoryPage), true);
     }
 
     [RelayCommand]
-    internal void CopyToClipboard()
+    private void CopyToClipboard()
     {
-        _clipboardService.CopyToClipboard(Items, Stores);
+        _clipboardService.CopyToClipboard(Items, Categories);
     }
 
     [RelayCommand]
-    internal void InsertFromClipboard()
+    private void InsertFromClipboard()
     {
-        _clipboardService.InsertFromClipboardAsync(Stores, Items);
+        _clipboardService.InsertFromClipboardAsync(Items, Categories);
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -198,27 +198,27 @@ public partial class ListViewModel : ObservableObject
 
     public async Task LoadItemsFromDatabase()
     {
-        var loadedItems = await _itemService.GetAsync();
-        Items = new ObservableCollection<Item>(loadedItems);
+        var loaded = await _itemService.GetAsync();
+        Items = new ObservableCollection<Item>(loaded);
         SortItems();
-        Logger.Log($"Loaded {loadedItems.Count} items, new collection size: {Items.Count}");
+        Logger.Log($"Loaded {loaded.Count} items, new collection size: {Items.Count}");
     }
 
-    public async Task LoadStoresFromDatabase()
+    public async Task LoadCategoriesFromDatabase()
     {
-        var loadedStores = await _categoryService.GetAllAsync();
-        Stores = new ObservableCollection<Category>(loadedStores);
-        Logger.Log($"Loaded {loadedStores.Count} stores, new collection size: {Stores.Count}");
-        foreach (var store in Stores)
+        var loaded = await _categoryService.GetAllAsync();
+        Categories = new ObservableCollection<Category>(loaded);
+        Logger.Log($"Loaded {loaded.Count} categories, new collection size: {Categories.Count}");
+        foreach (var category in Categories)
         {
-            if (store.Name != ICategoryService.DefaultCategoryName)
+            if (category.Name != ICategoryService.DefaultCategoryName)
                 continue;
 
-            CurrentStore = store;
-            OnPropertyChanged(nameof(CurrentStore));
+            CurrentCategory = category;
+            OnPropertyChanged(nameof(CurrentCategory));
         }
 
-        OnPropertyChanged(nameof(Stores));
-        Logger.Log("Current store set to: " + CurrentStore?.Name);
+        OnPropertyChanged(nameof(Categories));
+        Logger.Log("Current category set to: " + CurrentCategory?.Name);
     }
 }

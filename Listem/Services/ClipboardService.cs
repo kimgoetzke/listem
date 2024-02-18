@@ -9,8 +9,8 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     : IClipboardService
 {
     public async void InsertFromClipboardAsync(
-        ObservableCollection<Category> observableStores,
-        ObservableCollection<Item> observableItems
+        ObservableCollection<Item> observableItems,
+        ObservableCollection<Category> categories
     )
     {
         var import = await Clipboard.GetTextAsync();
@@ -22,15 +22,15 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
                 import!,
                 stores.ToList(),
                 out var itemCount,
-                out var storeCount,
+                out var categoryCount,
                 out var itemList,
-                out var storeList
+                out var categoryList
             )
         )
             return;
-        if (!await IsImportConfirmedByUser(itemCount, storeCount))
+        if (!await IsImportConfirmedByUser(itemCount, categoryCount))
             return;
-        await CreateMissingStores(observableStores, storeList);
+        await CreateMissingStores(categories, categoryList);
         await ImportItemList(observableItems, itemList);
         Notifier.ShowToast($"Imported {itemCount} items from clipboard");
     }
@@ -159,10 +159,10 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
 
     public void CopyToClipboard(
         ObservableCollection<Item> items,
-        ObservableCollection<Category> stores
+        ObservableCollection<Category> categories
     )
     {
-        var text = BuildStringFromList(items, stores);
+        var text = BuildStringFromList(items, categories);
         Clipboard.SetTextAsync(text);
         Logger.Log("Copied to clipboard: " + text.Replace(Environment.NewLine, ", "));
         Notifier.ShowToast("Copied list to clipboard");
