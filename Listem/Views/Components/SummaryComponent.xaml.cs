@@ -1,8 +1,8 @@
 ﻿namespace Listem.Views.Components;
 
-public partial class ListSummaryComponent
+public partial class SummaryComponent
 {
-    public ListSummaryComponent()
+    public SummaryComponent()
     {
         InitializeComponent();
     }

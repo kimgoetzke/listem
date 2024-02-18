@@ -24,10 +24,10 @@
 
     <Color x:Key="StatusBarColor">#EFF3F6</Color>
     <Color x:Key="BackgroundColor">#EFF3F6</Color>
-    <Color x:Key="BackgroundColorAccent">#F4F4F4</Color>
+    <Color x:Key="BackgroundColorAccent">White</Color>
     <Color x:Key="HeadlineColor">#D8D8D8</Color>
     <Color x:Key="SubHeadlineColor">#D8D8D8</Color>
-    <Color x:Key="TextColor">Black</Color>
+    <Color x:Key="TextColor">#0E3C53</Color>
     <Color x:Key="TextColorVariant">#1F1F1F</Color>
     <Color x:Key="TextColorInverted">White</Color>
     <Color x:Key="TextHighlightColor">#C62191</Color>
@@ -39,8 +39,8 @@
     <Color x:Key="ItemPropertyColor">#1F1F1F</Color>
     <Color x:Key="ThickLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="ThinLineSeparatorColor">#E1E1E1</Color>
-    <Color x:Key="CheckboxColor">#3CADD3</Color>
-    <Color x:Key="DisabledColor">#378CD1</Color>
+    <Color x:Key="CheckboxColor">#48F2D9</Color>
+    <Color x:Key="DisabledColor">#D8D8D8</Color>
     <Color x:Key="PickerTitleColor">#ACACAC</Color>
     <Color x:Key="StandardGradientStop1">#48F2D9</Color>
     <Color x:Key="StandardGradientStop2">#378CD1</Color>
@@ -51,25 +51,32 @@
     <Color x:Key="SwitchOffThumbColor">#919191</Color>
     <Color x:Key="NavigationPageBarBackgroundColor">#D8D8D8</Color>
     <Color x:Key="NavigationPageBarTextColor">#C8C8C8</Color>
-    <Color x:Key="NavigationPageIconColor">#C8C8C8</Color>
-    <Color x:Key="ShellTitleColor">White</Color>
+    <Color x:Key="NavigationPageIconColor">#D8D8D8</Color>
+    <Color x:Key="ShellTitleColor">#D8D8D8</Color>
     <Color x:Key="ShellBackgroundColor">#EFF3F6</Color>
     <Color x:Key="ShellForegroundColor">#0E3C53</Color>
     <Color x:Key="TabBarBackgroundColor">White</Color>
-    <Color x:Key="TabBarForegroundColor">#0E3C53</Color>
+    <Color x:Key="TabBarForegroundColor">#D8D8D8</Color>
     <Color x:Key="ShadowColor">#3CADD3</Color>
 
     <x:Double x:Key="StandardLineHeight">1</x:Double>
     <x:Double x:Key="ThickLineHeight">3</x:Double>
     <x:Double x:Key="StandardSwipeItemHeight">44</x:Double>
     <x:Double x:Key="StandardSwipeItemHeightPlusLineHeight">45</x:Double>
+    <x:Double x:Key="StandardFontSize">12</x:Double>
+    <x:Double x:Key="SmallerFontSize">10</x:Double>
 
-    <Shadow x:Key="BlueShadow"
-            Brush="#378CD1"
+    <Shadow x:Key="AccentBrightShadow"
+            Brush="#48F2D9"
+            Offset="0,15"
+            Radius="10"
+            Opacity="0.4" />
+    <Shadow x:Key="PrimaryShadow"
+            Brush="#3CADD3"
             Offset="0,20"
             Radius="10"
             Opacity="0.4" />
-    <Shadow x:Key="OrangeShadow"
+    <Shadow x:Key="SecondaryShadow"
             Brush="#CE6E4B"
             Offset="0,20"
             Radius="10"

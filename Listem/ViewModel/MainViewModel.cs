@@ -19,41 +19,40 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel()
     {
         NewList = new ItemList();
-        Lists =
+        var list1 = new ItemList { Name = "Shopping list" };
+        list1.Items =
         [
-            new ItemList
+            new Item
             {
-                Name = "Shopping list",
-                Items =
-                [
-                    new Item { Title = "This is a very long item name that should be cut off" },
-                    new Item { Title = "Bread" },
-                    new Item { Title = "Milk" },
-                    new Item { Title = "Eggs" },
-                    new Item { Title = "Butter" },
-                    new Item { Title = "Cheese" },
-                    new Item { Title = "Tomatoes" },
-                    new Item { Title = "Potatoes" },
-                    new Item { Title = "Carrots" },
-                    new Item { Title = "Cucumber" },
-                    new Item { Title = "Bananas" },
-                    new Item { Title = "Apples" },
-                    new Item { Title = "Oranges" },
-                    new Item { Title = "Grapes" },
-                    new Item { Title = "Pineapple" },
-                    new Item { Title = "Peaches" },
-                ],
-                AddedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now
+                Title = "This is a very long item name that should be cut off",
+                ListId = list1.Id
             },
-            new ItemList
-            {
-                Name = "Todo list with a very, very long title that should be cut off",
-                Items = [new Item { Title = "Do this" }, new Item { Title = "Do that" }],
-                AddedOn = DateTime.Now,
-                UpdatedOn = DateTime.Now
-            }
+            new Item { Title = "Bread", ListId = list1.Id },
+            new Item { Title = "Milk", ListId = list1.Id },
+            new Item { Title = "Eggs", ListId = list1.Id },
+            new Item { Title = "Butter", ListId = list1.Id },
+            new Item { Title = "Cheese", ListId = list1.Id },
+            new Item { Title = "Tomatoes", ListId = list1.Id },
+            new Item { Title = "Potatoes", ListId = list1.Id },
+            new Item { Title = "Carrots", ListId = list1.Id },
+            new Item { Title = "Cucumber", ListId = list1.Id },
+            new Item { Title = "Bananas", ListId = list1.Id },
+            new Item { Title = "Apples", ListId = list1.Id },
+            new Item { Title = "Oranges", ListId = list1.Id },
+            new Item { Title = "Grapes", ListId = list1.Id },
+            new Item { Title = "Pineapple", ListId = list1.Id },
+            new Item { Title = "Peaches", ListId = list1.Id },
         ];
+        var list2 = new ItemList
+        {
+            Name = "Todo list with a very, very long title that should be cut off"
+        };
+        list2.Items =
+        [
+            new Item { Title = "Do this", ListId = list2.Id },
+            new Item { Title = "Do that", ListId = list2.Id }
+        ];
+        Lists = [list1, list2];
     }
 
     [RelayCommand]

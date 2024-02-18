@@ -30,7 +30,7 @@
                      BorderWidth="0"
                      WidthRequest="34"
                      HeightRequest="34"
-                     Margin="15, 40, 15 ,5"
+                     Margin="25, 40, 15 ,5"
                      VerticalOptions="Center" />
 
         <!-- Content: Title -->
@@ -39,7 +39,7 @@
         </Grid>
 
         <!-- Content: Collection view with list of lists -->
-        <components:ListSummaryComponent Grid.Row="2" BindingContext="{Binding}" />
+        <components:SummaryComponent Grid.Row="2" BindingContext="{Binding}" />
 
         <!-- Content: Add button -->
         <Grid Grid.Row="3">

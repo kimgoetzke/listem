@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Listem.Models"
+             xmlns:viewmodel="clr-namespace:Listem.ViewModel"
+             xmlns:converters="clr-namespace:Listem.Converters"
+             x:Class="Listem.Views.Components.ListComponent"
+             x:DataType="viewmodel:ListViewModel">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <converters:QuantityGreaterThanOneConverter x:Key="QuantityGreaterThanOneConverter" />
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <CollectionView
+        ItemsSource="{Binding Items}"
+        SelectionMode="None"
+        VerticalOptions="Fill">
+        <CollectionView.Header>
+            <BoxView HeightRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Header>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="{x:Type models:Item}">
+                <SwipeView>
+
+                    <!-- List of added items: Swipe from left to right to complete task -->
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItemView
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=RemoveItemCommand}"
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="{DynamicResource Green}"
+                                WidthRequest="300">
+                                <Grid HorizontalOptions="Fill" Background="{DynamicResource Green}">
+                                    <Grid HorizontalOptions="Start">
+                                        <Image Source="done_white.png"
+                                               Aspect="AspectFit"
+                                               WidthRequest="25"
+                                               HeightRequest="25"
+                                               Margin="30, 5, 5 ,5"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Grid>
+                            </SwipeItemView>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+
+                    <!-- List of added items: Swipe from right to left to reveal prioritisation button -->
+                    <SwipeView.RightItems>
+                        <SwipeItems SwipeBehaviorOnInvoked="Close">
+                            <SwipeItemView
+                                Invoked="SwipeItemView_OnInvoked"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
+                                CommandParameter="{Binding .}">
+                                <Frame BackgroundColor="{DynamicResource Secondary}"
+                                       BorderColor="Transparent"
+                                       Padding="0"
+                                       VerticalOptions="Center"
+                                       HeightRequest="100"
+                                       WidthRequest="100">
+                                    <Image Source="important_white.png"
+                                           Aspect="AspectFit"
+                                           WidthRequest="25"
+                                           HeightRequest="25"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Frame>
+                            </SwipeItemView>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+
+                    <!-- List of added items: Contents of list -->
+                    <Grid Padding="0" RowDefinitions="Auto, Auto" VerticalOptions="Fill">
+                        <Frame HeightRequest="50"
+                               Margin="20, 5"
+                               Padding="0"
+                               VerticalOptions="Fill"
+                               BorderColor="Transparent"
+                               BackgroundColor="{DynamicResource White}">
+
+                            <!-- Contents of list: Settings -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TapItemCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <!-- Contents of list: Content -->
+                            <Grid ColumnDefinitions="*,*" VerticalOptions="Center">
+                                <StackLayout Orientation="Horizontal" Grid.Column="0"
+                                             VerticalOptions="Center"
+                                             Padding="5, 0">
+                                    <CheckBox IsChecked="False" Scale="0.8"
+                                              CheckedChanged="CheckBox_OnTaskCompleted"
+                                              BindingContext="{Binding .}" />
+                                    <Label Text="{Binding Title}"
+                                           AutomationId="{Binding Id}"
+                                           HeightRequest="50"
+                                           HorizontalOptions="Start"
+                                           VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding IsImportant}"
+                                                         Value="True">
+                                                <Setter Property="TextColor"
+                                                        Value="{DynamicResource Pink}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Label x:Name="QuantityLabel"
+                                           HeightRequest="50"
+                                           HorizontalOptions="Start"
+                                           VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding Quantity, Converter={StaticResource QuantityGreaterThanOneConverter}}"
+                                                         Value="True">
+                                                <Setter Property="Text"
+                                                        Value="{Binding Quantity, StringFormat=' ({0})'}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Image x:Name="PriorityIcon"
+                                           Source="important_pink.png"
+                                           Scale="0.5"
+                                           IsVisible="False"
+                                           HeightRequest="50"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Start">
+                                        <Image.Triggers>
+                                            <DataTrigger TargetType="Image"
+                                                         Binding="{Binding IsImportant}"
+                                                         Value="True">
+                                                <Setter Property="IsVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Image.Triggers>
+                                    </Image>
+                                </StackLayout>
+                                <Label Text="{Binding CategoryName}"
+                                       FontSize="{DynamicResource SmallerFontSize}"
+                                       HeightRequest="50"
+                                       TextColor="{DynamicResource Neutral}"
+                                       HorizontalOptions="End"
+                                       VerticalTextAlignment="Center"
+                                       Padding="0,0,15,0"
+                                       Grid.Column="1">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label"
+                                                     Binding="{Binding CategoryName}"
+                                                     Value="Any">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Grid>
+
+                        </Frame>
+                    </Grid>
+
+                </SwipeView>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+        <CollectionView.EmptyView>
+            <ContentView>
+                <Grid Padding="30">
+                    <StackLayout HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+
+                        <Label Text=":)"
+                               FontSize="48"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalOptions="Fill"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Nothing to buy"
+                               Margin="10"
+                               FontSize="18"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalOptions="Fill"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Add items to populate your list"
+                               FontSize="{DynamicResource StandardFontSize}"
+                               HorizontalOptions="Fill"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalTextAlignment="Center" />
+
+                    </StackLayout>
+                </Grid>
+            </ContentView>
+        </CollectionView.EmptyView>
+        <CollectionView.Footer>
+            <BoxView HeightRequest="100" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Footer>
+    </CollectionView>
+</ContentView>

@@ -10,9 +10,9 @@
         <Setter Property="FontFamily" Value="MulishRegular" />
         <Setter Property="FontAttributes" Value="{OnPlatform WinUI=None, Default=Bold}" />
         <Setter Property="TextTransform" Value="Uppercase" />
-        <Setter Property="Background" Value="{DynamicResource Secondary}" />
+        <Setter Property="Background" Value="{DynamicResource AccentBright}" />
         <Setter Property="TextColor" Value="{DynamicResource ButtonTextColor}" />
-        <Setter Property="Shadow" Value="{DynamicResource OrangeShadow}" />
+        <Setter Property="Shadow" Value="{DynamicResource AccentBrightShadow}" />
         <Setter Property="MaximumWidthRequest" Value="200" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
@@ -54,7 +54,7 @@
         </Setter>
     </Style>
     <Style TargetType="Button" x:Key="MenuButton" BasedOn="{StaticResource StandardButton}">
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{DynamicResource StandardFontSize}" />
         <Setter Property="WidthRequest" Value="{OnPlatform WinUI=200, Default=140}" />
     </Style>
 
@@ -74,7 +74,7 @@
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="MulishRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{DynamicResource StandardFontSize}" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource PlaceholderColor}" />
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="44" />
@@ -93,7 +93,7 @@
     </Style>
     <Style TargetType="Entry" x:Key="HeadlineEntry">
         <Setter Property="TextColor" Value="{DynamicResource HeadlineColor}" />
-        <Setter Property="FontSize" Value="32" />
+        <Setter Property="FontSize" Value="26" />
         <Setter Property="HorizontalOptions" Value="Center" />
         <Setter Property="HorizontalTextAlignment" Value="Center" />
     </Style>
@@ -103,7 +103,7 @@
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="MulishRegular" />
-        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontSize" Value="{DynamicResource StandardFontSize}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -150,7 +150,7 @@
         <Setter Property="TextColor" Value="{DynamicResource ItemPropertyColor}" />
         <Setter Property="FontAttributes" Value="None" />
     </Style>
-    <Style TargetType="Label" x:Key="StoreSwipeItem">
+    <Style TargetType="Label" x:Key="CategorySwipeItem">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="HeightRequest" Value="{DynamicResource StandardSwipeItemHeight}" />
         <Setter Property="VerticalOptions" Value="Center" />
@@ -165,7 +165,7 @@
     </Style>
     <Style TargetType="Span" x:Key="StandardSpan">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{DynamicResource StandardFontSize}" />
         <Setter Property="FontFamily" Value="MulishRegular" />
     </Style>
     <Style TargetType="Span">
@@ -208,7 +208,7 @@
         <Setter Property="TitleColor" Value="{DynamicResource PickerTitleColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="FontFamily" Value="MulishRegular" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="{DynamicResource StandardFontSize}" />
         <Setter Property="MinimumHeightRequest" Value="44" />
         <Setter Property="MinimumWidthRequest" Value="44" />
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -306,7 +306,7 @@
         <Setter Property="NavBarHasShadow" Value="False" />
         <Setter Property="TabBarBackgroundColor" Value="{DynamicResource TabBarBackgroundColor}" />
         <Setter Property="TabBarForegroundColor" Value="{DynamicResource TabBarForegroundColor}" />
-        <Setter Property="TabBarTitleColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="TabBarTitleColor" Value="{DynamicResource Neutral}" />
         <Setter Property="TabBarUnselectedColor" Value="{DynamicResource DisabledColor}" />
     </Style>
 </ResourceDictionary>

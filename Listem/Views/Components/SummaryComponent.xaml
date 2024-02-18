@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Listem.Models"
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
-             x:Class="Listem.Views.Components.ListSummaryComponent">
+             x:Class="Listem.Views.Components.SummaryComponent">
     
     <CollectionView ItemsSource="{Binding Lists}"
                     ItemsLayout="HorizontalList"
@@ -50,6 +50,7 @@
                                                 SelectionMode="None">
 
                                     <!-- Items inside the list: Content -->
+                                    <!-- TODO: Make this scrollable -->
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="{x:Type models:Item}">
                                             <HorizontalStackLayout HorizontalOptions="Start">
@@ -61,7 +62,8 @@
                                         </DataTemplate>
                                     </CollectionView.ItemTemplate>
 
-                                    <!-- Items inside the list: Fallback if empty (TODO: Make it show correctly) -->
+                                    <!-- Items inside the list: Fallback if empty -->
+                                    <!-- TODO: Make it show correctly -->
                                     <CollectionView.EmptyView>
                                         <ContentView>
                                             <FlexLayout AlignItems="Stretch" BackgroundColor="Blue">
@@ -85,6 +87,18 @@
                                 <BoxView.Background>
                                     <LinearGradientBrush StartPoint="0.9,0" EndPoint="1,0">
                                         <GradientStop Color="Transparent" Offset="0.1" />
+                                        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </BoxView.Background>
+                            </BoxView>
+                            
+                            <BoxView Grid.Row="0"
+                                     HorizontalOptions="Fill"
+                                     VerticalOptions="Fill"
+                                     HeightRequest="400">
+                                <BoxView.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="Transparent" Offset="0.65" />
                                         <GradientStop Color="{DynamicResource White}" Offset="1.0" />
                                     </LinearGradientBrush>
                                 </BoxView.Background>
