@@ -70,7 +70,7 @@
         <MauiXaml Update="Views\DetailPage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
-        <MauiXaml Update="Views\StoresPage.xaml">
+        <MauiXaml Update="Views\CategoryPage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Resources\Styles\LightTheme.xaml">
@@ -82,6 +82,9 @@
         <MauiXaml Update="Views\ListPage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
+        <MauiXaml Update="Views\Components\ListComponent.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
     </ItemGroup>
 
     <ItemGroup>
@@ -89,7 +92,7 @@
             <DependentUpon>DetailPage.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Update="Views\StoresPage.xaml.cs">
+        <Compile Update="Views\CategoryPage.xaml.cs">
             <DependentUpon>StoresPage.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
@@ -103,6 +106,10 @@
         </Compile>
         <Compile Update="Views\ListPage.xaml.cs">
           <DependentUpon>ListPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Components\ListComponent.xaml.cs">
+          <DependentUpon>ListComponent.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
