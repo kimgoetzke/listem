@@ -33,18 +33,9 @@
 
         <!-- Main page content: List of added items -->
         <components:ListComponent BindingContext="{Binding}" Grid.Row="2" Padding="0" />
-        
         <BoxView Grid.Row="2"
-                 HorizontalOptions="Fill"
-                 VerticalOptions="Start"
-                 HeightRequest="20">
-            <BoxView.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="Transparent" Offset="1.0" />
-                    <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0.1" />
-                </LinearGradientBrush>
-            </BoxView.Background>
-        </BoxView>
+                 Style="{StaticResource TopBackgroundToButtonTransparent}"
+                 HeightRequest="20" />
 
     </Grid>
 </ContentPage>

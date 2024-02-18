@@ -31,8 +31,6 @@
                             <Setter Property="TranslationX" Value="0" />
                             <Setter Property="Opacity" Value="0.8" />
                             <Setter Property="Shadow" Value="{DynamicResource ShadowOff}" />
-                            <Setter Property="BorderColor" Value="{DynamicResource White}" />
-                            <Setter Property="BorderWidth" Value="2" />
                         </VisualState.Setters>
                     </VisualState>
                     <VisualState x:Name="Pressed">
@@ -41,12 +39,6 @@
                             <Setter Property="TranslationY" Value="2" />
                             <Setter Property="TranslationX" Value="2" />
                             <Setter Property="Shadow" Value="{DynamicResource ShadowOff}" />
-                        </VisualState.Setters>
-                    </VisualState>
-                    <VisualState x:Name="PointerOver">
-                        <VisualState.Setters>
-                            <Setter Property="BorderColor" Value="{DynamicResource White}" />
-                            <Setter Property="BorderWidth" Value="1" />
                         </VisualState.Setters>
                     </VisualState>
                 </VisualStateGroup>
@@ -63,10 +55,21 @@
         <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
         <GradientStop Color="{DynamicResource StandardGradientStop2}" Offset="1.0" />
     </LinearGradientBrush>
-    
     <LinearGradientBrush x:Key="WhiteToTransparent" EndPoint="1,1">
         <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
         <GradientStop Color="Transparent" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="TopBackgroundToButtonTransparentBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="Transparent" Offset="1.0" />
+        <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0.1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="TopTransparentToButtonWhiteBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="Transparent" Offset="0.65" />
+        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush" StartPoint="0.9,0" EndPoint="1,0">
+        <GradientStop Color="Transparent" Offset="0.1" />
+        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
     </LinearGradientBrush>
 
     <!-- Entry -->
@@ -237,6 +240,21 @@
         <Setter Property="Background" Value="{DynamicResource ThickLineSeparatorColor}" />
         <Setter Property="HorizontalOptions" Value="FillAndExpand" />
     </Style>
+    <Style TargetType="BoxView" x:Key="TopBackgroundToButtonTransparent">
+        <Setter Property="Background" Value="{DynamicResource TopBackgroundToButtonTransparentBrush}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Start" />
+    </Style>
+    <Style TargetType="BoxView" x:Key="TopTransparentToButtonWhite">
+        <Setter Property="Background" Value="{DynamicResource TopTransparentToButtonWhiteBrush}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Fill" />
+    </Style>
+    <Style TargetType="BoxView" x:Key="LeftTransparentToRightWhite">
+        <Setter Property="Background" Value="{DynamicResource LeftTransparentToRightWhiteBrush}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Fill" />
+    </Style>
     <Style TargetType="BoxView">
         <Setter Property="BackgroundColor" Value="{DynamicResource BackgroundColorAccent}" />
     </Style>
@@ -293,6 +311,7 @@
         <Setter Property="BarBackgroundColor" Value="{DynamicResource NavigationPageBarBackgroundColor}" />
         <Setter Property="BarTextColor" Value="{DynamicResource NavigationPageBarTextColor}" />
         <Setter Property="IconColor" Value="{DynamicResource NavigationPageIconColor}" />
+        <Setter Property="HasBackButton" Value="False" />
     </Style>
 
     <!-- Shell -->
@@ -304,6 +323,7 @@
         <Setter Property="DisabledColor" Value="{DynamicResource DisabledColor}" />
         <Setter Property="UnselectedColor" Value="{DynamicResource DisabledColor}" />
         <Setter Property="NavBarHasShadow" Value="False" />
+        <Setter Property="NavBarIsVisible" Value="True" />
         <Setter Property="TabBarBackgroundColor" Value="{DynamicResource TabBarBackgroundColor}" />
         <Setter Property="TabBarForegroundColor" Value="{DynamicResource TabBarForegroundColor}" />
         <Setter Property="TabBarTitleColor" Value="{DynamicResource Neutral}" />

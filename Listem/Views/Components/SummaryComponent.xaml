@@ -5,7 +5,7 @@
              xmlns:models="clr-namespace:Listem.Models"
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
              x:Class="Listem.Views.Components.SummaryComponent">
-    
+
     <CollectionView ItemsSource="{Binding Lists}"
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
@@ -75,35 +75,19 @@
                                             </FlexLayout>
                                         </ContentView>
                                     </CollectionView.EmptyView>
-                                    
+
                                 </CollectionView>
                             </VerticalStackLayout>
 
                             <!-- Box:: Gradient transparent to white -->
                             <BoxView Grid.Row="0"
-                                     HorizontalOptions="Fill"
-                                     VerticalOptions="Fill"
-                                     HeightRequest="400">
-                                <BoxView.Background>
-                                    <LinearGradientBrush StartPoint="0.9,0" EndPoint="1,0">
-                                        <GradientStop Color="Transparent" Offset="0.1" />
-                                        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
-                                    </LinearGradientBrush>
-                                </BoxView.Background>
-                            </BoxView>
+                                     HeightRequest="400"
+                                     Style="{DynamicResource LeftTransparentToRightWhite}"/>
                             
                             <BoxView Grid.Row="0"
-                                     HorizontalOptions="Fill"
-                                     VerticalOptions="Fill"
-                                     HeightRequest="400">
-                                <BoxView.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                        <GradientStop Color="Transparent" Offset="0.65" />
-                                        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
-                                    </LinearGradientBrush>
-                                </BoxView.Background>
-                            </BoxView>
-
+                                     HeightRequest="400"
+                                     Style="{DynamicResource TopTransparentToButtonWhite}" />
+                            
                         </Grid>
 
                     </Frame>
