@@ -47,7 +47,6 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddTransient<EditListViewModel>();
-        builder.Services.AddTransient<CategoryViewModel>();
         builder.Services.AddTransient<ListViewModel>();
         builder.Services.AddTransient<DetailViewModel>();
         return builder;
@@ -57,7 +56,6 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddTransient<EditListPage>();
-        builder.Services.AddTransient<CategoryPage>();
         builder.Services.AddTransient<DetailPage>();
         builder.Services.AddTransient<ListPage>();
         return builder;

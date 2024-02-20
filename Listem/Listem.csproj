@@ -70,9 +70,6 @@
         <MauiXaml Update="Views\DetailPage.xaml">
             <SubType>Designer</SubType>
         </MauiXaml>
-        <MauiXaml Update="Views\CategoryPage.xaml">
-            <SubType>Designer</SubType>
-        </MauiXaml>
         <MauiXaml Update="Resources\Styles\LightTheme.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
@@ -112,6 +109,7 @@
           <DependentUpon>ListComponent.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Remove="ViewModel\CategoryViewModel.cs" />
     </ItemGroup>
 
 </Project>

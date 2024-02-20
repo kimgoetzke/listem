@@ -141,12 +141,6 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ManageCategories()
-    {
-        await Shell.Current.Navigation.PushAsync(new CategoryPage(ObservableItemList.Id));
-    }
-
-    [RelayCommand]
     private void CopyToClipboard()
     {
         _clipboardService.CopyToClipboard(Items, Categories);

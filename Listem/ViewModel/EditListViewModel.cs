@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Core.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
@@ -11,11 +12,16 @@ namespace Listem.ViewModel;
 
 public partial class EditListViewModel : ObservableObject
 {
+    public static string DefaultCategoryName => ICategoryService.DefaultCategoryName;
+
     [ObservableProperty]
     private ObservableItemList _observableItemList;
 
     [ObservableProperty]
     private ObservableCollection<ObservableItem> _items = [];
+
+    [ObservableProperty]
+    private ObservableCategory _newObservableCategory;
 
     [ObservableProperty]
     private ObservableCollection<ObservableCategory> _categories = [];
@@ -31,6 +37,7 @@ public partial class EditListViewModel : ObservableObject
         _itemService = IPlatformApplication.Current.Services.GetService<IItemService>()!;
         ObservableItemList = observableItemList;
         Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
+        NewObservableCategory = new ObservableCategory(observableItemList.Id);
         LoadCategories().SafeFireAndForget();
     }
 
@@ -40,14 +47,84 @@ public partial class EditListViewModel : ObservableObject
         Categories = new ObservableCollection<ObservableCategory>(categories);
         OnPropertyChanged(nameof(Categories));
         Logger.Log(
-            $"Loaded {Categories.Count} categories for list {ObservableItemList.Id} from the database"
+            $"Loaded {Categories.Count} categories for list {ObservableItemList.Id} from database"
+        );
+    }
+
+    [RelayCommand]
+    private async Task AddCategory(ITextInput view)
+    {
+        // Don't add empty items
+        if (string.IsNullOrWhiteSpace(NewObservableCategory.Name))
+            return;
+
+        // Pre-process
+        NewObservableCategory.Name = StringProcessor.TrimAndCapitalise(NewObservableCategory.Name);
+
+        // Only allow unique names
+        if (Categories.Any(category => category.Name == NewObservableCategory.Name))
+        {
+            Notifier.ShowToast($"Cannot add '{NewObservableCategory.Name}' - it already exists");
+            return;
+        }
+
+        // Add to list and database
+        Categories.Add(NewObservableCategory);
+        await _categoryService.CreateOrUpdateAsync(NewObservableCategory);
+
+        // Make sure the UI is reset/updated
+#if __ANDROID__
+        var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
+        Logger.Log("Keyboard hidden: " + isKeyboardHidden);
+#endif
+        Notifier.ShowToast($"Added: {NewObservableCategory.Name}");
+        NewObservableCategory = new ObservableCategory(ObservableItemList.Id);
+        OnPropertyChanged(nameof(NewObservableCategory));
+    }
+
+    [RelayCommand]
+    private async Task RemoveCategory(ObservableCategory observableCategory)
+    {
+        if (observableCategory.Name == ICategoryService.DefaultCategoryName)
+        {
+            Notifier.ShowToast("Cannot remove default category");
+            return;
+        }
+
+        Categories.Remove(observableCategory);
+        await _itemService.UpdateAllToCategoryAsync(observableCategory.Name, ObservableItemList.Id);
+        await _categoryService.DeleteAsync(observableCategory);
+        Notifier.ShowToast($"Removed: {observableCategory.Name}");
+    }
+
+    [RelayCommand]
+    private async Task ResetCategories()
+    {
+        if (!await IsResetCategoriesRequestConfirmed())
+            return;
+
+        Notifier.ShowToast("Reset categories");
+        await _itemService
+            .UpdateAllToDefaultCategoryAsync(ObservableItemList.Id)
+            .ConfigureAwait(false);
+        await _categoryService.DeleteAllByListIdAsync(ObservableItemList.Id).ConfigureAwait(false);
+        await LoadCategories().ConfigureAwait(false);
+    }
+
+    private static Task<bool> IsResetCategoriesRequestConfirmed()
+    {
+        return Shell.Current.DisplayAlert(
+            "Reset categories",
+            $"This will remove all categories, except 'Any'. Are you sure you want to continue?",
+            "Yes",
+            "No"
         );
     }
 
     [RelayCommand]
     private async Task RemoveAllItems()
     {
-        if (!await IsRequestConfirmedByUser())
+        if (!await IsRemoveItemsRequestConfirmed())
             return;
 
         Items.Clear();
@@ -55,7 +132,7 @@ public partial class EditListViewModel : ObservableObject
         Notifier.ShowToast("Removed all items from list");
     }
 
-    private static async Task<bool> IsRequestConfirmedByUser()
+    private static async Task<bool> IsRemoveItemsRequestConfirmed()
     {
         return await Shell.Current.DisplayAlert(
             "Clear list",
@@ -63,12 +140,6 @@ public partial class EditListViewModel : ObservableObject
             "Yes",
             "No"
         );
-    }
-
-    [RelayCommand]
-    private async Task ManageCategories()
-    {
-        await Shell.Current.Navigation.PushAsync(new CategoryPage(ObservableItemList.Id));
     }
 
     [RelayCommand]

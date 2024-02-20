@@ -2,25 +2,149 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
              xmlns:viewModel="clr-namespace:Listem.ViewModel"
-             x:Class="Listem.Views.EditListPage" 
+             xmlns:models="clr-namespace:Listem.Models"
+             x:Class="Listem.Views.EditListPage"
              x:DataType="viewModel:EditListViewModel">
-        
-        <VerticalStackLayout Padding="40, 10"
+
+    <VerticalStackLayout Padding="0, 20"
                          MinimumWidthRequest="400" MaximumWidthRequest="850"
                          VerticalOptions="Start"
                          HorizontalOptions="Fill">
 
-        <Entry Text="{Binding ObservableItemList.Name, Mode=TwoWay}"
-               Style="{DynamicResource HeadlineEntry}"
-               Margin="0,30"
-               VerticalOptions="Center"
-               HorizontalOptions="Center" />
-        
+        <Label Text="List name" Style="{DynamicResource SubHeadline}"
+               HorizontalTextAlignment="Center"
+               Padding="0" />
+
+        <!-- List title -->
+        <VerticalStackLayout Padding="50,5" MinimumWidthRequest="200" MaximumWidthRequest="850">
+            <Entry Text="{Binding ObservableItemList.Name, Mode=TwoWay}"
+                   Margin="5"
+                   FontSize="16"
+                   VerticalOptions="Fill"
+                   HorizontalTextAlignment="Center"
+                   Unfocused="OnEntryUnfocused" />
+        </VerticalStackLayout>
+
+        <!-- Categories title -->
+        <Label Text="List categories" Style="{DynamicResource SubHeadline}"
+               HorizontalTextAlignment="Center"
+               Padding="0, 10, 0,10" />
+
+        <!-- Line separator -->
+        <BoxView Style="{DynamicResource ThinLineSeparator}" />
+
+        <!-- Categories list -->
+        <CollectionView ItemsSource="{Binding Categories}"
+                        SelectionMode="None"
+                        HeightRequest="200"
+                        VerticalScrollBarVisibility="Always"
+                        VerticalOptions="Start">
+
+            <!-- Category list: Categories -->
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type models:ObservableCategory}">
+                    <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+                        <SwipeView.RightItems>
+                            <SwipeItems SwipeBehaviorOnInvoked="Close">
+                                <SwipeItemView
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RemoveCategoryCommand}"
+                                    CommandParameter="{Binding .}">
+                                    <Frame BackgroundColor="{DynamicResource Secondary}"
+                                           BorderColor="Transparent"
+                                           Padding="0"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Fill"
+                                           HeightRequest="75"
+                                           WidthRequest="100">
+                                        <Image Source="bin_white.png"
+                                               Aspect="AspectFit"
+                                               WidthRequest="25"
+                                               HeightRequest="25"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Frame>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <Grid Padding="5" VerticalOptions="Fill" HorizontalOptions="Fill">
+                            <Frame Margin="20, 0"
+                                   Padding="0"
+                                   VerticalOptions="Fill"
+                                   HorizontalOptions="Fill"
+                                   BorderColor="Transparent"
+                                   BackgroundColor="{DynamicResource White}">
+
+                                <VerticalStackLayout Padding="5, 5" HorizontalOptions="Fill">
+                                    <Label Text="{Binding Name}"
+                                           HeightRequest="{DynamicResource StandardSwipeItemHeight}"
+                                           HorizontalOptions="Fill"
+                                           VerticalTextAlignment="Center"
+                                           HorizontalTextAlignment="Start" />
+                                    <ImageButton x:Name="BinImageButton"
+                                                 Source="bin_neutral.png"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RemoveCategoryCommand}"
+                                                 CommandParameter="{Binding .}"
+                                                 Aspect="AspectFit"
+                                                 HorizontalOptions="End"
+                                                 VerticalOptions="Center"
+                                                 Padding="3"
+                                                 BorderWidth="1"
+                                                 Pressed="ImageButton_OnPressed"
+                                                 Released="ImageButton_OnReleased"
+                                                 IsVisible="{OnPlatform WinUI=True, Default=False}"
+                                                 WidthRequest="34"
+                                                 HeightRequest="34"
+                                                 Margin="5, 5, 25 ,5">
+                                        <ImageButton.Triggers>
+                                            <DataTrigger TargetType="ImageButton"
+                                                         Binding="{Binding Name}"
+                                                         Value="{x:Static viewModel:EditListViewModel.DefaultCategoryName}">
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </DataTrigger>
+                                        </ImageButton.Triggers>
+                                    </ImageButton>
+                                </VerticalStackLayout>
+
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Line separator -->
+        <BoxView Style="{DynamicResource ThinLineSeparator}" />
+
+        <!-- Entry field -->
+        <VerticalStackLayout Padding="50,20" MinimumWidthRequest="200" MaximumWidthRequest="850">
+            <Entry Placeholder="Enter category name"
+                   Text="{Binding NewObservableCategory.Name}"
+                   Margin="5"
+                   FontSize="16"
+                   HorizontalTextAlignment="Center"
+                   x:Name="CategoryNameEntry"
+                   Unfocused="OnEntryUnfocused" />
+        </VerticalStackLayout>
+
+        <!-- Buttons -->
+        <Button Text="Add category"
+                Margin="0, 20"
+                x:Name="AddCategoryButton"
+                Style="{DynamicResource StandardButton}"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=AddCategoryCommand}"
+                CommandParameter="{Binding Source={x:Reference CategoryNameEntry}}" />
+        <Button Text="Reset categories"
+                Margin="0, 20"
+                Style="{DynamicResource StandardButton}"
+                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=ResetCategoriesCommand}"
+                CommandParameter="{Binding .}" />
         <Button Text="Save changes"
+                Margin="0, 20"
                 Style="{DynamicResource StandardButton}"
                 Command="{Binding GoBackCommand}" />
 
     </VerticalStackLayout>
-
 </ContentPage>
