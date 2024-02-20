@@ -10,9 +10,9 @@
         <Setter Property="FontFamily" Value="MulishRegular" />
         <Setter Property="FontAttributes" Value="{OnPlatform WinUI=None, Default=Bold}" />
         <Setter Property="TextTransform" Value="Uppercase" />
-        <Setter Property="Background" Value="{DynamicResource AccentBright}" />
+        <Setter Property="Background" Value="{DynamicResource Primary}" />
         <Setter Property="TextColor" Value="{DynamicResource ButtonTextColor}" />
-        <Setter Property="Shadow" Value="{DynamicResource AccentBrightShadow}" />
+        <Setter Property="Shadow" Value="{DynamicResource PrimaryShadow}" />
         <Setter Property="MaximumWidthRequest" Value="200" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
