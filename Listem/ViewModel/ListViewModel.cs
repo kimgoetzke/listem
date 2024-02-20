@@ -45,13 +45,9 @@ public partial class ListViewModel : ObservableObject
         ObservableItemList observableItemList
     )
     {
-        _categoryService = (
-            services.First(s => s.Type == ServiceType.Category) as ICategoryService
-        )!;
-        _itemService = (services.First(s => s.Type == ServiceType.Item) as IItemService)!;
-        _clipboardService = (
-            services.First(s => s.Type == ServiceType.Clipboard) as IClipboardService
-        )!;
+        _categoryService = services.Get<ICategoryService>(ServiceType.Category);
+        _itemService = services.Get<IItemService>(ServiceType.Item);
+        _clipboardService = services.Get<IClipboardService>(ServiceType.Clipboard);
         ObservableItemList = observableItemList;
         Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
         NewObservableItem = new ObservableItem(ObservableItemList.Id);
