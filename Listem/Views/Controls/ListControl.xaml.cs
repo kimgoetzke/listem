@@ -1,11 +1,11 @@
 ﻿using Listem.Models;
 using Listem.Utilities;
 
-namespace Listem.Views.Components;
+namespace Listem.Views.Controls;
 
-public partial class ListComponent
+public partial class ListControl
 {
-    public ListComponent()
+    public ListControl()
     {
         InitializeComponent();
     }

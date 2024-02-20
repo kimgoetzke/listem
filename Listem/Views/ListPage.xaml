@@ -5,7 +5,7 @@
              x:Class="Listem.Views.ListPage"
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:components="clr-namespace:Listem.Views.Components"
+             xmlns:controls="clr-namespace:Listem.Views.Controls"
              x:DataType="viewmodel:ListViewModel"
              Shell.NavBarIsVisible="True">
     
@@ -35,7 +35,7 @@
         <!-- (Inserted via code behind) -->
 
         <!-- Main page content: List of added items -->
-        <components:ListComponent BindingContext="{Binding}" Grid.Row="2" Padding="0" />
+        <controls:ListControl BindingContext="{Binding}" Grid.Row="2" Padding="0" />
         <BoxView Grid.Row="2"
                  Style="{StaticResource TopBackgroundToButtonTransparent}"
                  HeightRequest="20" />

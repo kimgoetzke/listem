@@ -40,14 +40,11 @@ public partial class ListViewModel : ObservableObject
     private readonly IItemService _itemService;
     private readonly IClipboardService _clipboardService;
 
-    public ListViewModel(
-        IReadOnlyCollection<IService> services,
-        ObservableItemList observableItemList
-    )
+    public ListViewModel(ObservableItemList observableItemList)
     {
-        _categoryService = services.Get<ICategoryService>(ServiceType.Category);
-        _itemService = services.Get<IItemService>(ServiceType.Item);
-        _clipboardService = services.Get<IClipboardService>(ServiceType.Clipboard);
+        _categoryService = IPlatformApplication.Current!.Services.GetService<ICategoryService>()!;
+        _itemService = IPlatformApplication.Current.Services.GetService<IItemService>()!;
+        _clipboardService = IPlatformApplication.Current.Services.GetService<IClipboardService>()!;
         ObservableItemList = observableItemList;
         Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
         NewObservableItem = new ObservableItem(ObservableItemList.Id);

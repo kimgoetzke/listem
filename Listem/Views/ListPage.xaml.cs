@@ -1,7 +1,4 @@
-﻿using AsyncAwaitBestPractices;
-using CommunityToolkit.Maui.Views;
-using Listem.Models;
-using Listem.Services;
+﻿using Listem.Models;
 using Listem.Utilities;
 using Listem.ViewModel;
 
@@ -19,15 +16,7 @@ public partial class ListPage
     public ListPage(ObservableItemList observableItemList)
     {
         InitializeComponent();
-        var services = new List<IService?>
-        {
-            IPlatformApplication.Current?.Services.GetService<ICategoryService>(),
-            IPlatformApplication.Current?.Services.GetService<IItemService>(),
-            IPlatformApplication.Current?.Services.GetService<IClipboardService>()
-        };
-        if (services.Any(s => s is null))
-            throw new NullReferenceException($"One or more services are null");
-        _viewModel = new ListViewModel(services!, observableItemList);
+        _viewModel = new ListViewModel(observableItemList);
         BindingContext = _viewModel;
         InitialiseMenuToAddItems();
     }

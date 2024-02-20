@@ -5,7 +5,7 @@
              xmlns:models="clr-namespace:Listem.Models"
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
              xmlns:converters="clr-namespace:Listem.Converters"
-             x:Class="Listem.Views.Components.ListComponent"
+             x:Class="Listem.Views.Controls.ListControl"
              x:DataType="viewmodel:ListViewModel">
 
     <ContentView.Resources>
@@ -180,7 +180,7 @@
                                HorizontalTextAlignment="Center" />
                         <Label Text="Nothing to buy"
                                Margin="10"
-                               FontSize="18"
+                               FontSize="{DynamicResource FontSizeL}"
                                TextColor="{DynamicResource LightTextColor}"
                                HorizontalOptions="Fill"
                                HorizontalTextAlignment="Center" />

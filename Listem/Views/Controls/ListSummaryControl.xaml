@@ -3,16 +3,16 @@
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Listem.Models"
-             xmlns:viewmodel="clr-namespace:Listem.ViewModel"
-             x:Class="Listem.Views.Components.SummaryComponent">
+             xmlns:viewModel="clr-namespace:Listem.ViewModel"
+             x:Class="Listem.Views.Controls.ListSummaryControl">
 
     <CollectionView ItemsSource="{Binding Lists}"
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
                     SelectionMode="None"
                     x:Name="ParentCollectionView"
-                    x:DataType="viewmodel:MainViewModel">
-        
+                    x:DataType="viewModel:MainViewModel">
+
         <CollectionView.Header>
             <BoxView WidthRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Header>
@@ -31,7 +31,7 @@
 
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapListCommand}"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
                                 CommandParameter="{Binding .}" />
                         </Frame.GestureRecognizers>
 
@@ -66,7 +66,7 @@
 
                                 <CollectionView.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapListCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
                                         CommandParameter="{Binding .}" />
                                 </CollectionView.GestureRecognizers>
 
@@ -116,7 +116,7 @@
                             <!-- Box: Bottom bar with list options -->
                             <Grid Grid.Row="2" HorizontalOptions="Fill">
                                 <ImageButton Source="bin_secondary.png"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=RemoveListCommand}"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=RemoveListCommand}"
                                              CommandParameter="{Binding .}"
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
