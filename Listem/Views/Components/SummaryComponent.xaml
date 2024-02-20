@@ -10,12 +10,17 @@
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
                     SelectionMode="None"
+                    x:Name="ParentCollectionView"
                     x:DataType="viewmodel:MainViewModel">
+        
+        <CollectionView.Header>
+            <BoxView WidthRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Header>
 
         <!-- Content: Box -->
         <CollectionView.ItemTemplate>
             <DataTemplate x:DataType="{x:Type models:ObservableItemList}">
-                <FlexLayout Margin="0">
+                <FlexLayout>
 
                     <!-- Box -->
                     <Frame FlexLayout.Grow="1"
@@ -31,88 +36,86 @@
                         </Frame.GestureRecognizers>
 
                         <!-- Box: List summary -->
-                        <Grid RowDefinitions="*, Auto">
-                            <VerticalStackLayout Grid.Row="0" HorizontalOptions="Start">
+                        <Grid RowDefinitions="Auto, *, Auto">
 
-                                <!-- List summary: List name -->
-                                <Label VerticalTextAlignment="Start"
-                                       VerticalOptions="Fill"
+                            <!-- List summary: Title and edit button -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto" HorizontalOptions="Fill">
+                                <Label Grid.Column="0"
+                                       VerticalTextAlignment="Start"
+                                       HorizontalOptions="Start"
+                                       HorizontalTextAlignment="Start"
                                        Style="{DynamicResource SubHeadline}"
                                        Text="{Binding Name}"
-                                       HorizontalOptions="Start" />
+                                       LineBreakMode="WordWrap" />
+                                <ImageButton Grid.Column="1"
+                                             Margin="0,3,0,0"
+                                             Source="pencil_primary.png"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="Start"
+                                             VerticalOptions="Start"
+                                             WidthRequest="20"
+                                             HeightRequest="20" />
+                            </Grid>
 
-                                <!-- List summary: Items inside the list -->
-                                <CollectionView ItemsSource="{Binding Items}"
-                                                VerticalOptions="Fill"
-                                                Margin="0,10,0,0"
-                                                BackgroundColor="Transparent"
-                                                SelectionMode="None">
+                            <!-- List summary: Items inside the list -->
+                            <CollectionView Grid.Row="1" ItemsSource="{Binding Items}"
+                                            VerticalOptions="Fill"
+                                            Margin="0,10,0,0"
+                                            BackgroundColor="Transparent"
+                                            SelectionMode="None">
 
-                                    <CollectionView.GestureRecognizers>
-                                        <TapGestureRecognizer
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapListCommand}"
-                                            CommandParameter="{Binding .}" />
-                                    </CollectionView.GestureRecognizers>
-                                    
-                                    <!-- Items inside the list: Content -->
-                                    <!-- TODO: Make this scrollable -->
-                                    <CollectionView.ItemTemplate>
-                                        <DataTemplate x:DataType="{x:Type models:ObservableItem}">
-                                            <HorizontalStackLayout HorizontalOptions="Start">
-                                                <CheckBox Scale="1" IsEnabled="False" />
-                                                <Label Text="{Binding Title}"
-                                                       VerticalOptions="Center"
-                                                       TextColor="{DynamicResource TextColor}" />
-                                            </HorizontalStackLayout>
-                                        </DataTemplate>
-                                    </CollectionView.ItemTemplate>
+                                <CollectionView.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapListCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </CollectionView.GestureRecognizers>
 
-                                    <!-- Items inside the list: Fallback if empty -->
-                                    <!-- TODO: Make it show correctly -->
-                                    <CollectionView.EmptyView>
-                                        <ContentView>
-                                            <FlexLayout AlignItems="Stretch" BackgroundColor="Blue">
-                                                <Label Text="Open this list and add items"
-                                                       FontSize="18"
-                                                       TextColor="{DynamicResource LightTextColor}"
-                                                       HorizontalTextAlignment="Start"
-                                                       VerticalTextAlignment="Start" />
-                                            </FlexLayout>
-                                        </ContentView>
-                                    </CollectionView.EmptyView>
+                                <!-- Items inside the list: Content -->
+                                <!-- TODO: Make this scrollable -->
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="{x:Type models:ObservableItem}">
+                                        <HorizontalStackLayout HorizontalOptions="Start">
+                                            <HorizontalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference ParentCollectionView}, Path=SelectedItem}"
+                                                    CommandParameter="{Binding .}" />
+                                            </HorizontalStackLayout.GestureRecognizers>
+                                            <CheckBox Scale="1" IsEnabled="False" />
+                                            <Label Text="{Binding Title}"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{DynamicResource TextColor}" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
 
-                                </CollectionView>
-                            </VerticalStackLayout>
+                                <!-- Items inside the list: Fallback if empty -->
+                                <!-- TODO: Make it show correctly -->
+                                <CollectionView.EmptyView>
+                                    <ContentView>
+                                        <FlexLayout AlignItems="Stretch" BackgroundColor="Blue">
+                                            <Label Text="Open this list and add items"
+                                                   FontSize="18"
+                                                   TextColor="{DynamicResource LightTextColor}"
+                                                   HorizontalTextAlignment="Start"
+                                                   VerticalTextAlignment="Start" />
+                                        </FlexLayout>
+                                    </ContentView>
+                                </CollectionView.EmptyView>
 
-                            <!-- Box: Gradients transparent to white -->
-                            <BoxView Grid.Row="0"
-                                     HeightRequest="400"
-                                     Style="{DynamicResource LeftTransparentToRightWhite}"/>
-                            
-                            <BoxView Grid.Row="0"
-                                     HeightRequest="400"
+                            </CollectionView>
+
+                            <!-- Box: Gradients transparent to white drawn over the CollectionView -->
+                            <BoxView Grid.Row="1"
+                                     FlexLayout.Grow="1"
+                                     Style="{DynamicResource LeftTransparentToRightWhite}" />
+
+                            <BoxView Grid.Row="1"
+                                     FlexLayout.Grow="1"
                                      Style="{DynamicResource TopTransparentToButtonWhite}" />
-                            
+
                             <!-- Box: Bottom bar with list options -->
-                            <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto" HorizontalOptions="Fill">
-                                <ImageButton Source="pencil_primary.png"
-                                             Grid.Column="0"
-                                             Margin="0,0,5,0"
-                                             Aspect="AspectFit"
-                                             HorizontalOptions="Start"
-                                             VerticalOptions="Start"
-                                             WidthRequest="23"
-                                             HeightRequest="23" />
-                                <ImageButton Source="rename_primary.png"
-                                             Grid.Column="1"
-                                             Margin="10, 0"
-                                             Aspect="AspectFit"
-                                             HorizontalOptions="Start"
-                                             VerticalOptions="Start"
-                                             WidthRequest="25"
-                                             HeightRequest="25" />
+                            <Grid Grid.Row="2" HorizontalOptions="Fill">
                                 <ImageButton Source="bin_secondary.png"
-                                             Grid.Column="2"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=RemoveListCommand}"
                                              CommandParameter="{Binding .}"
                                              Aspect="AspectFit"
@@ -121,7 +124,7 @@
                                              WidthRequest="25"
                                              HeightRequest="25" />
                             </Grid>
-                            
+
                         </Grid>
 
                     </Frame>
@@ -152,5 +155,9 @@
             </ContentView>
         </CollectionView.EmptyView>
 
+        <CollectionView.Footer>
+            <BoxView WidthRequest="100" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Footer>
+        
     </CollectionView>
 </ContentView>
