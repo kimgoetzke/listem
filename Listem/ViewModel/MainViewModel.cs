@@ -6,7 +6,6 @@ using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
 using Listem.Views;
-using Random = System.Random;
 
 namespace Listem.ViewModel;
 
@@ -119,10 +118,9 @@ public partial class MainViewModel : ObservableObject
     private async Task AddList()
     {
         // TODO: Remove this once testing is done
-        var random = new Random();
         NewList = new ObservableItemList
         {
-            Name = "List " + random.Next(100) + 1,
+            Name = "New List",
             AddedOn = DateTime.Now,
             UpdatedOn = DateTime.Now
         };

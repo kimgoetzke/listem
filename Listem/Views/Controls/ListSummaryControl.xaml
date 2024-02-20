@@ -146,28 +146,25 @@
         <!-- Content: Fallback if there are no lists -->
         <CollectionView.EmptyView>
             <ContentView>
-                <Grid Padding="30">
-                    <StackLayout HorizontalOptions="Center"
-                                 VerticalOptions="Center"
-                                 Padding="0,0,50,0">
-                        <Label Text="You have no lists yet"
-                               Margin="10"
-                               FontSize="{DynamicResource FontSizeL}"
-                               TextColor="{DynamicResource LightTextColor}"
-                               HorizontalOptions="Fill"
-                               HorizontalTextAlignment="Center" />
-                        <Label Text="Create a list to get started"
-                               FontSize="{DynamicResource FontSizeM}"
-                               HorizontalOptions="Fill"
-                               TextColor="{DynamicResource LightTextColor}"
-                               HorizontalTextAlignment="Center" />
-                    </StackLayout>
-                </Grid>
+                <StackLayout HorizontalOptions="Center"
+                             VerticalOptions="Center">
+                    <Label Text="You have no lists"
+                           Margin="0, 10"
+                           FontSize="{DynamicResource FontSizeL}"
+                           TextColor="{DynamicResource LightTextColor}"
+                           HorizontalOptions="Fill"
+                           HorizontalTextAlignment="End" />
+                    <Label Text="Create a list to get started"
+                           FontSize="{DynamicResource FontSizeM}"
+                           HorizontalOptions="Fill"
+                           TextColor="{DynamicResource LightTextColor}"
+                           HorizontalTextAlignment="End" />
+                </StackLayout>
             </ContentView>
         </CollectionView.EmptyView>
 
         <CollectionView.Footer>
-            <BoxView WidthRequest="100" BackgroundColor="{DynamicResource BackgroundColor}" />
+            <BoxView WidthRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Footer>
 
     </CollectionView>

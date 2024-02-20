@@ -3,18 +3,20 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
 using Listem.Services;
-using Listem.Utilities;
 
 namespace Listem.ViewModel;
 
 [QueryProperty(nameof(ObservableItem), nameof(ObservableItem))]
 public partial class DetailViewModel : ObservableObject
 {
-    [ObservableProperty] private ObservableCollection<ObservableCategory> _categories = [];
+    [ObservableProperty]
+    private ObservableCollection<ObservableCategory> _categories = [];
 
-    [ObservableProperty] private ObservableCategory _currentCategory;
+    [ObservableProperty]
+    private ObservableCategory _currentCategory;
 
-    [ObservableProperty] private ObservableItem _observableItem;
+    [ObservableProperty]
+    private ObservableItem _observableItem;
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
@@ -37,7 +39,6 @@ public partial class DetailViewModel : ObservableObject
     {
         ObservableItem.CategoryName = CurrentCategory.Name;
         await _itemService.CreateOrUpdateAsync(ObservableItem);
-        Notifier.ShowToast($"Updated: {ObservableItem.Title}");
         await Shell.Current.Navigation.PopModalAsync();
     }
 

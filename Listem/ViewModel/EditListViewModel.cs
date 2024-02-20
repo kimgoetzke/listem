@@ -74,7 +74,7 @@ public partial class EditListViewModel : ObservableObject
     [RelayCommand]
     private async Task GoBack()
     {
-        // TODO: String validation on list name
+        ObservableItemList.Name = StringProcessor.TrimAndCapitalise(ObservableItemList.Name);
         await _itemListService.CreateOrUpdateAsync(ObservableItemList);
         await Shell.Current.Navigation.PopModalAsync();
     }
