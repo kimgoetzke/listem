@@ -32,12 +32,6 @@ public partial class ListPage
         InitialiseMenuToAddItems();
     }
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-        _viewModel.LoadCategories().SafeFireAndForget();
-    }
-
     private void InitialiseMenuToAddItems()
     {
         EntryField = GetEntryField();

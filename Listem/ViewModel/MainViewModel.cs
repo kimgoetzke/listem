@@ -49,7 +49,7 @@ public partial class MainViewModel : ObservableObject
         );
     }
 
-    public async Task LoadFromDatabase()
+    public async Task LoadItemLists()
     {
         Logger.Log("Loading lists from database");
         var lists = await _itemListService.GetAllAsync();

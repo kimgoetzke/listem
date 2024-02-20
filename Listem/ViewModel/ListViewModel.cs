@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -56,15 +57,21 @@ public partial class ListViewModel : ObservableObject
         NewObservableItem = new ObservableItem(ObservableItemList.Id);
         Themes = Settings.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
+        SortItems();
+        LoadCategories().SafeFireAndForget();
     }
 
-    public async Task LoadCategories()
+    private async Task LoadCategories()
     {
-        Logger.Log("Loading categories from database");
         var categories = await _categoryService.GetAllByListIdAsync(ObservableItemList.Id);
         Categories = new ObservableCollection<ObservableCategory>(categories);
         CurrentCategory = Categories.FirstOrDefault(c =>
             c.Name == ICategoryService.DefaultCategoryName
+        );
+        OnPropertyChanged(nameof(Categories));
+        OnPropertyChanged(nameof(CurrentCategory));
+        Logger.Log(
+            $"Loaded {Categories.Count} categories for list {ObservableItemList.Id} from the database"
         );
     }
 
@@ -137,7 +144,7 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private static async Task TapItem(ObservableItem i)
     {
-        await Shell.Current.Navigation.PushAsync(new DetailPage(i));
+        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i));
     }
 
     [RelayCommand]

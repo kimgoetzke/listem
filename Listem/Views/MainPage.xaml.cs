@@ -12,7 +12,7 @@ public partial class MainPage
     {
         InitializeComponent();
         BindingContext = viewModel;
-        viewModel.LoadFromDatabase().SafeFireAndForget();
+        viewModel.LoadItemLists().SafeFireAndForget();
     }
 
     protected override void OnAppearing()
