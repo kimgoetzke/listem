@@ -1,5 +1,6 @@
 ﻿using Listem.Models;
 using Listem.Utilities;
+using SQLite;
 
 namespace Listem.Services;
 
@@ -29,13 +30,34 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
         {
             await connection.UpdateAsync(list);
             Logger.Log($"Updated list: {list.ToLoggableString()}");
-            await CreateDefaultCategory(list.Id);
             return;
         }
 
         await connection.InsertAsync(list);
         Logger.Log($"Added list: {list.ToLoggableString()}");
-        await CreateDefaultCategory(list.Id);
+        await CreateDefaultCategory(connection, list.Id);
+    }
+
+    private static async Task CreateDefaultCategory(SQLiteAsyncConnection connection, string listId)
+    {
+        var existingDefaultCategory = await connection
+            .Table<Category>()
+            .Where(i => i.ListId == listId && i.Name == ICategoryService.DefaultCategoryName)
+            .FirstOrDefaultAsync();
+
+        if (existingDefaultCategory != null)
+        {
+            Logger.Log($"Default category already exists for list {listId} - skipping creation");
+            return;
+        }
+
+        var observableCategory = new ObservableCategory(listId)
+        {
+            Name = ICategoryService.DefaultCategoryName
+        };
+        var category = Category.From(observableCategory);
+        await connection.InsertAsync(category).ConfigureAwait(false);
+        Logger.Log($"Added category '{ICategoryService.DefaultCategoryName}' to list {listId}");
     }
 
     public async Task DeleteAsync(ObservableItemList observableItemList)
@@ -58,20 +80,5 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
         }
 
         Logger.Log($"Removed all lists");
-    }
-
-    private async Task CreateDefaultCategory(string listId)
-    {
-        var connection = await db.GetConnection();
-        if (await connection.Table<Category>().CountAsync() != 0)
-            return;
-
-        var observableCategory = new ObservableCategory(listId)
-        {
-            Name = ICategoryService.DefaultCategoryName
-        };
-        var category = Category.From(observableCategory);
-        await connection.InsertAsync(category).ConfigureAwait(false);
-        Logger.Log($"Added category '{ICategoryService.DefaultCategoryName}' to list {listId}");
     }
 }
