@@ -20,8 +20,7 @@
                     <!-- Box -->
                     <Frame FlexLayout.Grow="1"
                            Margin="10"
-                           MinimumWidthRequest="100"
-                           MaximumWidthRequest="275"
+                           WidthRequest="250"
                            BorderColor="Transparent"
                            BackgroundColor="{DynamicResource White}">
 
