@@ -123,7 +123,7 @@
                                         </Label.Triggers>
                                     </Label>
                                     <Image x:Name="PriorityIcon"
-                                           Source="important_pink.png"
+                                           Source="important_primary.png"
                                            Scale="0.5"
                                            IsVisible="False"
                                            HeightRequest="50"
