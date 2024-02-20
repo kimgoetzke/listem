@@ -29,7 +29,7 @@ public partial class CategoryPage
         if (sender is not ImageButton button)
             return;
 
-        button.Source = "bin_primary.png";
+        button.Source = "bin_secondary.png";
     }
 
     private void ImageButton_OnReleased(object? sender, EventArgs e)

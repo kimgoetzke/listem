@@ -158,8 +158,27 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveList(ObservableItemList list)
     {
+        var isConfirmed = await IsDeletionConfirmedByUser(list.Name);
+
+        if (!isConfirmed)
+        {
+            Logger.Log($"Cancelled action to delete: {list.ToLoggableString()}");
+            return;
+        }
+
         Logger.Log($"Removing list: {list.ToLoggableString()}");
-        await Application.Current!.Dispatcher.DispatchAsync(() => Lists.Remove(list));
+        await _itemListService.DeleteAsync(list);
+        Lists.Remove(list);
+    }
+
+    private static async Task<bool> IsDeletionConfirmedByUser(string listName)
+    {
+        return await Shell.Current.DisplayAlert(
+            "Delete list",
+            $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?",
+            "Yes",
+            "No"
+        );
     }
 
     [RelayCommand]

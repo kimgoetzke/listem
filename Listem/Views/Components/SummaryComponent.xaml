@@ -31,7 +31,7 @@
                         </Frame.GestureRecognizers>
 
                         <!-- Box: List summary -->
-                        <Grid>
+                        <Grid RowDefinitions="*, Auto">
                             <VerticalStackLayout Grid.Row="0" HorizontalOptions="Start">
 
                                 <!-- List summary: List name -->
@@ -48,6 +48,12 @@
                                                 BackgroundColor="Transparent"
                                                 SelectionMode="None">
 
+                                    <CollectionView.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=TapListCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    </CollectionView.GestureRecognizers>
+                                    
                                     <!-- Items inside the list: Content -->
                                     <!-- TODO: Make this scrollable -->
                                     <CollectionView.ItemTemplate>
@@ -78,7 +84,7 @@
                                 </CollectionView>
                             </VerticalStackLayout>
 
-                            <!-- Box:: Gradient transparent to white -->
+                            <!-- Box: Gradients transparent to white -->
                             <BoxView Grid.Row="0"
                                      HeightRequest="400"
                                      Style="{DynamicResource LeftTransparentToRightWhite}"/>
@@ -86,6 +92,35 @@
                             <BoxView Grid.Row="0"
                                      HeightRequest="400"
                                      Style="{DynamicResource TopTransparentToButtonWhite}" />
+                            
+                            <!-- Box: Bottom bar with list options -->
+                            <Grid Grid.Row="1" ColumnDefinitions="Auto, *, Auto" HorizontalOptions="Fill">
+                                <ImageButton Source="pencil_primary.png"
+                                             Grid.Column="0"
+                                             Margin="0,0,5,0"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="Start"
+                                             VerticalOptions="Start"
+                                             WidthRequest="23"
+                                             HeightRequest="23" />
+                                <ImageButton Source="rename_primary.png"
+                                             Grid.Column="1"
+                                             Margin="10, 0"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="Start"
+                                             VerticalOptions="Start"
+                                             WidthRequest="25"
+                                             HeightRequest="25" />
+                                <ImageButton Source="bin_secondary.png"
+                                             Grid.Column="2"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:MainViewModel}}, Path=RemoveListCommand}"
+                                             CommandParameter="{Binding .}"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="End"
+                                             WidthRequest="25"
+                                             HeightRequest="25" />
+                            </Grid>
                             
                         </Grid>
 
@@ -103,12 +138,12 @@
                                  VerticalOptions="Center">
                         <Label Text="You have no lists yet"
                                Margin="10"
-                               FontSize="18"
+                               FontSize="{DynamicResource FontSizeL}"
                                TextColor="{DynamicResource LightTextColor}"
                                HorizontalOptions="Fill"
                                HorizontalTextAlignment="Center" />
                         <Label Text="Create a list to get started"
-                               FontSize="12"
+                               FontSize="{DynamicResource FontSizeM}"
                                HorizontalOptions="Fill"
                                TextColor="{DynamicResource LightTextColor}"
                                HorizontalTextAlignment="Center" />

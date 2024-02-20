@@ -144,7 +144,7 @@
                                     </Image>
                                 </StackLayout>
                                 <Label Text="{Binding CategoryName}"
-                                       FontSize="{DynamicResource SmallerFontSize}"
+                                       FontSize="{DynamicResource FontSizeS}"
                                        HeightRequest="50"
                                        TextColor="{DynamicResource Neutral}"
                                        HorizontalOptions="End"
@@ -185,7 +185,7 @@
                                HorizontalOptions="Fill"
                                HorizontalTextAlignment="Center" />
                         <Label Text="Add items to populate your list"
-                               FontSize="{DynamicResource StandardFontSize}"
+                               FontSize="{DynamicResource FontSizeM}"
                                HorizontalOptions="Fill"
                                TextColor="{DynamicResource LightTextColor}"
                                HorizontalTextAlignment="Center" />

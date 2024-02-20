@@ -18,14 +18,6 @@
                HorizontalOptions="Start"
                VerticalTextAlignment="Center" Style="{DynamicResource SubHeadline}"/>
     </Shell.TitleView>
-    
-
-    <!-- The color has to be static for some reason. It will be white if any DynamicResource is used. -->
-    <ContentPage.Behaviors>
-        <toolkit:StatusBarBehavior
-            StatusBarColor="{StaticResource StatusBarColor}"
-            StatusBarStyle="DarkContent" />
-    </ContentPage.Behaviors>
 
     <!-- Main page content -->
     <Grid RowDefinitions="Auto, Auto, *"
