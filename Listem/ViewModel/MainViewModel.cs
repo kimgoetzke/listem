@@ -107,6 +107,14 @@ public partial class MainViewModel : ObservableObject
         Logger.Log("Added lists for testing");
     }
 
+    private async Task AddItemsFromNewList(ObservableItemList list)
+    {
+        foreach (var item in list.Items)
+        {
+            await _itemService.CreateOrUpdateAsync(item);
+        }
+    }
+
     [RelayCommand]
     private async Task AddList()
     {
@@ -127,12 +135,6 @@ public partial class MainViewModel : ObservableObject
         NewList.Name = StringProcessor.TrimAndCapitalise(NewList.Name);
         await AddNewList(NewList);
 
-        // Add items from new list, if any
-        if (NewList.Items.Count > 0)
-        {
-            await AddItemsFromNewList(NewList);
-        }
-
         // Update UI
         NewList = new ObservableItemList();
         OnPropertyChanged(nameof(NewList));
@@ -145,14 +147,6 @@ public partial class MainViewModel : ObservableObject
         Lists.Add(newList);
         Notifier.ShowToast($"Added: {newList.Name}");
         Logger.Log($"Added list: {newList.ToLoggableString()}");
-    }
-
-    private async Task AddItemsFromNewList(ObservableItemList list)
-    {
-        foreach (var item in list.Items)
-        {
-            await _itemService.CreateOrUpdateAsync(item);
-        }
     }
 
     [RelayCommand]
@@ -186,5 +180,12 @@ public partial class MainViewModel : ObservableObject
     {
         Logger.Log($"Opening list: {list.ToLoggableString()}");
         await Shell.Current.Navigation.PushAsync(new ListPage(list));
+    }
+
+    [RelayCommand]
+    private static async Task EditList(ObservableItemList list)
+    {
+        Logger.Log($"Opening list: {list.ToLoggableString()}");
+        await Shell.Current.Navigation.PushModalAsync(new EditListPage(list));
     }
 }

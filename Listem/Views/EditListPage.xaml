@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModel="clr-namespace:Listem.ViewModel"
+             x:Class="Listem.Views.EditListPage" 
+             x:DataType="viewModel:EditListViewModel">
+        
+        <VerticalStackLayout Padding="40, 10"
+                         MinimumWidthRequest="400" MaximumWidthRequest="850"
+                         VerticalOptions="Start"
+                         HorizontalOptions="Fill">
+
+        <Entry Text="{Binding ObservableItemList.Name, Mode=TwoWay}"
+               Style="{DynamicResource HeadlineEntry}"
+               Margin="0,30"
+               VerticalOptions="Center"
+               HorizontalOptions="Center" />
+        
+        <Button Text="Save changes"
+                Style="{DynamicResource StandardButton}"
+                Command="{Binding GoBackCommand}" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

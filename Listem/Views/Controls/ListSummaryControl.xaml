@@ -48,6 +48,8 @@
                                        Text="{Binding Name}"
                                        LineBreakMode="WordWrap" />
                                 <ImageButton Grid.Column="1"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=EditListCommand}"
+                                             CommandParameter="{Binding .}"
                                              Margin="0,3,0,0"
                                              Source="pencil_primary.png"
                                              Aspect="AspectFit"
@@ -71,7 +73,6 @@
                                 </CollectionView.GestureRecognizers>
 
                                 <!-- Items inside the list: Content -->
-                                <!-- TODO: Make this scrollable -->
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="{x:Type models:ObservableItem}">
                                         <HorizontalStackLayout HorizontalOptions="Start">
@@ -89,15 +90,24 @@
                                 </CollectionView.ItemTemplate>
 
                                 <!-- Items inside the list: Fallback if empty -->
-                                <!-- TODO: Make it show correctly -->
                                 <CollectionView.EmptyView>
                                     <ContentView>
-                                        <FlexLayout AlignItems="Stretch" BackgroundColor="Blue">
-                                            <Label Text="Open this list and add items"
-                                                   FontSize="18"
-                                                   TextColor="{DynamicResource LightTextColor}"
-                                                   HorizontalTextAlignment="Start"
-                                                   VerticalTextAlignment="Start" />
+                                        <FlexLayout AlignItems="Stretch">
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="Nothing to here yet"
+                                                       Margin="0, 10"
+                                                       FontSize="{DynamicResource FontSizeL}"
+                                                       TextColor="{DynamicResource LightTextColor}"
+                                                       HorizontalTextAlignment="Start" />
+                                                <Label Text="Tap to open this list"
+                                                       FontSize="{DynamicResource FontSizeM}"
+                                                       TextColor="{DynamicResource LightTextColor}"
+                                                       HorizontalTextAlignment="Start" />
+                                                <Label Text="and start adding items"
+                                                       FontSize="{DynamicResource FontSizeM}"
+                                                       TextColor="{DynamicResource LightTextColor}"
+                                                       HorizontalTextAlignment="Start" />
+                                            </VerticalStackLayout>
                                         </FlexLayout>
                                     </ContentView>
                                 </CollectionView.EmptyView>
@@ -138,7 +148,8 @@
             <ContentView>
                 <Grid Padding="30">
                     <StackLayout HorizontalOptions="Center"
-                                 VerticalOptions="Center">
+                                 VerticalOptions="Center"
+                                 Padding="0,0,50,0">
                         <Label Text="You have no lists yet"
                                Margin="10"
                                FontSize="{DynamicResource FontSizeL}"
@@ -158,6 +169,6 @@
         <CollectionView.Footer>
             <BoxView WidthRequest="100" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Footer>
-        
+
     </CollectionView>
 </ContentView>
