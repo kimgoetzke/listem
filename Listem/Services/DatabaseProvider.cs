@@ -30,9 +30,15 @@ public class DatabaseProvider : IDatabaseProvider
         Logger.Log($"Initialising database");
         _connection = new SQLiteAsyncConnection(DatabasePath, Flags);
         Logger.Log($"Connected to: {DatabasePath}");
+        var itemListTable = InitialiseItemListTable(_connection);
         var itemTable = InitialiseItemTable(_connection);
-        var storeTable = InitialiseStoreTable(_connection);
-        await Task.WhenAll(itemTable, storeTable).ConfigureAwait(false);
+        var categoryTable = InitialiseCategoryTable(_connection);
+        await Task.WhenAll(itemListTable, itemTable, categoryTable).ConfigureAwait(false);
+    }
+
+    private static Task<CreateTableResult> InitialiseItemListTable(SQLiteAsyncConnection connection)
+    {
+        return connection.CreateTableAsync<ItemList>();
     }
 
     private static Task<CreateTableResult> InitialiseItemTable(SQLiteAsyncConnection connection)
@@ -40,15 +46,8 @@ public class DatabaseProvider : IDatabaseProvider
         return connection.CreateTableAsync<Item>();
     }
 
-    private static async Task InitialiseStoreTable(SQLiteAsyncConnection connection)
+    private static async Task InitialiseCategoryTable(SQLiteAsyncConnection connection)
     {
         await connection.CreateTableAsync<Category>();
-        if (await connection.Table<Category>().CountAsync() != 0)
-            return;
-
-        await connection
-            .InsertAsync(new Category { Name = ICategoryService.DefaultCategoryName })
-            .ConfigureAwait(false);
-        Logger.Log($"Added default store(s): {ICategoryService.DefaultCategoryName}");
     }
 }

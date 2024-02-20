@@ -4,9 +4,20 @@ namespace Listem.Models;
 
 public class Category
 {
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
-    public string Name { get; set; } = string.Empty;
+    [PrimaryKey]
+    public string Id { get; init; } = null!;
+    public string Name { get; init; } = null!;
+    public string ListId { get; init; } = null!;
+
+    public static Category From(ObservableCategory observableCategory)
+    {
+        return new Category
+        {
+            Id = observableCategory.Id,
+            Name = observableCategory.Name,
+            ListId = observableCategory.ListId
+        };
+    }
 
     public override string ToString()
     {
@@ -15,6 +26,6 @@ public class Category
 
     public string ToLoggableString()
     {
-        return $"{Name} #{Id}";
+        return $"[Category] {Name} {Id} in {ListId}";
     }
 }

@@ -1,69 +1,99 @@
 using Listem.Models;
 using Listem.Utilities;
 using SQLite;
+using static Listem.Services.ICategoryService;
 
 namespace Listem.Services;
 
 public class CategoryService(IDatabaseProvider db) : ICategoryService
 {
-    private Category? _defaultStore;
+    private ObservableCategory? _defaultStore;
 
-    public async Task<Category> GetDefaultCategory()
+    public async Task<ObservableCategory> GetDefaultCategory(string listId)
     {
         if (_defaultStore == null)
         {
             var connection = await db.GetConnection();
-            var loadedStore = await connection
+            var loaded = await connection
                 .Table<Category>()
-                .FirstAsync(s => s.Name == ICategoryService.DefaultCategoryName);
-            _defaultStore = loadedStore;
+                .FirstAsync(l => l.Name == DefaultCategoryName && l.ListId == listId);
+            _defaultStore = ObservableCategory.From(loaded);
         }
 
         if (_defaultStore == null)
-            throw new NullReferenceException("There is no default store in the database");
+            throw new NullReferenceException("There is no default category in the database");
 
         return _defaultStore;
     }
 
-    public async Task<List<Category>> GetAllAsync()
+    public async Task<List<ObservableCategory>> GetAllAsync()
     {
         var connection = await db.GetConnection();
-        return await connection.Table<Category>().ToListAsync();
+        var categories = await connection.Table<Category>().ToListAsync();
+        return ConvertToObservableItems(categories);
     }
 
-    public async Task CreateOrUpdateAsync(Category store)
+    public async Task<List<ObservableCategory>> GetAllByListIdAsync(string listId)
     {
         var connection = await db.GetConnection();
-        if (store.Id != 0)
+        var categories = await connection
+            .Table<Category>()
+            .Where(c => c.ListId == listId)
+            .ToListAsync();
+        return ConvertToObservableItems(categories);
+    }
+
+    private static List<ObservableCategory> ConvertToObservableItems(List<Category> categories)
+    {
+        return categories.Select(ObservableCategory.From).ToList();
+    }
+
+    public async Task CreateOrUpdateAsync(ObservableCategory observableCategory)
+    {
+        var connection = await db.GetConnection();
+        var category = Category.From(observableCategory);
+        var existingCategory = await connection
+            .Table<Category>()
+            .Where(c => c.Id == observableCategory.Id)
+            .FirstOrDefaultAsync();
+        if (existingCategory != null)
         {
-            await connection.UpdateAsync(store);
+            await connection.UpdateAsync(category);
+            Logger.Log($"Updated category: {category.ToLoggableString()}");
             return;
         }
 
-        await connection.InsertAsync(store);
-        Logger.Log($"Added or updated store: {store.ToLoggableString()}");
+        await connection.InsertAsync(category);
+        Logger.Log($"Added category: {category.ToLoggableString()}");
     }
 
-    public async Task DeleteAsync(Category store)
+    public async Task DeleteAsync(ObservableCategory observableCategory)
     {
-        Logger.Log($"Removing store: {store.ToLoggableString()}");
+        Logger.Log($"Removing category: {observableCategory.ToLoggableString()}");
         var connection = await db.GetConnection();
-        await connection.DeleteAsync(store);
+        var category = Category.From(observableCategory);
+        await connection.DeleteAsync(category);
     }
 
-    public async Task DeleteAllAsync()
+    public async Task DeleteAllByListIdAsync(string listId)
     {
         var connection = await db.GetConnection();
-        await RemoveAllExceptDefaultStore(connection);
-        Logger.Log($"Reset all stores");
+        await RemoveAllExceptDefaultCategory(connection, listId);
+        Logger.Log($"Reset all categories for list {listId}");
     }
 
-    private static async Task RemoveAllExceptDefaultStore(SQLiteAsyncConnection connection)
+    private static async Task RemoveAllExceptDefaultCategory(
+        SQLiteAsyncConnection connection,
+        string listId
+    )
     {
-        var stores = await connection.Table<Category>().ToListAsync();
-        foreach (var store in stores.Where(store => store.Name != ICategoryService.DefaultCategoryName))
+        var categories = await connection
+            .Table<Category>()
+            .Where(c => c.ListId == listId)
+            .ToListAsync();
+        foreach (var category in categories.Where(c => c.Name != DefaultCategoryName))
         {
-            await connection.DeleteAsync(store);
+            await connection.DeleteAsync(category);
         }
     }
 }

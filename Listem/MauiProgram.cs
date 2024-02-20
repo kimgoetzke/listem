@@ -30,6 +30,7 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
+        builder.Services.AddSingleton<IItemListService, ItemListService>();
         builder.Services.AddSingleton<ICategoryService, CategoryService>();
         builder.Services.AddSingleton<IItemService, ItemService>();
         builder.Services.AddSingleton<IClipboardService, ClipboardService>();
@@ -45,7 +46,7 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<MainViewModel>();
-        builder.Services.AddSingleton<CategoryViewModel>();
+        builder.Services.AddTransient<CategoryViewModel>();
         builder.Services.AddTransient<ListViewModel>();
         builder.Services.AddTransient<DetailViewModel>();
         return builder;
@@ -54,7 +55,7 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddSingleton<CategoryPage>();
+        builder.Services.AddTransient<CategoryPage>();
         builder.Services.AddTransient<DetailPage>();
         builder.Services.AddTransient<ListPage>();
         return builder;

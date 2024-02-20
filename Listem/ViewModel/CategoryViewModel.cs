@@ -6,34 +6,39 @@ using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
+using static Listem.Services.IService;
 
 namespace Listem.ViewModel;
 
 public partial class CategoryViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<Category> _categories;
+    private ObservableCollection<ObservableCategory> _categories;
 
     [ObservableProperty]
-    private Category _newCategory;
+    private ObservableCategory _newObservableCategory;
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
+    private readonly string _listId;
     public static string DefaultCategoryName => ICategoryService.DefaultCategoryName;
 
-    public CategoryViewModel(ICategoryService categoryService, IItemService itemService)
+    public CategoryViewModel(IReadOnlyCollection<IService> services, string listId)
     {
+        _categoryService = (
+            services.First(s => s.Type == ServiceType.Category) as ICategoryService
+        )!;
+        _itemService = (services.First(s => s.Type == ServiceType.Item) as IItemService)!;
+        _listId = listId;
         Categories = [];
-        NewCategory = new Category();
-        _categoryService = categoryService;
-        _itemService = itemService;
+        NewObservableCategory = new ObservableCategory(listId);
         LoadCategoriesFromDatabase()
             .SafeFireAndForget<Exception>(ex => Logger.Log($"Failed to load categories: {ex}"));
     }
 
     private async Task LoadCategoriesFromDatabase()
     {
-        var loaded = await _categoryService.GetAllAsync().ConfigureAwait(false);
-        Categories = new ObservableCollection<Category>(loaded);
+        var loaded = await _categoryService.GetAllByListIdAsync(_listId).ConfigureAwait(false);
+        Categories = new ObservableCollection<ObservableCategory>(loaded);
         OnPropertyChanged(nameof(IsCollectionViewLargerThanThreshold));
         Logger.Log($"Loaded {loaded.Count} categories, new collection size: {Categories.Count}");
     }
@@ -42,48 +47,50 @@ public partial class CategoryViewModel : ObservableObject
     private async Task AddCategory(ITextInput view)
     {
         // Don't add empty items
-        if (string.IsNullOrWhiteSpace(NewCategory.Name))
+        if (string.IsNullOrWhiteSpace(NewObservableCategory.Name))
             return;
 
         // Pre-process
-        NewCategory.Name = StringProcessor.TrimAndCapitaliseFirstChar(NewCategory.Name);
+        NewObservableCategory.Name = StringProcessor.TrimAndCapitalise(
+            NewObservableCategory.Name
+        );
 
         // Only allow unique names
-        if (Categories.Any(category => category.Name == NewCategory.Name))
+        if (Categories.Any(category => category.Name == NewObservableCategory.Name))
         {
-            Notifier.ShowToast($"Cannot add '{NewCategory.Name}' - it already exists");
+            Notifier.ShowToast($"Cannot add '{NewObservableCategory.Name}' - it already exists");
             return;
         }
 
         // Add to list and database
-        Categories.Add(NewCategory);
-        await _categoryService.CreateOrUpdateAsync(NewCategory);
+        Categories.Add(NewObservableCategory);
+        await _categoryService.CreateOrUpdateAsync(NewObservableCategory);
 
         // Make sure the UI is reset/updated
 #if __ANDROID__
         var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
         Logger.Log("Keyboard hidden: " + isKeyboardHidden);
 #endif
-        Notifier.ShowToast($"Added: {NewCategory.Name}");
-        NewCategory = new Category();
-        OnPropertyChanged(nameof(NewCategory));
+        Notifier.ShowToast($"Added: {NewObservableCategory.Name}");
+        NewObservableCategory = new ObservableCategory(_listId);
+        OnPropertyChanged(nameof(NewObservableCategory));
         OnPropertyChanged(nameof(IsCollectionViewLargerThanThreshold));
     }
 
     [RelayCommand]
-    private async Task RemoveCategory(Category category)
+    private async Task RemoveCategory(ObservableCategory observableCategory)
     {
-        if (category.Name == ICategoryService.DefaultCategoryName)
+        if (observableCategory.Name == ICategoryService.DefaultCategoryName)
         {
             Notifier.ShowToast("Cannot remove default category");
             return;
         }
 
-        Categories.Remove(category);
-        await _itemService.UpdateAllUsingCategoryAsync(category.Name);
-        await _categoryService.DeleteAsync(category);
+        Categories.Remove(observableCategory);
+        await _itemService.UpdateAllToCategoryAsync(observableCategory.Name, _listId);
+        await _categoryService.DeleteAsync(observableCategory);
         OnPropertyChanged(nameof(IsCollectionViewLargerThanThreshold));
-        Notifier.ShowToast($"Removed: {category.Name}");
+        Notifier.ShowToast($"Removed: {observableCategory.Name}");
     }
 
     [RelayCommand]
@@ -93,8 +100,8 @@ public partial class CategoryViewModel : ObservableObject
             return;
 
         Notifier.ShowToast("Reset categories");
-        await _itemService.UpdateAllToDefaultCategoryAsync().ConfigureAwait(false);
-        await _categoryService.DeleteAllAsync().ConfigureAwait(false);
+        await _itemService.UpdateAllToDefaultCategoryAsync(_listId).ConfigureAwait(false);
+        await _categoryService.DeleteAllByListIdAsync(_listId).ConfigureAwait(false);
         await LoadCategoriesFromDatabase().ConfigureAwait(false);
     }
 

@@ -5,64 +5,84 @@ namespace Listem.Services;
 
 public class ItemService(IDatabaseProvider db) : IItemService
 {
-    public async Task<List<Item>> GetAsync()
+    public async Task<List<ObservableItem>> GetAllAsync()
     {
         var connection = await db.GetConnection();
-        return await connection.Table<Item>().ToListAsync();
+        var items = await connection.Table<Item>().ToListAsync();
+        return ConvertToObservableItems(items);
     }
 
-    public async Task CreateOrUpdateAsync(Item item)
+    public async Task<List<ObservableItem>> GetAllByListIdAsync(string listId)
     {
         var connection = await db.GetConnection();
-        if (item.Id != 0)
+        var items = await connection.Table<Item>().Where(i => i.ListId == listId).ToListAsync();
+        return ConvertToObservableItems(items);
+    }
+
+    private static List<ObservableItem> ConvertToObservableItems(List<Item> items)
+    {
+        return items.Select(ObservableItem.From).ToList();
+    }
+
+    public async Task CreateOrUpdateAsync(ObservableItem observableItem)
+    {
+        var connection = await db.GetConnection();
+        var item = Item.From(observableItem);
+        var allItems = await connection.Table<Item>().ToListAsync();
+        var existingItem = allItems.FirstOrDefault(i => i.Id == observableItem.Id);
+        if (existingItem != null)
         {
             await connection.UpdateAsync(item);
+            Logger.Log($"Updated item: {item.ToLoggableString()}");
             return;
         }
 
         await connection.InsertAsync(item);
-        Logger.Log($"Added or updated item: {item.ToLoggableString()}");
+        Logger.Log($"Added item: {item.ToLoggableString()}");
     }
 
-    public async Task DeleteAsync(Item item)
+    public async Task DeleteAsync(ObservableItem observableItem)
     {
-        Logger.Log($"Removing item: {item.Title} #{item.Id}");
+        Logger.Log($"Removing item: {observableItem.Title} {observableItem.Id}");
         var connection = await db.GetConnection();
+        var item = Item.From(observableItem);
         await connection.DeleteAsync(item);
     }
 
-    public async Task DeleteAllAsync()
+    public async Task DeleteAllByListIdAsync(string listId)
     {
         var connection = await db.GetConnection();
-        var items = await connection.Table<Item>().ToListAsync();
+        var items = await connection.Table<Item>().Where(i => i.ListId == listId).ToListAsync();
         foreach (var item in items)
+        {
             await connection.DeleteAsync(item);
-        Logger.Log("Removed all items");
+        }
+        Logger.Log($"Removed all items from list {listId}");
     }
 
-    public async Task UpdateAllToDefaultCategoryAsync()
+    public async Task UpdateAllToDefaultCategoryAsync(string listId)
     {
         var connection = await db.GetConnection();
-        var items = await connection.Table<Item>().ToListAsync();
+        var items = await connection.Table<Item>().Where(i => i.ListId == listId).ToListAsync();
         foreach (
             var item in items.Where(item =>
                 item.CategoryName != ICategoryService.DefaultCategoryName
             )
         )
         {
-            Logger.Log($"Updating item to use default store: {item.ToLoggableString()}");
+            Logger.Log($"Updating item to use default category: {item.ToLoggableString()}");
             item.CategoryName = ICategoryService.DefaultCategoryName;
             await connection.UpdateAsync(item);
         }
 
-        Logger.Log($"Updated all items to use default store");
+        Logger.Log($"Updated all items to use default category");
     }
 
-    public async Task UpdateAllUsingCategoryAsync(string storeName)
+    public async Task UpdateAllToCategoryAsync(string categoryName, string listId)
     {
         var connection = await db.GetConnection();
-        var items = await connection.Table<Item>().ToListAsync();
-        foreach (var item in items.Where(item => item.CategoryName == storeName))
+        var items = await connection.Table<Item>().Where(i => i.ListId == listId).ToListAsync();
+        foreach (var item in items.Where(item => item.CategoryName == categoryName))
         {
             item.CategoryName = ICategoryService.DefaultCategoryName;
             await connection.UpdateAsync(item);

@@ -2,54 +2,58 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
-using Listem.Utilities;
 using Listem.Services;
+using Listem.Utilities;
 
 namespace Listem.ViewModel;
 
-[QueryProperty("Item", "Item")]
+[QueryProperty(nameof(ObservableItem), nameof(ObservableItem))]
 public partial class DetailViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<Category> _stores = [];
+    private ObservableCollection<ObservableCategory> _categories = [];
 
     [ObservableProperty]
-    private Item _item;
+    private ObservableItem _observableItem;
 
     [ObservableProperty]
-    private Category _currentStore;
+    private ObservableCategory _currentCategory;
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
 
-    public DetailViewModel(Item item, ICategoryService categoryService, IItemService itemService)
+    public DetailViewModel(
+        ObservableItem observableItem,
+        ICategoryService categoryService,
+        IItemService itemService
+    )
     {
-        Item = item;
-        CurrentStore = new Category();
+        ObservableItem = observableItem;
+        CurrentCategory = new ObservableCategory(observableItem.ListId);
         _categoryService = categoryService;
         _itemService = itemService;
-        SetStoreOptions();
+        SetCategories();
     }
 
     [RelayCommand]
     private async Task GoBack()
     {
-        Item.CategoryName = CurrentStore.Name;
-        await _itemService.CreateOrUpdateAsync(Item);
-        Notifier.ShowToast($"Updated: {Item.Title}");
+        ObservableItem.CategoryName = CurrentCategory.Name;
+        await _itemService.CreateOrUpdateAsync(ObservableItem);
+        Notifier.ShowToast($"Updated: {ObservableItem.Title}");
         await Shell.Current.GoToAsync("..", true);
     }
 
-    private async void SetStoreOptions()
+    private async void SetCategories()
     {
         var loadedStores = await _categoryService.GetAllAsync();
-        Stores.Clear();
-        foreach (var s in loadedStores)
+        Categories.Clear();
+        foreach (var category in loadedStores)
         {
-            Stores.Add(s);
-            if (s.Name == Item.CategoryName)
+            Categories.Add(category);
+            if (category.Name == ObservableItem.CategoryName)
             {
-                CurrentStore = s;
+                CurrentCategory = category;
             }
         }
     }

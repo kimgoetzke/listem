@@ -22,7 +22,7 @@
             <BoxView HeightRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Header>
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:Item}">
+            <DataTemplate x:DataType="{x:Type models:ObservableItem}">
                 <SwipeView>
 
                     <!-- List of added items: Swipe from left to right to complete task -->
@@ -32,7 +32,7 @@
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=RemoveItemCommand}"
                                 CommandParameter="{Binding .}"
                                 BackgroundColor="{DynamicResource Green}"
-                                WidthRequest="300">
+                                WidthRequest="400">
                                 <Grid HorizontalOptions="Fill" Background="{DynamicResource Green}">
                                     <Grid HorizontalOptions="Start">
                                         <Image Source="done_white.png"
@@ -92,7 +92,8 @@
                                 <StackLayout Orientation="Horizontal" Grid.Column="0"
                                              VerticalOptions="Center"
                                              Padding="5, 0">
-                                    <CheckBox IsChecked="False" Scale="0.8"
+                                    <CheckBox x:Name="DoneBox"
+                                              IsChecked="False" Scale="1"
                                               CheckedChanged="CheckBox_OnTaskCompleted"
                                               BindingContext="{Binding .}" />
                                     <Label Text="{Binding Title}"
@@ -100,12 +101,16 @@
                                            HeightRequest="50"
                                            HorizontalOptions="Start"
                                            VerticalTextAlignment="Center">
+                                        <Label.TextDecorations>
+                                            <OnPlatform x:TypeArguments="TextDecorations">
+                                                <On Platform="iOS, Android">None</On>
+                                            </OnPlatform>
+                                        </Label.TextDecorations>
                                         <Label.Triggers>
                                             <DataTrigger TargetType="Label"
-                                                         Binding="{Binding IsImportant}"
+                                                         Binding="{Binding Source={x:Reference DoneBox}, Path=IsChecked}"
                                                          Value="True">
-                                                <Setter Property="TextColor"
-                                                        Value="{DynamicResource Secondary}" />
+                                                <Setter Property="TextDecorations" Value="Strikethrough" />
                                             </DataTrigger>
                                         </Label.Triggers>
                                     </Label>

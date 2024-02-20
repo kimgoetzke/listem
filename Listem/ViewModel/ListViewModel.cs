@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
@@ -14,31 +15,34 @@ namespace Listem.ViewModel;
 public partial class ListViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<Item> _items = [];
+    private ObservableCollection<ObservableItem> _items = [];
 
     [ObservableProperty]
-    private ObservableCollection<Category> _categories = [];
+    private ObservableCollection<ObservableCategory> _categories = [];
 
     [ObservableProperty]
-    private ItemList _itemList;
+    private ObservableItemList _observableItemList;
 
     [ObservableProperty]
-    private Item _newItem;
+    private ObservableItem _newObservableItem;
 
     [ObservableProperty]
-    private Category? _currentCategory;
+    private ObservableCategory? _currentCategory;
 
     [ObservableProperty]
-    private ObservableCollection<Theme> _themes = [];
+    private ObservableCollection<ObservableTheme> _themes = [];
 
     [ObservableProperty]
-    private Theme _currentTheme;
+    private ObservableTheme _currentTheme;
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
     private readonly IClipboardService _clipboardService;
 
-    public ListViewModel(IReadOnlyCollection<IService> services, ItemList itemList)
+    public ListViewModel(
+        IReadOnlyCollection<IService> services,
+        ObservableItemList observableItemList
+    )
     {
         _categoryService = (
             services.First(s => s.Type == ServiceType.Category) as ICategoryService
@@ -47,44 +51,58 @@ public partial class ListViewModel : ObservableObject
         _clipboardService = (
             services.First(s => s.Type == ServiceType.Clipboard) as IClipboardService
         )!;
-        ItemList = itemList;
-        Items = new ObservableCollection<Item>(itemList.Items);
-        NewItem = new Item { ListId = ItemList.Id };
+        ObservableItemList = observableItemList;
+        Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
+        NewObservableItem = new ObservableItem(ObservableItemList.Id);
         Themes = Settings.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
+    }
+
+    public async Task LoadCategories()
+    {
+        Logger.Log("Loading categories from database");
+        var categories = await _categoryService.GetAllByListIdAsync(ObservableItemList.Id);
+        Categories = new ObservableCollection<ObservableCategory>(categories);
+        CurrentCategory = Categories.FirstOrDefault(c =>
+            c.Name == ICategoryService.DefaultCategoryName
+        );
     }
 
     [RelayCommand]
     private async Task AddItem()
     {
-        Logger.Log($"Adding item: {NewItem.ToLoggableString()}");
-
         // Don't add empty items
-        if (string.IsNullOrWhiteSpace(NewItem.Title))
+        if (string.IsNullOrWhiteSpace(NewObservableItem.Title))
             return;
 
         // Pre-process item
-        NewItem.Title = StringProcessor.TrimAndCapitaliseFirstChar(NewItem.Title);
-        NewItem.CategoryName =
+        NewObservableItem.Title = StringProcessor.TrimAndCapitalise(NewObservableItem.Title);
+        NewObservableItem.CategoryName =
             CurrentCategory != null ? CurrentCategory.Name : ICategoryService.DefaultCategoryName;
 
         // Add to list and database
-        await _itemService.CreateOrUpdateAsync(NewItem);
-        await Application.Current!.Dispatcher.DispatchAsync(() => Items.Add(NewItem));
-        Notifier.ShowToast($"Added: {NewItem.Title}");
-        Logger.Log($"Added item: {NewItem.ToLoggableString()}");
+        Logger.Log($"Adding item: {NewObservableItem.ToLoggableString()}");
+        var value = new ItemChangedDto(ObservableItemList.Id, NewObservableItem);
+        WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
+        await _itemService.CreateOrUpdateAsync(NewObservableItem);
+        Items.Add(NewObservableItem);
+        Notifier.ShowToast($"Added: {NewObservableItem.Title}");
 
         // Make sure the UI is reset/updated
-        NewItem = new Item { ListId = ItemList.Id };
+        NewObservableItem = new ObservableItem(ObservableItemList.Id);
         SortItems();
-        OnPropertyChanged(nameof(NewItem));
+        OnPropertyChanged(nameof(NewObservableItem));
     }
 
     [RelayCommand]
-    public async Task RemoveItem(Item i)
+    private async Task RemoveItem(ObservableItem i)
     {
-        await Application.Current!.Dispatcher.DispatchAsync(() => Items.Remove(i));
         await _itemService.DeleteAsync(i);
+        ObservableItemList.Items.Remove(i);
+        Items.Remove(i);
+        var value = new ItemChangedDto(ObservableItemList.Id, i);
+        WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
+        OnPropertyChanged(nameof(ObservableItemList));
     }
 
     [RelayCommand]
@@ -92,8 +110,9 @@ public partial class ListViewModel : ObservableObject
     {
         if (!await IsRequestConfirmedByUser())
             return;
+
         Items.Clear();
-        await _itemService.DeleteAllAsync();
+        await _itemService.DeleteAllByListIdAsync(ObservableItemList.Id);
         Notifier.ShowToast("Removed all items from list");
     }
 
@@ -108,7 +127,7 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task TogglePriority(Item i)
+    private async Task TogglePriority(ObservableItem i)
     {
         i.IsImportant = !i.IsImportant;
         await _itemService.CreateOrUpdateAsync(i);
@@ -116,7 +135,7 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static async Task TapItem(Item i)
+    private static async Task TapItem(ObservableItem i)
     {
         await Shell.Current.Navigation.PushAsync(new DetailPage(i));
     }
@@ -124,7 +143,7 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private async Task ManageCategories()
     {
-        await Shell.Current.GoToAsync(nameof(CategoryPage), true);
+        await Shell.Current.Navigation.PushAsync(new CategoryPage(ObservableItemList.Id));
     }
 
     [RelayCommand]
@@ -136,12 +155,12 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private void InsertFromClipboard()
     {
-        _clipboardService.InsertFromClipboardAsync(Items, Categories);
+        _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableItemList.Id);
     }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     [RelayCommand]
-    private async Task ChangeTheme(Theme? theme)
+    private async Task ChangeTheme(ObservableTheme? theme)
     {
         if (theme == null)
         {
@@ -190,35 +209,9 @@ public partial class ListViewModel : ObservableObject
 
     private void SortItems()
     {
-        Items = new ObservableCollection<Item>(
+        Items = new ObservableCollection<ObservableItem>(
             Items.OrderBy(i => i.CategoryName).ThenByDescending(i => i.AddedOn)
         );
         OnPropertyChanged(nameof(Items));
-    }
-
-    public async Task LoadItemsFromDatabase()
-    {
-        var loaded = await _itemService.GetAsync();
-        Items = new ObservableCollection<Item>(loaded);
-        SortItems();
-        Logger.Log($"Loaded {loaded.Count} items, new collection size: {Items.Count}");
-    }
-
-    public async Task LoadCategoriesFromDatabase()
-    {
-        var loaded = await _categoryService.GetAllAsync();
-        Categories = new ObservableCollection<Category>(loaded);
-        Logger.Log($"Loaded {loaded.Count} categories, new collection size: {Categories.Count}");
-        foreach (var category in Categories)
-        {
-            if (category.Name != ICategoryService.DefaultCategoryName)
-                continue;
-
-            CurrentCategory = category;
-            OnPropertyChanged(nameof(CurrentCategory));
-        }
-
-        OnPropertyChanged(nameof(Categories));
-        Logger.Log("Current category set to: " + CurrentCategory?.Name);
     }
 }

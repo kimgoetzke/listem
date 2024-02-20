@@ -1,4 +1,6 @@
-﻿using Listem.ViewModel;
+﻿using AsyncAwaitBestPractices;
+using Listem.Utilities;
+using Listem.ViewModel;
 
 // ReSharper disable UnusedMember.Local
 
@@ -6,12 +8,21 @@ namespace Listem.Views;
 
 public partial class MainPage
 {
-    private readonly MainViewModel _viewModel;
-
     public MainPage(MainViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;
-        _viewModel = viewModel;
+        viewModel.LoadFromDatabase().SafeFireAndForget();
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (!Settings.FirstRun)
+            return;
+
+        Logger.Log("First time running this application");
+        Settings.FirstRun = false;
     }
 }

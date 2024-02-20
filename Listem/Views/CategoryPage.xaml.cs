@@ -1,12 +1,21 @@
+using Listem.Services;
 using Listem.ViewModel;
 
 namespace Listem.Views;
 
 public partial class CategoryPage
 {
-    public CategoryPage(CategoryViewModel viewModel)
+    public CategoryPage(string listId)
     {
         InitializeComponent();
+        var services = new List<IService?>
+        {
+            IPlatformApplication.Current?.Services.GetService<ICategoryService>(),
+            IPlatformApplication.Current?.Services.GetService<IItemService>(),
+        };
+        if (services.Any(s => s is null))
+            throw new NullReferenceException($"One or more services are null");
+        var viewModel = new CategoryViewModel(services!, listId);
         BindingContext = viewModel;
     }
 
@@ -20,7 +29,7 @@ public partial class CategoryPage
         if (sender is not ImageButton button)
             return;
 
-        button.Source = "bin_pink.png";
+        button.Source = "bin_primary.png";
     }
 
     private void ImageButton_OnReleased(object? sender, EventArgs e)

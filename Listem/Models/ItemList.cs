@@ -5,11 +5,21 @@ namespace Listem.Models;
 public class ItemList
 {
     [PrimaryKey]
-    public string Id { get; } = "L~" + Guid.NewGuid().ToString().Replace("-", "");
-    public string Name { get; set; } = string.Empty;
-    public List<Item> Items { get; set; } = [];
-    public DateTime AddedOn { get; set; } = DateTime.Now;
-    public DateTime UpdatedOn { get; set; } = DateTime.Now;
+    public string Id { get; init; } = null!;
+    public string Name { get; set; } = null!;
+    public DateTime AddedOn { get; set; }
+    public DateTime UpdatedOn { get; set; }
+
+    public static ItemList From(ObservableItemList observableItemList)
+    {
+        return new ItemList
+        {
+            Id = observableItemList.Id,
+            Name = observableItemList.Name,
+            AddedOn = observableItemList.AddedOn,
+            UpdatedOn = observableItemList.UpdatedOn
+        };
+    }
 
     public override string ToString()
     {
@@ -18,6 +28,6 @@ public class ItemList
 
     public string ToLoggableString()
     {
-        return $"{Name} #{Id} with {Items.Count} items";
+        return $"[ItemList] '{Name}' {Id}, last updated: {UpdatedOn}";
     }
 }

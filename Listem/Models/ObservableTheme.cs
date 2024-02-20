@@ -3,7 +3,7 @@ using Listem.Utilities;
 
 namespace Listem.Models;
 
-public partial class Theme : ObservableObject
+public partial class ObservableTheme : ObservableObject
 {
     [ObservableProperty]
     private Settings.Theme _name;

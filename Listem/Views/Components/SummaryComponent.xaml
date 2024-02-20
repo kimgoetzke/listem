@@ -14,7 +14,7 @@
 
         <!-- Content: Box -->
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:ItemList}">
+            <DataTemplate x:DataType="{x:Type models:ObservableItemList}">
                 <FlexLayout Margin="0">
 
                     <!-- Box -->
@@ -52,7 +52,7 @@
                                     <!-- Items inside the list: Content -->
                                     <!-- TODO: Make this scrollable -->
                                     <CollectionView.ItemTemplate>
-                                        <DataTemplate x:DataType="{x:Type models:Item}">
+                                        <DataTemplate x:DataType="{x:Type models:ObservableItem}">
                                             <HorizontalStackLayout HorizontalOptions="Start">
                                                 <CheckBox Scale="1" IsEnabled="False" />
                                                 <Label Text="{Binding Title}"

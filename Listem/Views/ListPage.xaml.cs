@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Views;
+﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Views;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
@@ -15,7 +16,7 @@ public partial class ListPage
     private Entry EntryField { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
 
-    public ListPage(ItemList itemList)
+    public ListPage(ObservableItemList observableItemList)
     {
         InitializeComponent();
         var services = new List<IService?>
@@ -26,12 +27,18 @@ public partial class ListPage
         };
         if (services.Any(s => s is null))
             throw new NullReferenceException($"One or more services are null");
-        _viewModel = new ListViewModel(services!, itemList);
+        _viewModel = new ListViewModel(services!, observableItemList);
         BindingContext = _viewModel;
-        AddMenuToAddItems();
+        InitialiseMenuToAddItems();
     }
 
-    private void AddMenuToAddItems()
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.LoadCategories().SafeFireAndForget();
+    }
+
+    private void InitialiseMenuToAddItems()
     {
         EntryField = GetEntryField();
         var categoryPicker = GetCategoryPicker();
@@ -144,7 +151,8 @@ public partial class ListPage
             Command = new Command(async () =>
             {
                 AddButton.IsEnabled = false;
-                await _viewModel.AddItemCommand.ExecuteAsync(_viewModel.NewItem);
+                _viewModel.NewObservableItem.Title = EntryField.Text;
+                await _viewModel.AddItemCommand.ExecuteAsync(_viewModel.NewObservableItem);
                 EntryField.Focus();
                 AddButton.IsEnabled = true;
             }),
@@ -164,7 +172,7 @@ public partial class ListPage
         };
         var quantityLabel = new Label
         {
-            Text = $"Quantity: {_viewModel.NewItem.Quantity}",
+            Text = $"Quantity: {_viewModel.NewObservableItem.Quantity}",
             FontSize = 10,
             VerticalTextAlignment = TextAlignment.Center,
             HorizontalTextAlignment = TextAlignment.Center
@@ -209,7 +217,7 @@ public partial class ListPage
             if (sender is not Picker picker)
                 return;
 
-            if (picker.SelectedItem is not Category category)
+            if (picker.SelectedItem is not ObservableCategory category)
                 return;
 
             _viewModel.CurrentCategory = category;
@@ -224,14 +232,18 @@ public partial class ListPage
         {
             Placeholder = "Enter item name",
             AutomationId = "ListPageEntryField",
-            Text = _viewModel.NewItem.Title,
+            Text = _viewModel.NewObservableItem.Title,
             Margin = new Thickness(5),
             FontSize = 16,
             ReturnCommand = _viewModel.AddItemCommand
         };
         entryField.SetBinding(Entry.TextProperty, "NewItem.Title");
         entryField.Unfocused += (_, _) => AddButton.Focus();
-        entryField.Completed += (_, _) => entryField.Focus();
+        entryField.Completed += (_, _) =>
+        {
+            _viewModel.NewObservableItem.Title = entryField.Text;
+            entryField.Focus();
+        };
         return entryField;
     }
 }

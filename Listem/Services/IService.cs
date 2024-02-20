@@ -6,8 +6,9 @@ public interface IService
 
     enum ServiceType
     {
-        Category,
+        ItemList,
         Item,
+        Category,
         Clipboard
     }
 }

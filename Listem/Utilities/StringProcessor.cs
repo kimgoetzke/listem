@@ -17,7 +17,7 @@ public static partial class StringProcessor
     [GeneratedRegex(@"!")]
     private static partial Regex ItemIsImportantRegex();
 
-    public static string TrimAndCapitaliseFirstChar(string s)
+    public static string TrimAndCapitalise(string s)
     {
         var trimmed = s.Trim();
         return s.Length > 1 ? trimmed[..1].ToUpper() + trimmed[1..] : trimmed.ToUpper();
@@ -41,13 +41,13 @@ public static partial class StringProcessor
         return success ? number : 1;
     }
 
-    public static bool IsStoreName(string input)
+    public static bool IsCategoryName(string input)
     {
         var match = StoreRegex().Match(input);
         return match.Success;
     }
 
-    public static string ExtractStoreName(string input)
+    public static string ExtractCategoryName(string input)
     {
         var match = StoreRegex().Match(input);
         return match.Success ? match.Groups[1].Value.Trim() : ICategoryService.DefaultCategoryName;

@@ -19,7 +19,7 @@
                          VerticalOptions="Start"
                          HorizontalOptions="Fill">
 
-        <Entry Text="{Binding Item.Title, Mode=TwoWay}"
+        <Entry Text="{Binding ObservableItem.Title, Mode=TwoWay}"
                Style="{DynamicResource HeadlineEntry}"
                VerticalOptions="Center"
                HorizontalOptions="Center" />
@@ -30,10 +30,10 @@
             <VerticalStackLayout Grid.Column="0" Padding="5">
                 <Label Text="Important" Style="{DynamicResource ItemPropertyLabel}" />
                 <Label x:Name="IsImportantProperty"
-                       Text="{Binding Item.IsImportant, Converter={StaticResource BoolToTextConverter}}"
+                       Text="{Binding ObservableItem.IsImportant, Converter={StaticResource BoolToTextConverter}}"
                        Style="{DynamicResource ItemProperty}" />
             </VerticalStackLayout>
-            <Switch IsToggled="{Binding Item.IsImportant, Mode=TwoWay}"
+            <Switch IsToggled="{Binding ObservableItem.IsImportant, Mode=TwoWay}"
                     Grid.Column="1"
                     VerticalOptions="Center"
                     Toggled="IsImportantSwitch_OnToggled"
@@ -46,9 +46,9 @@
             <VerticalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
                 <Label Text="Quantity" Style="{DynamicResource ItemPropertyLabel}" />
                 <Label x:Name="QuantityProperty"
-                       Text="{Binding Item.Quantity}" Style="{DynamicResource ItemProperty}" />
+                       Text="{Binding ObservableItem.Quantity}" Style="{DynamicResource ItemProperty}" />
             </VerticalStackLayout>
-            <Stepper Value="{Binding Item.Quantity}"
+            <Stepper Value="{Binding ObservableItem.Quantity}"
                      Grid.Column="1"
                      Minimum="1" Maximum="99" Increment="1"
                      VerticalOptions="Center"
@@ -61,8 +61,8 @@
             <VerticalStackLayout Padding="5">
                 <Label Text="From" Style="{DynamicResource ItemPropertyLabel}" />
                 <Picker Title="{OnPlatform WinUI='', Default='Select store'}"
-                        SelectedItem="{Binding CurrentStore, Mode=TwoWay}"
-                        ItemsSource="{Binding Stores}"
+                        SelectedItem="{Binding CurrentCategory, Mode=TwoWay}"
+                        ItemsSource="{Binding Categories}"
                         TextColor="{DynamicResource TextColor}"
                         TitleColor="{DynamicResource PickerTitleColor}"
                         MinimumWidthRequest="400" MaximumWidthRequest="850"
@@ -72,7 +72,7 @@
 
         <VerticalStackLayout Padding="5, 5, 5, 40" Margin="5" VerticalOptions="Center">
             <Label Text="Added on" Style="{DynamicResource ItemPropertyLabel}" />
-            <Label Text="{Binding Item.AddedOn}" Style="{DynamicResource ItemProperty}" />
+            <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemProperty}" />
         </VerticalStackLayout>
         <Button Text="Save changes"
                 Style="{DynamicResource StandardButton}"

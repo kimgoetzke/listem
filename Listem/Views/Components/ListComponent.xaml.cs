@@ -21,7 +21,7 @@ public partial class ListComponent
         if (sender is not CheckBox { IsChecked: true } checkBox)
             return;
 
-        if (checkBox.BindingContext is not Item item)
+        if (checkBox.BindingContext is not ObservableItem item)
             return;
 
         // await _viewModel.RemoveItem(item);

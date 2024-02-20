@@ -13,7 +13,7 @@
         <BackButtonBehavior IconOverride="back_neutral.png" IsVisible="True" />   
     </Shell.BackButtonBehavior>
     <Shell.TitleView>
-        <Label Text="{Binding ItemList.Name}" 
+        <Label Text="{Binding ObservableItemList.Name}" 
                TextColor="{DynamicResource ShellTitleColor}" 
                HorizontalOptions="Start"
                VerticalTextAlignment="Center" Style="{DynamicResource SubHeadline}"/>

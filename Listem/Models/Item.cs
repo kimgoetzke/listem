@@ -4,14 +4,28 @@ namespace Listem.Models;
 
 public class Item
 {
-    [PrimaryKey, AutoIncrement]
-    public int Id { get; init; }
-    public string ListId { get; init; }
-    public string Title { get; set; } = string.Empty;
-    public int Quantity { get; set; } = 1;
-    public bool IsImportant { get; set; }
-    public DateTime AddedOn { get; init; } = DateTime.Now;
-    public string CategoryName { get; set; } = "<Not set>";
+    [PrimaryKey]
+    public string Id { get; init; } = null!;
+    public string ListId { get; init; } = null!;
+    public string Title { get; init; } = null!;
+    public int Quantity { get; init; }
+    public bool IsImportant { get; init; }
+    public DateTime AddedOn { get; init; }
+    public string CategoryName { get; set; } = null!;
+
+    public static Item From(ObservableItem observableItem)
+    {
+        return new Item
+        {
+            Id = observableItem.Id,
+            ListId = observableItem.ListId,
+            Title = observableItem.Title,
+            Quantity = observableItem.Quantity,
+            IsImportant = observableItem.IsImportant,
+            CategoryName = observableItem.CategoryName,
+            AddedOn = observableItem.AddedOn
+        };
+    }
 
     public override string ToString()
     {
@@ -20,6 +34,6 @@ public class Item
 
     public string ToLoggableString()
     {
-        return $"{Title} #{Id} #{ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant})";
+        return $"[Item] {Title} {Id} in {ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant})";
     }
 }

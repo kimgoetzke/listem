@@ -13,7 +13,7 @@
     <ContentPage.Behaviors>
         <toolkit:StatusBarBehavior
             StatusBarColor="{StaticResource StatusBarColor}"
-            StatusBarStyle="LightContent" />
+            StatusBarStyle="DarkContent" />
     </ContentPage.Behaviors>
 
     <!-- Content -->
@@ -35,7 +35,7 @@
 
         <!-- Content: Title -->
         <Grid Grid.Row="1">
-            <Label Text="Your lists" Style="{StaticResource Headline}" VerticalOptions="Start" />
+            <Label Text="" Style="{StaticResource Headline}" VerticalOptions="Start" />
         </Grid>
 
         <!-- Content: Collection view with list of lists -->
