@@ -15,10 +15,10 @@ namespace Listem.ViewModel;
 public partial class ListViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ObservableItem> _items = [];
+    private ObservableCollection<ObservableTheme> _themes = [];
 
     [ObservableProperty]
-    private ObservableCollection<ObservableCategory> _categories = [];
+    private ObservableTheme _currentTheme;
 
     [ObservableProperty]
     private ObservableItemList _observableItemList;
@@ -27,13 +27,13 @@ public partial class ListViewModel : ObservableObject
     private ObservableItem _newObservableItem;
 
     [ObservableProperty]
+    private ObservableCollection<ObservableItem> _items = [];
+
+    [ObservableProperty]
+    private ObservableCollection<ObservableCategory> _categories = [];
+
+    [ObservableProperty]
     private ObservableCategory? _currentCategory;
-
-    [ObservableProperty]
-    private ObservableCollection<ObservableTheme> _themes = [];
-
-    [ObservableProperty]
-    private ObservableTheme _currentTheme;
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;

@@ -130,7 +130,7 @@ public partial class ListPage
             HorizontalOptions = LayoutOptions.Start,
             AutomationId = "ListPageIsImportantCheckBox",
         };
-        importantCheckBox.SetBinding(CheckBox.IsCheckedProperty, "NewItem.IsImportant");
+        importantCheckBox.SetBinding(CheckBox.IsCheckedProperty, "NewObservableItem.IsImportant");
         importantGrid.Add(importantCheckBox, 1);
         return importantGrid;
     }
@@ -186,7 +186,7 @@ public partial class ListPage
             Increment = 1,
             HorizontalOptions = LayoutOptions.Center
         };
-        quantityStepper.SetBinding(Stepper.ValueProperty, "NewItem.Quantity");
+        quantityStepper.SetBinding(Stepper.ValueProperty, "NewObservableItem.Quantity");
         quantityStepper.ValueChanged += (_, e) =>
         {
             quantityLabel.Text = $"Quantity: {e.NewValue}";
@@ -237,7 +237,7 @@ public partial class ListPage
             FontSize = 16,
             ReturnCommand = _viewModel.AddItemCommand
         };
-        entryField.SetBinding(Entry.TextProperty, "NewItem.Title");
+        entryField.SetBinding(Entry.TextProperty, "NewObservableItem.Title");
         entryField.Unfocused += (_, _) => AddButton.Focus();
         entryField.Completed += (_, _) =>
         {
