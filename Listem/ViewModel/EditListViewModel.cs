@@ -32,9 +32,9 @@ public partial class EditListViewModel : ObservableObject
 
     public EditListViewModel(ObservableItemList observableItemList)
     {
-        _itemListService = IPlatformApplication.Current!.Services.GetService<IItemListService>()!;
-        _categoryService = IPlatformApplication.Current.Services.GetService<ICategoryService>()!;
-        _itemService = IPlatformApplication.Current.Services.GetService<IItemService>()!;
+        _itemListService = IPlatformApplication.Current?.Services.GetService<IItemListService>()!;
+        _categoryService = IPlatformApplication.Current?.Services.GetService<ICategoryService>()!;
+        _itemService = IPlatformApplication.Current?.Services.GetService<IItemService>()!;
         ObservableItemList = observableItemList;
         Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
         NewObservableCategory = new ObservableCategory(observableItemList.Id);

@@ -50,13 +50,14 @@
                                 <ImageButton Grid.Column="1"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=EditListCommand}"
                                              CommandParameter="{Binding .}"
-                                             Margin="0,3,0,0"
+                                             Padding="20"
+                                             Margin="0"
                                              Source="pencil_primary.png"
                                              Aspect="AspectFit"
-                                             HorizontalOptions="Start"
+                                             HorizontalOptions="End"
                                              VerticalOptions="Start"
-                                             WidthRequest="20"
-                                             HeightRequest="20" />
+                                             WidthRequest="30"
+                                             HeightRequest="30" />
                             </Grid>
 
                             <!-- List summary: Items inside the list -->
@@ -94,7 +95,7 @@
                                     <ContentView>
                                         <FlexLayout AlignItems="Stretch">
                                             <VerticalStackLayout VerticalOptions="Center">
-                                                <Label Text="Nothing to here yet"
+                                                <Label Text="Nothing here yet"
                                                        Margin="0, 10"
                                                        FontSize="{DynamicResource FontSizeL}"
                                                        TextColor="{DynamicResource LightTextColor}"
@@ -131,8 +132,9 @@
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="End"
-                                             WidthRequest="25"
-                                             HeightRequest="25" />
+                                             Padding="15"
+                                             WidthRequest="35"
+                                             HeightRequest="35" />
                             </Grid>
 
                         </Grid>
@@ -148,17 +150,17 @@
             <ContentView>
                 <StackLayout HorizontalOptions="Center"
                              VerticalOptions="Center">
-                    <Label Text="You have no lists"
+                    <Label Text="Nothing here yet"
                            Margin="0, 10"
                            FontSize="{DynamicResource FontSizeL}"
                            TextColor="{DynamicResource LightTextColor}"
                            HorizontalOptions="Fill"
-                           HorizontalTextAlignment="End" />
+                           HorizontalTextAlignment="Center" />
                     <Label Text="Create a list to get started"
                            FontSize="{DynamicResource FontSizeM}"
                            HorizontalOptions="Fill"
                            TextColor="{DynamicResource LightTextColor}"
-                           HorizontalTextAlignment="End" />
+                           HorizontalTextAlignment="Center" />
                 </StackLayout>
             </ContentView>
         </CollectionView.EmptyView>

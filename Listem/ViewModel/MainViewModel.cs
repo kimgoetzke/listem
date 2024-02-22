@@ -117,21 +117,17 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task AddList()
     {
-        // TODO: Remove this once testing is done
         NewList = new ObservableItemList
         {
-            Name = "New List",
+            Name = "New List " + Lists.Count + 1,
             AddedOn = DateTime.Now,
             UpdatedOn = DateTime.Now
         };
 
-        // Don't add list without name
-        if (string.IsNullOrWhiteSpace(NewList.Name))
-            return;
-
-        // Process list name and add the list
+        // Process list name, add the list, and open for editing
         NewList.Name = StringProcessor.TrimAndCapitalise(NewList.Name);
         await AddNewList(NewList);
+        await EditList(NewList);
 
         // Update UI
         NewList = new ObservableItemList();
@@ -183,7 +179,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private static async Task EditList(ObservableItemList list)
     {
-        Logger.Log($"Opening list: {list.ToLoggableString()}");
+        Logger.Log($"Editing list: {list.ToLoggableString()}");
         await Shell.Current.Navigation.PushModalAsync(new EditListPage(list));
     }
 }
