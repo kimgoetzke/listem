@@ -217,7 +217,7 @@ public partial class ListViewModel : ObservableObject
         {
             if (ObservableItemList.Name.Length > 15)
             {
-                return ObservableItemList.Name[..15] + "...";
+                return ObservableItemList.Name[..15].Trim() + "...";
             }
 
             return ObservableItemList.Name;

@@ -88,7 +88,7 @@
                             </Frame.GestureRecognizers>
 
                             <!-- Contents of list: Content -->
-                            <Grid ColumnDefinitions="*,*" VerticalOptions="Center">
+                            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Fill">
                                 <StackLayout Orientation="Horizontal" Grid.Column="0"
                                              VerticalOptions="Center"
                                              Padding="5, 0">
@@ -143,22 +143,34 @@
                                         </Image.Triggers>
                                     </Image>
                                 </StackLayout>
-                                <Label Text="{Binding CategoryName}"
-                                       FontSize="{DynamicResource FontSizeS}"
-                                       HeightRequest="50"
-                                       TextColor="{DynamicResource Neutral}"
-                                       HorizontalOptions="End"
-                                       VerticalTextAlignment="Center"
-                                       Padding="0,0,15,0"
-                                       Grid.Column="1">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label"
+                                <BoxView Grid.Column="0" Grid.ColumnSpan="2"
+                                         Style="{DynamicResource LeftTransparentToRightWhite}"
+                                         Background="{DynamicResource LeftTransparentToRightWhiteBrush2}" />
+                                <Frame Grid.Column="1" HeightRequest="20" VerticalOptions="Center" HorizontalOptions="End" 
+                                       Margin="10,10" Padding="0"
+                                       BorderColor="Transparent"
+                                       CornerRadius="4"
+                                       HasShadow="True"
+                                       Shadow="{DynamicResource NeutralShadow}"
+                                       BackgroundColor="{DynamicResource Tertiary}">
+                                    <Label Text="{Binding CategoryName}"
+                                           FontSize="{DynamicResource FontSizeS}"
+                                           TextColor="{DynamicResource Neutral}"
+                                           Margin="0"
+                                           Padding="3, 0"
+                                           HorizontalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalOptions="Center"
+                                           VerticalTextAlignment="Center">
+                                    </Label>
+                                    <Frame.Triggers>
+                                        <DataTrigger TargetType="Frame"
                                                      Binding="{Binding CategoryName}"
                                                      Value="(Default)">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
+                                    </Frame.Triggers>
+                                </Frame>
                             </Grid>
 
                         </Frame>

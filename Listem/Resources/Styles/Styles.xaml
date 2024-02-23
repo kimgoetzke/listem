@@ -50,28 +50,6 @@
         <Setter Property="WidthRequest" Value="{OnPlatform WinUI=200, Default=140}" />
     </Style>
 
-    <!-- Gradients -->
-    <LinearGradientBrush x:Key="StandardGradient" EndPoint="1,1">
-        <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
-        <GradientStop Color="{DynamicResource StandardGradientStop2}" Offset="1.0" />
-    </LinearGradientBrush>
-    <LinearGradientBrush x:Key="WhiteToTransparent" EndPoint="1,1">
-        <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
-        <GradientStop Color="Transparent" Offset="1.0" />
-    </LinearGradientBrush>
-    <LinearGradientBrush x:Key="TopBackgroundToButtonTransparentBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="Transparent" Offset="1.0" />
-        <GradientStop Color="{DynamicResource Neutral}" Offset="0.1" />
-    </LinearGradientBrush>
-    <LinearGradientBrush x:Key="TopTransparentToButtonWhiteBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="Transparent" Offset="0.9" />
-        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
-    </LinearGradientBrush>
-    <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush" StartPoint="0.9,0" EndPoint="1,0">
-        <GradientStop Color="Transparent" Offset="0.1" />
-        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
-    </LinearGradientBrush>
-
     <!-- Entry -->
     <Style TargetType="Entry">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
@@ -226,7 +204,37 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-
+    
+    <!-- Gradients -->
+    <LinearGradientBrush x:Key="StandardGradient" EndPoint="1,1">
+        <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
+        <GradientStop Color="{DynamicResource StandardGradientStop2}" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="WhiteToTransparent" EndPoint="1,1">
+        <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
+        <GradientStop Color="Transparent" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="TopBackgroundToButtonTransparentBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="Transparent" Offset="1.0" />
+        <GradientStop Color="{DynamicResource Neutral}" Offset="0.1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="TopTransparentToButtonWhiteBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="Transparent" Offset="0.9" />
+        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush1" StartPoint="0.9,0" EndPoint="1,0">
+        <GradientStop Color="Transparent" Offset="0.1" />
+        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush2" StartPoint="0.8,0" EndPoint="1,0">
+        <GradientStop Color="Transparent" Offset="0.1" />
+        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="LeftToRightTestBrush" StartPoint="0.9,0" EndPoint="1,0">
+        <GradientStop Color="Magenta" Offset="0.1" />
+        <GradientStop Color="Peru" Offset="1.0" />
+    </LinearGradientBrush>
+    
     <!-- BoxView & Line separators -->
     <Style TargetType="BoxView" x:Key="ThinLineSeparator">
         <Setter Property="HeightRequest" Value="{DynamicResource StandardLineHeight}" />
@@ -249,7 +257,12 @@
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
     <Style TargetType="BoxView" x:Key="LeftTransparentToRightWhite">
-        <Setter Property="Background" Value="{DynamicResource LeftTransparentToRightWhiteBrush}" />
+        <Setter Property="Background" Value="{DynamicResource LeftTransparentToRightWhiteBrush1}" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+        <Setter Property="VerticalOptions" Value="Fill" />
+    </Style>
+    <Style TargetType="BoxView" x:Key="LeftToRightTest">
+        <Setter Property="Background" Value="{DynamicResource LeftToRightTestBrush}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>
