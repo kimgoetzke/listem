@@ -59,7 +59,7 @@
         <!-- Main page content: List of added items -->
         <controls:ListControl BindingContext="{Binding}" Grid.Row="2" Padding="0" />
         <BoxView Grid.Row="2"
-                 Style="{StaticResource TopBackgroundToButtonTransparent}"
+                 Style="{StaticResource TopNeutralToBottomTransparent}"
                  HeightRequest="20" />
 
     </Grid>

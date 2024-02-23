@@ -122,7 +122,7 @@
 
                             <BoxView Grid.Row="1"
                                      FlexLayout.Grow="1"
-                                     Style="{DynamicResource TopTransparentToButtonWhite}" />
+                                     Style="{DynamicResource TopTransparentToBottomWhite}" />
 
                             <!-- Box: Bottom bar with list options -->
                             <Grid Grid.Row="2" HorizontalOptions="Fill">

@@ -14,6 +14,7 @@ public partial class ListPage
     private const uint AnimationDuration = 400u;
     private readonly ListViewModel _viewModel;
     private Entry EntryField { get; set; } = null!;
+    private Frame EntryFieldFrame { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
 
     public ListPage(ObservableItemList observableItemList)
@@ -27,6 +28,7 @@ public partial class ListPage
     private void InitialiseMenuToAddItems()
     {
         EntryField = GetEntryField();
+        EntryFieldFrame = GetFrameForEntryField();
         var categoryPicker = GetCategoryPicker();
         var quantityGrid = GetQuantityGrid();
         var importantGrid = GetImportantGrid();
@@ -86,7 +88,7 @@ public partial class ListPage
             }
         };
 
-        menuGrid.Add(EntryField, 0);
+        menuGrid.Add(EntryFieldFrame, 0);
         menuGrid.Add(categoryPicker, 1);
         menuGrid.Add(quantityGrid, 2);
         menuGrid.Add(importantGrid, 3);
@@ -99,7 +101,7 @@ public partial class ListPage
         var menuGrid = new Grid
         {
             RowSpacing = 5,
-            Padding = new Thickness(5),
+            Padding = new Thickness(10, 5),
             RowDefinitions =
             {
                 new RowDefinition { Height = GridLength.Auto },
@@ -113,8 +115,8 @@ public partial class ListPage
             }
         };
 
-        menuGrid.Add(EntryField, 0);
-        Grid.SetColumnSpan(EntryField, 2);
+        menuGrid.Add(EntryFieldFrame, 0);
+        Grid.SetColumnSpan(EntryFieldFrame, 2);
         menuGrid.Add(AddButton, 2);
         menuGrid.Add(categoryPicker, 0, 1);
         menuGrid.Add(quantityGrid, 1, 1);
@@ -162,6 +164,7 @@ public partial class ListPage
             HorizontalOptions = LayoutOptions.Fill,
 #endif
             Text = "Add",
+            Margin = new Thickness(5, 0),
             AutomationId = "ListPageAddButton",
             Style = (Style)Application.Current!.Resources["StandardButton"],
             Command = new Command(() =>
@@ -244,15 +247,33 @@ public partial class ListPage
         return categoryPicker;
     }
 
+    private Frame GetFrameForEntryField()
+    {
+        var frame = new Frame
+        {
+            CornerRadius = 10,
+            HeightRequest = 40,
+            Content = EntryField,
+            BorderColor = Colors.Transparent,
+            Margin = new Thickness(10, 0),
+            Padding = new Thickness(10, 0),
+            HasShadow = false,
+            BackgroundColor = (Color)Application.Current!.Resources["Gray100"],
+            AutomationId = "ListPageEntryFrame"
+        };
+        return frame;
+    }
+
     private Entry GetEntryField()
     {
         var entryField = new Entry
         {
             Placeholder = "Enter item name",
             AutomationId = "ListPageEntryField",
+            FontFamily = "MulishLight",
             Text = _viewModel.NewObservableItem.Title,
-            Margin = new Thickness(5),
-            FontSize = 16,
+            Margin = new Thickness(0),
+            FontSize = (double)Application.Current!.Resources["FontSizeM"],
             ReturnCommand = _viewModel.AddItemCommand
         };
         entryField.SetBinding(Entry.TextProperty, "NewObservableItem.Title");
