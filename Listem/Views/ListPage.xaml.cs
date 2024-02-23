@@ -1,4 +1,7 @@
-﻿using Listem.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Core;
+using Listem.Models;
 using Listem.Utilities;
 using Listem.ViewModel;
 
@@ -34,6 +37,36 @@ public partial class ListPage
         var menuGrid = CreateGridOnMobile(categoryPicker, quantityGrid, importantGrid);
 #endif
         PageContentGrid.Add(menuGrid, 0, 1);
+    }
+
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+#if __ANDROID__ || __IOS__
+        var statusBarColor = (Color)Application.Current!.Resources["BackgroundColorAccent"];
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
+#endif
+    }
+
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+
+        foreach (var item in _viewModel.ItemsToDelete)
+        {
+            Logger.Log($"Removing item: {item.Title} from list");
+            _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
+        }
+
+#if __ANDROID__ || __IOS__
+        var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
+#endif
     }
 
     private Grid CreateGridOnDesktop(IView categoryPicker, IView quantityGrid, IView importantGrid)

@@ -4,19 +4,41 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Listem.Views.ListPage"
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:Listem.Views.Controls"
              x:DataType="viewmodel:ListViewModel"
              Shell.NavBarIsVisible="True">
-    
+
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IconOverride="back_neutral.png" IsVisible="True" />   
+        <BackButtonBehavior IconOverride="back_primary.png" IsVisible="False" />  
     </Shell.BackButtonBehavior>
+    <Shell.BackgroundColor>White</Shell.BackgroundColor>
     <Shell.TitleView>
-        <Label Text="{Binding ObservableItemList.Name}" 
-               TextColor="{DynamicResource ShellTitleColor}" 
-               HorizontalOptions="Start"
-               VerticalTextAlignment="Center" Style="{DynamicResource SubHeadline}"/>
+        <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}"
+              VerticalOptions="Center"
+              Padding="0, 0, 20, 0"
+              ColumnDefinitions="Auto, *, Auto, Auto">
+            <ImageButton Grid.Column="0" 
+                         Source="left_primary.png" 
+                         Command="{Binding GoBackCommand}"
+                         Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
+            <Label Grid.Column="0" Grid.ColumnSpan="3"
+                   Padding="20, 0"
+                   Text="{Binding ObservableItemList.Name}"
+                   TextColor="{DynamicResource ShellTitleColor}"
+                   VerticalTextAlignment="Center"
+                   Style="{DynamicResource SubHeadline}" />
+            <ImageButton Grid.Column="2" 
+                         Margin="20,0"
+                         VerticalOptions="End"
+                         Source="import_primary.png" 
+                         Command="{Binding InsertFromClipboardCommand}"
+                         Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
+            <ImageButton Grid.Column="3" 
+                         VerticalOptions="End"
+                         Source="export_primary.png" 
+                         Command="{Binding CopyToClipboardCommand}"
+                         Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
+        </Grid>
     </Shell.TitleView>
 
     <!-- Main page content -->
@@ -28,7 +50,7 @@
         <!-- Main page content: Background for first two rows -->
         <BoxView Grid.Row="0"
                  Grid.RowSpan="2"
-                 Color="{DynamicResource BackgroundColor}"
+                 Color="{DynamicResource BackgroundColorAccent}"
                  BackgroundColor="Transparent" />
 
         <!-- Main page content: Menu to add items -->

@@ -135,6 +135,12 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private static async Task GoBack(ObservableItem i)
+    {
+        await Shell.Current.Navigation.PopAsync();
+    }
+
+    [RelayCommand]
     private static async Task TapItem(ObservableItem i)
     {
         await Shell.Current.Navigation.PushModalAsync(new DetailPage(i));

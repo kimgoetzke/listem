@@ -12,7 +12,7 @@
                HasShadow="True"
                BorderColor="Transparent"
                Shadow="{DynamicResource NeutralShadow}"
-               BackgroundColor="{DynamicResource White}">
+               BackgroundColor="{DynamicResource BackgroundColorAccent}">
             <Grid ColumnSpacing="10"
                   ColumnDefinitions="*,Auto,Auto"
                   RowDefinitions="55">

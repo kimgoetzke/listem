@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Text;
+using CommunityToolkit.Mvvm.Messaging;
 using Listem.Models;
 using Listem.Utilities;
 
@@ -167,6 +168,8 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
         foreach (var item in toImport)
         {
             await itemService.CreateOrUpdateAsync(item);
+            var value = new ItemChangedDto(item.ListId, item);
+            WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
             items.Add(item);
         }
     }

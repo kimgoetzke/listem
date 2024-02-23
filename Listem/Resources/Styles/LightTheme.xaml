@@ -52,7 +52,7 @@
     <Color x:Key="NavigationPageBarBackgroundColor">#D8D8D8</Color>
     <Color x:Key="NavigationPageBarTextColor">#C8C8C8</Color>
     <Color x:Key="NavigationPageIconColor">#D8D8D8</Color>
-    <Color x:Key="ShellTitleColor">White</Color>
+    <Color x:Key="ShellTitleColor">#D8D8D8</Color>
     <Color x:Key="ShellBackgroundColor">#EFF3F6</Color>
     <Color x:Key="ShellForegroundColor">#0E3C53</Color>
     <Color x:Key="TabBarBackgroundColor">White</Color>
