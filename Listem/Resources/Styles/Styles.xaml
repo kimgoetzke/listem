@@ -7,10 +7,10 @@
     <!-- Buttons -->
     <Style TargetType="Button" x:Key="StandardButton">
         <Setter Property="Margin" Value="5" />
-        <Setter Property="FontFamily" Value="MulishRegular" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="FontFamily" Value="MulishSemiBold" />
         <Setter Property="FontAttributes" Value="{OnPlatform WinUI=None, Default=Bold}" />
-        <Setter Property="TextTransform" Value="Uppercase" />
-        <Setter Property="Background" Value="{DynamicResource Primary}" />
+        <Setter Property="Background" Value="{DynamicResource StandardGradient}" />
         <Setter Property="TextColor" Value="{DynamicResource ButtonTextColor}" />
         <Setter Property="Shadow" Value="{DynamicResource PrimaryShadow}" />
         <Setter Property="MaximumWidthRequest" Value="200" />
@@ -61,10 +61,10 @@
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="TopBackgroundToButtonTransparentBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="Transparent" Offset="1.0" />
-        <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0.1" />
+        <GradientStop Color="{DynamicResource Neutral}" Offset="0.1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="TopTransparentToButtonWhiteBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="Transparent" Offset="0.65" />
+        <GradientStop Color="Transparent" Offset="0.9" />
         <GradientStop Color="{DynamicResource White}" Offset="1.0" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush" StartPoint="0.9,0" EndPoint="1,0">
@@ -76,7 +76,7 @@
     <Style TargetType="Entry">
         <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
         <Setter Property="BackgroundColor" Value="Transparent" />
-        <Setter Property="FontFamily" Value="MulishRegular" />
+        <Setter Property="FontFamily" Value="MulishLight" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeM}" />
         <Setter Property="PlaceholderColor" Value="{DynamicResource PlaceholderColor}" />
         <Setter Property="MinimumHeightRequest" Value="44" />
@@ -240,12 +240,12 @@
         <Setter Property="Background" Value="{DynamicResource ThickLineSeparatorColor}" />
         <Setter Property="HorizontalOptions" Value="FillAndExpand" />
     </Style>
-    <Style TargetType="BoxView" x:Key="TopBackgroundToButtonTransparent">
+    <Style TargetType="BoxView" x:Key="TopNeutralToBottomTransparent">
         <Setter Property="Background" Value="{DynamicResource TopBackgroundToButtonTransparentBrush}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Start" />
     </Style>
-    <Style TargetType="BoxView" x:Key="TopTransparentToButtonWhite">
+    <Style TargetType="BoxView" x:Key="TopTransparentToBottomWhite">
         <Setter Property="Background" Value="{DynamicResource TopTransparentToButtonWhiteBrush}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
@@ -297,7 +297,7 @@
     <Style TargetType="Frame">
         <Setter Property="HasShadow" Value="False" />
         <Setter Property="BorderColor" Value="{DynamicResource Neutral}" />
-        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="CornerRadius" Value="10" />
     </Style>
 
     <!-- Page -->

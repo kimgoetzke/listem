@@ -18,6 +18,7 @@ public static class MauiProgram
             {
                 fonts.AddFont("Mulish-Black.ttf", "MulishBlack");
                 fonts.AddFont("Mulish-Bold.ttf", "MulishBold");
+                fonts.AddFont("Mulish-SemiBold.ttf", "MulishSemiBold");
                 fonts.AddFont("Mulish-Regular.ttf", "MulishRegular");
                 fonts.AddFont("Mulish-Light.ttf", "MulishLight");
             })
