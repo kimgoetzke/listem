@@ -7,25 +7,28 @@
 
     <Grid VerticalOptions="End"
           BackgroundColor="Transparent">
-        <Frame CornerRadius="10,10,0,0"
+        <Frame CornerRadius="10"
                Padding="0"
+               HasShadow="True"
+               BorderColor="Transparent"
+               Shadow="{DynamicResource NeutralShadow}"
                BackgroundColor="{DynamicResource White}">
             <Grid ColumnSpacing="10"
                   ColumnDefinitions="*,Auto,Auto"
-                  RowDefinitions="Auto, 55">
-                <BoxView Grid.Row="0" Grid.ColumnSpan="3" Style="{DynamicResource ThinLineSeparator}" />
-                <Entry Grid.Row="1" Grid.Column="0"
+                  RowDefinitions="55">
+                <Entry Grid.Column="0"
                        x:Name="StickyEntryField"
                        x:DataType="controls:StickyEntry"
                        BindingContext="{Binding .}"
                        ReturnCommand="{Binding SubmitInputCommand}"
                        Unfocused="StickyEntryField_Unfocused"
+                       TextChanged="StickyEntryField_OnTextChanged"
                        Margin="20,0,0,0"
                        HorizontalOptions="Fill"
                        FontSize="{DynamicResource FontSizeL}"
-                       Placeholder="Enter text here..."
+                       Placeholder=""
                        VerticalOptions="Center" />
-                <ImageButton Grid.Row="1" Grid.Column="1"
+                <ImageButton Grid.Column="1"
                              AutomationId="StickyEntryCancel"
                              x:DataType="controls:StickyEntry"
                              BindingContext="{Binding .}"
@@ -38,13 +41,14 @@
                              Margin="20,0"
                              WidthRequest="25"
                              HeightRequest="25" />
-                <ImageButton Grid.Row="1" Grid.Column="2"
+                <ImageButton Grid.Column="2"
                              AutomationId="StickyEntrySubmit"
+                             x:Name="StickyEntrySubmit"
                              x:DataType="controls:StickyEntry"
                              BindingContext="{Binding .}"
                              Command="{Binding SubmitInputCommand}"
                              CommandParameter="{Binding Source={x:Reference StickyEntryField}}"
-                             Source="done_primary.png"
+                             Source="done_neutral.png"
                              Aspect="AspectFit"
                              HorizontalOptions="End"
                              VerticalOptions="Center"

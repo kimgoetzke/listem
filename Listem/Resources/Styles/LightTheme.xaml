@@ -68,18 +68,13 @@
     <x:Double x:Key="FontSizeM">12</x:Double>
     <x:Double x:Key="FontSizeS">10</x:Double>
 
-    <Shadow x:Key="AccentBrightShadow"
-            Brush="#48F2D9"
-            Offset="0,15"
-            Radius="10"
-            Opacity="0.4" />
+    <Shadow x:Key="NeutralShadow"
+            Brush="#D8D8D8"
+            Offset="0,0"
+            Radius="40"
+            Opacity="0.8" />
     <Shadow x:Key="PrimaryShadow"
             Brush="#3CADD3"
-            Offset="0,20"
-            Radius="10"
-            Opacity="0.4" />
-    <Shadow x:Key="SecondaryShadow"
-            Brush="#CE6E4B"
             Offset="0,20"
             Radius="10"
             Opacity="0.4" />

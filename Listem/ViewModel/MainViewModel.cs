@@ -59,8 +59,10 @@ public partial class MainViewModel : ObservableObject
             {
                 list.Items.Add(item);
             }
+
             Lists.Add(list);
         }
+
         await AddTestData();
     }
 
@@ -117,6 +119,9 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task AddList(string name)
     {
+        if (name.Length == 0)
+            return;
+
         NewList = new ObservableItemList
         {
             Name = name,
@@ -124,11 +129,9 @@ public partial class MainViewModel : ObservableObject
             UpdatedOn = DateTime.Now
         };
 
-        // Process list name and add the list
         NewList.Name = StringProcessor.TrimAndCapitalise(NewList.Name);
         await AddNewList(NewList);
 
-        // Update UI
         NewList = new ObservableItemList();
         OnPropertyChanged(nameof(NewList));
         OnPropertyChanged(nameof(Lists));
