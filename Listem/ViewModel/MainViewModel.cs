@@ -115,19 +115,18 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AddList()
+    private async Task AddList(string name)
     {
         NewList = new ObservableItemList
         {
-            Name = "New List " + Lists.Count + 1,
+            Name = name,
             AddedOn = DateTime.Now,
             UpdatedOn = DateTime.Now
         };
 
-        // Process list name, add the list, and open for editing
+        // Process list name and add the list
         NewList.Name = StringProcessor.TrimAndCapitalise(NewList.Name);
         await AddNewList(NewList);
-        await EditList(NewList);
 
         // Update UI
         NewList = new ObservableItemList();

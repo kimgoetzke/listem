@@ -45,7 +45,7 @@
         <Grid Grid.Row="3">
             <Button AbsoluteLayout.LayoutBounds="1,1,60,60"
                     AbsoluteLayout.LayoutFlags="PositionProportional"
-                    Command="{Binding AddListCommand}"
+                    Clicked="AddListButton_OnClicked"
                     HorizontalOptions="End"
                     Margin="20, 20, 20, 30"
                     CornerRadius="50"
@@ -57,5 +57,7 @@
             </Button>
         </Grid>
 
+        <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" />
     </Grid>
+
 </ContentPage>
