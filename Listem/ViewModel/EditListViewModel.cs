@@ -52,14 +52,14 @@ public partial class EditListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AddCategory(ITextInput view)
+    private async Task AddCategory(string text)
     {
-        // Don't add empty items
-        if (string.IsNullOrWhiteSpace(NewObservableCategory.Name))
+        // Don't add empty category
+        if (string.IsNullOrWhiteSpace(text))
             return;
 
         // Pre-process
-        NewObservableCategory.Name = StringProcessor.TrimAndCapitalise(NewObservableCategory.Name);
+        NewObservableCategory.Name = StringProcessor.TrimAndCapitalise(text);
 
         // Only allow unique names
         if (Categories.Any(category => category.Name == NewObservableCategory.Name))
@@ -72,11 +72,7 @@ public partial class EditListViewModel : ObservableObject
         Categories.Add(NewObservableCategory);
         await _categoryService.CreateOrUpdateAsync(NewObservableCategory);
 
-        // Make sure the UI is reset/updated
-#if __ANDROID__
-        var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
-        Logger.Log("Keyboard hidden: " + isKeyboardHidden);
-#endif
+        // Update/reset UI
         Notifier.ShowToast($"Added: {NewObservableCategory.Name}");
         NewObservableCategory = new ObservableCategory(ObservableItemList.Id);
         OnPropertyChanged(nameof(NewObservableCategory));
@@ -115,7 +111,7 @@ public partial class EditListViewModel : ObservableObject
     {
         return Shell.Current.DisplayAlert(
             "Reset categories",
-            $"This will remove all categories, except 'Any'. Are you sure you want to continue?",
+            $"This will remove all categories. Are you sure you want to continue?",
             "Yes",
             "No"
         );
@@ -143,10 +139,16 @@ public partial class EditListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task GoBack()
+    private async Task SaveAndBack()
     {
         ObservableItemList.Name = StringProcessor.TrimAndCapitalise(ObservableItemList.Name);
         await _itemListService.CreateOrUpdateAsync(ObservableItemList);
+        Back().SafeFireAndForget();
+    }
+
+    [RelayCommand]
+    private static async Task Back()
+    {
         await Shell.Current.Navigation.PopModalAsync();
     }
 }
