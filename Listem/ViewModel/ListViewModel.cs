@@ -176,7 +176,8 @@ public partial class ListViewModel : ObservableObject
         OnPropertyChanged(nameof(CurrentTheme));
 
 #if __ANDROID__ || __IOS__
-        // The below is only necessary until GradientStops support DynamicResource which is a known problem.
+        // The below is a poor attempt to deal with: https://github.com/dotnet/maui/issues/18545 (GradientStop
+        // not working with DynamicResource).
         // However, attempting to start the process is optional and is unlikely to work on most devices.
         if (await IsRestartConfirmed())
         {
@@ -208,6 +209,19 @@ public partial class ListViewModel : ObservableObject
             "Now",
             "Later"
         );
+    }
+
+    public string ProcessedObservableItemListName
+    {
+        get
+        {
+            if (ObservableItemList.Name.Length > 15)
+            {
+                return ObservableItemList.Name[..15] + "...";
+            }
+
+            return ObservableItemList.Name;
+        }
     }
 
     private void SortItems()

@@ -154,7 +154,7 @@
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label"
                                                      Binding="{Binding CategoryName}"
-                                                     Value="Any">
+                                                     Value="(Default)">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
                                     </Label.Triggers>

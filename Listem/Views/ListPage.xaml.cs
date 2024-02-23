@@ -15,6 +15,8 @@ public partial class ListPage
     private readonly ListViewModel _viewModel;
     private Entry EntryField { get; set; } = null!;
     private Frame EntryFieldFrame { get; set; } = null!;
+    private Picker CategoryPicker { get; set; } = null!;
+    private Frame CategoryPickerFrame { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
 
     public ListPage(ObservableItemList observableItemList)
@@ -29,14 +31,14 @@ public partial class ListPage
     {
         EntryField = GetEntryField();
         EntryFieldFrame = GetFrameForEntryField();
-        var categoryPicker = GetCategoryPicker();
-        var quantityGrid = GetQuantityGrid();
-        var importantGrid = GetImportantGrid();
+        CategoryPicker = GetCategoryPicker();
+        CategoryPickerFrame = GetFrameForCategoryPicker();
+        var isImportantGrid = GetImportantGrid();
         AddButton = GetAddButton();
 #if WINDOWS || __MACOS__
-        var menuGrid = CreateGridOnDesktop(categoryPicker, quantityGrid, importantGrid);
+        var menuGrid = CreateGridOnDesktop(isImportantGrid);
 #elif __IOS__ || __ANDROID__
-        var menuGrid = CreateGridOnMobile(categoryPicker, quantityGrid, importantGrid);
+        var menuGrid = CreateGridOnMobile(isImportantGrid);
 #endif
         PageContentGrid.Add(menuGrid, 0, 1);
     }
@@ -71,7 +73,7 @@ public partial class ListPage
 #endif
     }
 
-    private Grid CreateGridOnDesktop(IView categoryPicker, IView quantityGrid, IView importantGrid)
+    private Grid CreateGridOnDesktop(IView importantGrid)
     {
         var menuGrid = new Grid
         {
@@ -89,19 +91,19 @@ public partial class ListPage
         };
 
         menuGrid.Add(EntryFieldFrame, 0);
-        menuGrid.Add(categoryPicker, 1);
-        menuGrid.Add(quantityGrid, 2);
+        menuGrid.Add(CategoryPickerFrame, 1);
+        Grid.SetColumnSpan(CategoryPickerFrame, 2);
         menuGrid.Add(importantGrid, 3);
         menuGrid.Add(AddButton, 4);
         return menuGrid;
     }
 
-    private Grid CreateGridOnMobile(IView categoryPicker, IView quantityGrid, IView importantGrid)
+    private Grid CreateGridOnMobile(IView importantGrid)
     {
         var menuGrid = new Grid
         {
-            RowSpacing = 5,
-            Padding = new Thickness(10, 5),
+            RowSpacing = 0,
+            Padding = new Thickness(10, 5, 15, 0),
             RowDefinitions =
             {
                 new RowDefinition { Height = GridLength.Auto },
@@ -118,39 +120,36 @@ public partial class ListPage
         menuGrid.Add(EntryFieldFrame, 0);
         Grid.SetColumnSpan(EntryFieldFrame, 2);
         menuGrid.Add(AddButton, 2);
-        menuGrid.Add(categoryPicker, 0, 1);
-        menuGrid.Add(quantityGrid, 1, 1);
+        menuGrid.Add(CategoryPickerFrame, 0, 1);
+        Grid.SetColumnSpan(CategoryPickerFrame, 2);
         menuGrid.Add(importantGrid, 2, 1);
         return menuGrid;
     }
 
     private static Grid GetImportantGrid()
     {
-        var importantGrid = new Grid
+        var isImportantGrid = new Grid { Margin = new Thickness(5) };
+        var isImportantLabel = new Label
         {
-            Margin = new Thickness(5),
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = GridLength.Auto },
-                new ColumnDefinition { Width = GridLength.Star }
-            }
+            Text = "Important",
+            FontSize = (double)Application.Current!.Resources["FontSizeS"],
+            FontFamily = "MulishSemiBold",
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalOptions = LayoutOptions.Start,
+            Margin = new Thickness(0, 10, 0, 0)
         };
-        var importantLabel = new Label
+        isImportantGrid.Add(isImportantLabel, 0);
+        var isImportantSwitch = new Switch
         {
-            Text = "Important:",
-            FontSize = 10,
-            HorizontalTextAlignment = TextAlignment.Start,
-            VerticalTextAlignment = TextAlignment.Center
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Start,
+            Scale = 0.8,
+            AutomationId = "ListPageIsImportantSwitch",
+            Margin = new Thickness(0, 10, 0, 0)
         };
-        importantGrid.Add(importantLabel, 0);
-        var importantCheckBox = new CheckBox
-        {
-            HorizontalOptions = LayoutOptions.Start,
-            AutomationId = "ListPageIsImportantCheckBox",
-        };
-        importantCheckBox.SetBinding(CheckBox.IsCheckedProperty, "NewObservableItem.IsImportant");
-        importantGrid.Add(importantCheckBox, 1);
-        return importantGrid;
+        isImportantSwitch.SetBinding(CheckBox.IsCheckedProperty, "NewObservableItem.IsImportant");
+        isImportantGrid.Add(isImportantSwitch, 0);
+        return isImportantGrid;
     }
 
     private Button GetAddButton()
@@ -180,42 +179,6 @@ public partial class ListPage
         };
     }
 
-    private Grid GetQuantityGrid()
-    {
-        var quantityGrid = new Grid
-        {
-            Margin = new Thickness(5),
-            ColumnDefinitions =
-            {
-                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
-            }
-        };
-        var quantityLabel = new Label
-        {
-            Text = $"Quantity: {_viewModel.NewObservableItem.Quantity}",
-            FontSize = 10,
-            VerticalTextAlignment = TextAlignment.Center,
-            HorizontalTextAlignment = TextAlignment.Center
-        };
-        quantityGrid.Add(quantityLabel, 0);
-        var quantityStepper = new Stepper
-        {
-            AutomationId = "ListPageQuantityStepper",
-            Minimum = 1,
-            Maximum = 99,
-            Increment = 1,
-            HorizontalOptions = LayoutOptions.Center
-        };
-        quantityStepper.SetBinding(Stepper.ValueProperty, "NewObservableItem.Quantity");
-        quantityStepper.ValueChanged += (_, e) =>
-        {
-            quantityLabel.Text = $"Quantity: {e.NewValue}";
-        };
-        quantityGrid.Add(quantityStepper, 1);
-        return quantityGrid;
-    }
-
     private Picker GetCategoryPicker()
     {
         var categoryPicker = new Picker
@@ -229,7 +192,7 @@ public partial class ListPage
             TextColor = (Color)Application.Current!.Resources["TextColor"],
             TitleColor = (Color)Application.Current.Resources["PickerTitleColor"],
             HeightRequest = (double)Application.Current.Resources["StandardSwipeItemHeight"],
-            Margin = new Thickness(5)
+            Margin = new Thickness(10, 0, 0, 0)
         };
         categoryPicker.SetBinding(Picker.SelectedItemProperty, "CurrentCategory");
         categoryPicker.SetBinding(Picker.ItemsSourceProperty, "Categories");
@@ -247,9 +210,47 @@ public partial class ListPage
         return categoryPicker;
     }
 
+    private Frame GetFrameForCategoryPicker()
+    {
+        var searchImage = new Image
+        {
+            Source = "search_tertiary.png",
+            HeightRequest = 14,
+            WidthRequest = 14,
+            VerticalOptions = LayoutOptions.Center
+        };
+
+        var categoryPickerGrid = new Grid
+        {
+            ColumnDefinitions =
+            {
+                new ColumnDefinition { Width = GridLength.Auto },
+                new ColumnDefinition { Width = GridLength.Star }
+            },
+            VerticalOptions = LayoutOptions.Fill,
+            HorizontalOptions = LayoutOptions.Fill,
+            Padding = new Thickness(0)
+        };
+        categoryPickerGrid.Add(searchImage, 0);
+        categoryPickerGrid.Add(CategoryPicker, 1);
+
+        return new Frame
+        {
+            CornerRadius = 10,
+            HeightRequest = 40,
+            Content = categoryPickerGrid,
+            BorderColor = Colors.Transparent,
+            Margin = new Thickness(10, 0),
+            Padding = new Thickness(10, 0),
+            HasShadow = false,
+            BackgroundColor = (Color)Application.Current!.Resources["Gray100"],
+            AutomationId = "ListPageCategoryFrame"
+        };
+    }
+
     private Frame GetFrameForEntryField()
     {
-        var frame = new Frame
+        return new Frame
         {
             CornerRadius = 10,
             HeightRequest = 40,
@@ -261,7 +262,6 @@ public partial class ListPage
             BackgroundColor = (Color)Application.Current!.Resources["Gray100"],
             AutomationId = "ListPageEntryFrame"
         };
-        return frame;
     }
 
     private Entry GetEntryField()
