@@ -74,7 +74,7 @@
             <Label Text="Added on" Style="{DynamicResource ItemPropertyLabel}" />
             <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemProperty}" />
         </VerticalStackLayout>
-        <Button Text="Save changes"
+        <Button Text="Save"
                 Style="{DynamicResource StandardButton}"
                 Command="{Binding GoBackCommand}" />
 

@@ -141,7 +141,7 @@
                 Style="{DynamicResource StandardButton}"
                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=ResetCategoriesCommand}"
                 CommandParameter="{Binding .}" />
-        <Button Text="Save changes"
+        <Button Text="Save"
                 Margin="0, 20"
                 Style="{DynamicResource StandardButton}"
                 Command="{Binding GoBackCommand}" />
