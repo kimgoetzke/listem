@@ -117,13 +117,14 @@
         <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
     </Style>
     <Style TargetType="Label" x:Key="ItemPropertyLabel">
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeS}" />
         <Setter Property="HorizontalTextAlignment" Value="Start" />
         <Setter Property="VerticalOptions" Value="Center" />
+        <Setter Property="FontFamily" Value="MulishSemiBold" />
         <Setter Property="TextColor" Value="{DynamicResource ItemPropertyLabelColor}" />
     </Style>
     <Style TargetType="Label" x:Key="ItemProperty">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeL}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeM}" />
         <Setter Property="HorizontalTextAlignment" Value="Start" />
         <Setter Property="VerticalOptions" Value="Center" />
         <Setter Property="TextColor" Value="{DynamicResource ItemPropertyColor}" />

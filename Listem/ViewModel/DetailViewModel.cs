@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
@@ -35,10 +36,16 @@ public partial class DetailViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task GoBack()
+    private async Task SaveAndBack()
     {
         ObservableItem.CategoryName = CurrentCategory.Name;
         await _itemService.CreateOrUpdateAsync(ObservableItem);
+        Back().SafeFireAndForget();
+    }
+
+    [RelayCommand]
+    private static async Task Back()
+    {
         await Shell.Current.Navigation.PopModalAsync();
     }
 
