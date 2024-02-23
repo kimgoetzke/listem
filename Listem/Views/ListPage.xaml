@@ -9,7 +9,7 @@
              Shell.NavBarIsVisible="True">
 
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IconOverride="back_primary.png" IsVisible="False" />  
+        <BackButtonBehavior IsVisible="False" />  
     </Shell.BackButtonBehavior>
     <Shell.BackgroundColor>White</Shell.BackgroundColor>
     <Shell.TitleView>
@@ -24,7 +24,6 @@
             <Label Grid.Column="0" Grid.ColumnSpan="3"
                    Padding="20, 0"
                    Text="{Binding ObservableItemList.Name}"
-                   TextColor="{DynamicResource ShellTitleColor}"
                    VerticalTextAlignment="Center"
                    Style="{DynamicResource SubHeadline}" />
             <ImageButton Grid.Column="2" 

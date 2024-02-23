@@ -123,9 +123,8 @@
     <Style TargetType="Label" x:Key="Headline">
         <Setter Property="TextColor" Value="{DynamicResource HeadlineColor}" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />
-        <Setter Property="FontFamily" Value="MulishBlack" />
+        <Setter Property="FontFamily" Value="MulishBold" />
         <Setter Property="Padding" Value="25" />
-        <Setter Property="TextTransform" Value="Uppercase" />
         <Setter Property="HorizontalOptions" Value="Start" />
         <Setter Property="HorizontalTextAlignment" Value="Start" />
     </Style>
@@ -133,7 +132,6 @@
         <Setter Property="TextColor" Value="{DynamicResource SubHeadlineColor}" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeL}" />
         <Setter Property="FontFamily" Value="MulishBold" />
-        <Setter Property="TextTransform" Value="Uppercase" />
         <Setter Property="HorizontalOptions" Value="Center" />
     </Style>
     <Style TargetType="Label" x:Key="MenuHeader">
