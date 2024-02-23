@@ -1,5 +1,6 @@
 ﻿using Listem.Models;
 using Listem.Utilities;
+using Listem.ViewModel;
 
 namespace Listem.Views.Controls;
 
@@ -24,7 +25,8 @@ public partial class ListControl
         if (checkBox.BindingContext is not ObservableItem item)
             return;
 
-        // await _viewModel.RemoveItem(item);
+        var viewModel = BindingContext as ListViewModel;
+        viewModel!.ItemsToDelete.Add(item);
         await Task.Delay(200);
     }
 }

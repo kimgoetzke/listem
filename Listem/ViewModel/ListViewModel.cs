@@ -31,6 +31,9 @@ public partial class ListViewModel : ObservableObject
     private ObservableCollection<ObservableItem> _items = [];
 
     [ObservableProperty]
+    private ObservableCollection<ObservableItem> _itemsToDelete = [];
+
+    [ObservableProperty]
     private ObservableCollection<ObservableCategory> _categories = [];
 
     [ObservableProperty]
