@@ -164,11 +164,13 @@ public partial class ListPage
             Text = "Add",
             AutomationId = "ListPageAddButton",
             Style = (Style)Application.Current!.Resources["StandardButton"],
-            Command = new Command(async () =>
+            Command = new Command(() =>
             {
                 AddButton.IsEnabled = false;
                 _viewModel.NewObservableItem.Title = EntryField.Text;
-                await _viewModel.AddItemCommand.ExecuteAsync(_viewModel.NewObservableItem);
+                _viewModel
+                    .AddItemCommand.ExecuteAsync(_viewModel.NewObservableItem)
+                    .SafeFireAndForget();
                 EntryField.Focus();
                 AddButton.IsEnabled = true;
             }),
