@@ -147,7 +147,7 @@ public partial class ListPage
             AutomationId = "ListPageIsImportantSwitch",
             Margin = new Thickness(0, 10, 0, 0)
         };
-        isImportantSwitch.SetBinding(CheckBox.IsCheckedProperty, "NewObservableItem.IsImportant");
+        isImportantSwitch.SetBinding(Switch.IsToggledProperty, "NewObservableItem.IsImportant");
         isImportantGrid.Add(isImportantSwitch, 0);
         return isImportantGrid;
     }
