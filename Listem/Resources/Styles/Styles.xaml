@@ -11,10 +11,10 @@
         <Setter Property="FontFamily" Value="{OnPlatform WinUI=MulishSemiBold, Default=Bold}" />
         <Setter Property="FontAttributes" Value="{OnPlatform WinUI=None, Default=Bold}" />
         <Setter Property="WidthRequest" Value="{OnPlatform WinUI=200, Default=100}" />
+        <Setter Property="MaximumWidthRequest" Value="200" />
         <Setter Property="Background" Value="{DynamicResource StandardGradient}" />
         <Setter Property="TextColor" Value="{DynamicResource ButtonTextColor}" />
         <Setter Property="Shadow" Value="{DynamicResource PrimaryShadow}" />
-        <Setter Property="MaximumWidthRequest" Value="200" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -42,6 +42,14 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
+    </Style>
+    <Style TargetType="Button" x:Key="SimpleButton" BasedOn="{StaticResource StandardButton}">
+        <Setter Property="Background" Value="{DynamicResource White}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeM}" />
+        <Setter Property="FontFamily" Value="MulishRegular" />
+        <Setter Property="TextColor" Value="{DynamicResource Primary}" />
+        <Setter Property="BorderColor" Value="{DynamicResource Primary}" />
+        <Setter Property="BorderWidth" Value="2" />
     </Style>
 
     <!-- ImageButton -->
