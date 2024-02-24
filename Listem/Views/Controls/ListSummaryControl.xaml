@@ -50,14 +50,13 @@
                                 <ImageButton Grid.Column="1"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=EditListCommand}"
                                              CommandParameter="{Binding .}"
-                                             Padding="20"
                                              Margin="0"
-                                             Source="pencil_primary.png"
+                                             Source="pencil_primary_margin.png"
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="Start"
-                                             WidthRequest="30"
-                                             HeightRequest="30" />
+                                             WidthRequest="40"
+                                             HeightRequest="40" />
                             </Grid>
 
                             <!-- List summary: Items inside the list -->
@@ -126,15 +125,14 @@
 
                             <!-- Box: Bottom bar with list options -->
                             <Grid Grid.Row="2" HorizontalOptions="Fill">
-                                <ImageButton Source="bin_secondary.png"
+                                <ImageButton Source="bin_secondary_margin.png"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=RemoveListCommand}"
                                              CommandParameter="{Binding .}"
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="End"
-                                             Padding="15"
-                                             WidthRequest="35"
-                                             HeightRequest="35" />
+                                             WidthRequest="40"
+                                             HeightRequest="40" />
                             </Grid>
 
                         </Grid>
