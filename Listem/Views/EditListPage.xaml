@@ -29,7 +29,7 @@
             <!-- List title -->
             <Grid Margin="5, 20, 5,0"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemPropertyLabel}" />
+                <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1"
                        BorderColor="Transparent"
                        BackgroundColor="{DynamicResource Gray100}"
@@ -43,7 +43,7 @@
             </Grid>
 
             <!-- Categories title -->
-            <Label Text="Manage categories" Style="{DynamicResource ItemPropertyLabel}"
+            <Label Text="Manage categories" Style="{DynamicResource ItemProperty}"
                    Padding="5, 10, 5,10" />
 
             <!-- Line separator -->

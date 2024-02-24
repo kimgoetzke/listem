@@ -33,7 +33,7 @@
             <!-- Item name -->
             <Grid Margin="5, 20, 5,0"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemPropertyLabel}" />
+                <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1"
                        BorderColor="Transparent"
                        BackgroundColor="{DynamicResource Gray100}"
@@ -49,10 +49,10 @@
             <Grid RowDefinitions="1*"
                   ColumnDefinitions=".5*, .5*">
                 <HorizontalStackLayout Grid.Column="0" Padding="5">
-                    <Label Text="Important: " Style="{DynamicResource ItemPropertyLabel}" />
+                    <Label Text="Important: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="IsImportantProperty"
                            Text="{Binding ObservableItem.IsImportant, Converter={StaticResource BoolToTextConverter}}"
-                           Style="{DynamicResource ItemPropertyLabel}" />
+                           Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
                 <Switch IsToggled="{Binding ObservableItem.IsImportant, Mode=TwoWay}"
                         Grid.Column="1"
@@ -65,10 +65,10 @@
             <Grid RowDefinitions="1*"
                   ColumnDefinitions=".5*, .5*">
                 <HorizontalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
-                    <Label Text="Quantity: " Style="{DynamicResource ItemPropertyLabel}" />
+                    <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="QuantityProperty"
                            Text="{Binding ObservableItem.Quantity}"
-                           Style="{DynamicResource ItemPropertyLabel}" />
+                           Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
                 <Stepper Value="{Binding ObservableItem.Quantity}"
                          Grid.Column="1"
@@ -81,7 +81,7 @@
             <!-- Category -->
             <Grid RowDefinitions="1*">
                 <VerticalStackLayout Padding="5">
-                    <Label Text="Category" Style="{DynamicResource ItemPropertyLabel}" />
+                    <Label Text="Category" Style="{DynamicResource ItemProperty}" />
                     <Frame BorderColor="Transparent"
                            BackgroundColor="{DynamicResource Gray100}"
                            Margin="0, 10"
@@ -107,8 +107,8 @@
 
             <!-- Added on -->
             <HorizontalStackLayout Padding="5, 5, 5, 40" Margin="5" VerticalOptions="Center">
-                <Label Text="Added on: " Style="{DynamicResource ItemPropertyLabel}" />
-                <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemPropertyLabel}" />
+                <Label Text="Added on: " Style="{DynamicResource ItemProperty}" />
+                <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemProperty}" />
             </HorizontalStackLayout>
             
             <!-- Save button -->

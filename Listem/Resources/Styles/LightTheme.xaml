@@ -35,8 +35,7 @@
     <Color x:Key="PlaceholderColor">#919191</Color>
     <Color x:Key="ButtonTextColor">White</Color>
     <Color x:Key="MenuHeaderColor">#F4F4F4</Color>
-    <Color x:Key="ItemPropertyLabelColor">#0E3C53</Color>
-    <Color x:Key="ItemPropertyColor">#D8D8D8</Color>
+    <Color x:Key="ItemPropertyColor">#0E3C53</Color>
     <Color x:Key="ThickLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="ThinLineSeparatorColor">#E1E1E1</Color>
     <Color x:Key="CheckboxColor">#3CADD3</Color>
