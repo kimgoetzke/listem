@@ -192,7 +192,8 @@ public partial class ListPage
             TextColor = (Color)Application.Current!.Resources["TextColor"],
             TitleColor = (Color)Application.Current.Resources["PickerTitleColor"],
             HeightRequest = (double)Application.Current.Resources["StandardSwipeItemHeight"],
-            Margin = new Thickness(10, 0, 0, 0)
+            Margin = new Thickness(0),
+            HorizontalOptions = LayoutOptions.Fill
         };
         categoryPicker.SetBinding(Picker.SelectedItemProperty, "CurrentCategory");
         categoryPicker.SetBinding(Picker.ItemsSourceProperty, "Categories");
@@ -229,6 +230,7 @@ public partial class ListPage
             },
             VerticalOptions = LayoutOptions.Fill,
             HorizontalOptions = LayoutOptions.Fill,
+            ColumnSpacing = 5,
             Padding = new Thickness(0)
         };
         categoryPickerGrid.Add(searchImage, 0);

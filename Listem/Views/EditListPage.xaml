@@ -47,7 +47,7 @@
                    Padding="5, 10, 5,0" />
 
             <!-- Buttons -->
-            <Grid ColumnDefinitions=".5*, .5*" ColumnSpacing="0" Padding="5, 10">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="0" Padding="5, 10">
                 <Button Grid.Column="0"
                         Text="Reset all"
                         Margin="0"
@@ -55,7 +55,7 @@
                         VerticalOptions="Fill"
                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=ResetCategoriesCommand}"
                         CommandParameter="{Binding .}" />
-                <Button Grid.Column="1"
+                <Button Grid.Column="2"
                         x:Name="AddCategoryButton"
                         Text="Add new"
                         Margin="0"

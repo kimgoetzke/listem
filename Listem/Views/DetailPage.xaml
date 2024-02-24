@@ -17,10 +17,11 @@
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent" />
             <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
-            <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30" 
+            <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
                          Command="{Binding BackCommand}"
                          HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
-            <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center" VerticalOptions="Center" />
+            <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                   VerticalOptions="Center" />
         </Grid>
 
         <VerticalStackLayout Grid.Row="1"
@@ -43,6 +44,33 @@
                        HeightRequest="40">
                     <Entry Text="{Binding ObservableItem.Title, Mode=TwoWay}" />
                 </Frame>
+            </Grid>
+
+            <!-- Category -->
+            <Grid RowDefinitions="1*">
+                <VerticalStackLayout Padding="5">
+                    <Label Text="Category" Style="{DynamicResource ItemProperty}" />
+                    <Frame BorderColor="Transparent"
+                           BackgroundColor="{DynamicResource Gray100}"
+                           Margin="0, 10"
+                           Padding="10, 0"
+                           VerticalOptions="Fill"
+                           HeightRequest="40">
+                        <Grid ColumnDefinitions="Auto, *"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="Fill" ColumnSpacing="5">
+                            <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
+                            <Picker Grid.Column="1"
+                                    Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select category'}"
+                                    SelectedItem="{Binding CurrentCategory, Mode=TwoWay}"
+                                    ItemsSource="{Binding Categories}"
+                                    TextColor="{DynamicResource TextColor}"
+                                    TitleColor="{DynamicResource PickerTitleColor}"
+                                    MinimumWidthRequest="400" MaximumWidthRequest="850"
+                                    HorizontalOptions="Fill" />
+                        </Grid>
+                    </Frame>
+                </VerticalStackLayout>
             </Grid>
 
             <!-- Is important -->
@@ -78,39 +106,12 @@
                          HorizontalOptions="{OnPlatform WinUI='Start', Default='Center'}" />
             </Grid>
 
-            <!-- Category -->
-            <Grid RowDefinitions="1*">
-                <VerticalStackLayout Padding="5">
-                    <Label Text="Category" Style="{DynamicResource ItemProperty}" />
-                    <Frame BorderColor="Transparent"
-                           BackgroundColor="{DynamicResource Gray100}"
-                           Margin="0, 10"
-                           Padding="10, 0"
-                           VerticalOptions="Fill"
-                           HeightRequest="40">
-                        <Grid ColumnDefinitions="Auto, *"
-                              VerticalOptions="Fill"
-                              HorizontalOptions="Fill" ColumnSpacing="5">
-                            <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
-                            <Picker Grid.Column="1"
-                                    Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select category'}"
-                                    SelectedItem="{Binding CurrentCategory, Mode=TwoWay}"
-                                    ItemsSource="{Binding Categories}"
-                                    TextColor="{DynamicResource TextColor}"
-                                    TitleColor="{DynamicResource PickerTitleColor}"
-                                    MinimumWidthRequest="400" MaximumWidthRequest="850"
-                                    HorizontalOptions="Fill" />
-                        </Grid>
-                    </Frame>
-                </VerticalStackLayout>
-            </Grid>
-
             <!-- Added on -->
-            <HorizontalStackLayout Padding="5, 5, 5, 40" Margin="5" VerticalOptions="Center">
+            <HorizontalStackLayout Padding="0, 5, 0, 40" Margin="5" VerticalOptions="Center">
                 <Label Text="Added on: " Style="{DynamicResource ItemProperty}" />
                 <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemProperty}" />
             </HorizontalStackLayout>
-            
+
             <!-- Save button -->
             <Button Text="Save"
                     Style="{DynamicResource StandardButton}"
