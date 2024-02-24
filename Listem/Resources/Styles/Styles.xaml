@@ -14,7 +14,7 @@
         <Setter Property="MaximumWidthRequest" Value="200" />
         <Setter Property="Background" Value="{DynamicResource StandardGradient}" />
         <Setter Property="TextColor" Value="{DynamicResource ButtonTextColor}" />
-        <Setter Property="Shadow" Value="{DynamicResource PrimaryShadow}" />
+        <Setter Property="Shadow" Value="{DynamicResource PrimaryShadowM}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -56,7 +56,7 @@
     <Style TargetType="ImageButton" x:Key="FancyImageButton">
         <Setter Property="CornerRadius" Value="25" />
         <Setter Property="Background" Value="{DynamicResource StandardGradient}" />
-        <Setter Property="Shadow" Value="{DynamicResource PrimaryShadow}" />
+        <Setter Property="Shadow" Value="{DynamicResource PrimaryShadowL}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
             <VisualStateGroupList>
                 <VisualStateGroup x:Name="CommonStates">
@@ -244,11 +244,11 @@
         <GradientStop Color="{DynamicResource StandardGradientStop1}" Offset="0.1" />
         <GradientStop Color="Transparent" Offset="1.0" />
     </LinearGradientBrush>
-    <LinearGradientBrush x:Key="TopBackgroundToButtonTransparentBrush" StartPoint="0,0" EndPoint="0,1">
+    <LinearGradientBrush x:Key="TopGray150ToBottomTransparentBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="Transparent" Offset="1.0" />
-        <GradientStop Color="{DynamicResource Neutral}" Offset="0.1" />
+        <GradientStop Color="{DynamicResource Gray150}" Offset="0.1" />
     </LinearGradientBrush>
-    <LinearGradientBrush x:Key="TopTransparentToButtonWhiteBrush" StartPoint="0,0" EndPoint="0,1">
+    <LinearGradientBrush x:Key="TopTransparentToBottomWhiteBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="Transparent" Offset="0.9" />
         <GradientStop Color="{DynamicResource White}" Offset="1.0" />
     </LinearGradientBrush>
@@ -276,13 +276,13 @@
         <Setter Property="Background" Value="{DynamicResource ThickLineSeparatorColor}" />
         <Setter Property="HorizontalOptions" Value="FillAndExpand" />
     </Style>
-    <Style TargetType="BoxView" x:Key="TopNeutralToBottomTransparent">
-        <Setter Property="Background" Value="{DynamicResource TopBackgroundToButtonTransparentBrush}" />
+    <Style TargetType="BoxView" x:Key="TopGrey150ToBottomTransparent">
+        <Setter Property="Background" Value="{DynamicResource TopGray150ToBottomTransparentBrush}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Start" />
     </Style>
     <Style TargetType="BoxView" x:Key="TopTransparentToBottomWhite">
-        <Setter Property="Background" Value="{DynamicResource TopTransparentToButtonWhiteBrush}" />
+        <Setter Property="Background" Value="{DynamicResource TopTransparentToBottomWhiteBrush}" />
         <Setter Property="HorizontalOptions" Value="Fill" />
         <Setter Property="VerticalOptions" Value="Fill" />
     </Style>

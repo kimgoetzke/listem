@@ -16,12 +16,14 @@
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent" />
-            <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
-            <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
-                         Command="{Binding BackCommand}"
-                         HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
-            <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
-                   VerticalOptions="Center" />
+            <Grid Margin="0, 15, 0,0">
+                <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
+                <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
+                             Command="{Binding BackCommand}"
+                             HorizontalOptions="Start" VerticalOptions="Center" Margin="15, 0" />
+                <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Grid>
         </Grid>
 
         <VerticalStackLayout Grid.Row="1"

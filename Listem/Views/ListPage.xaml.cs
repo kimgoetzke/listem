@@ -6,7 +6,6 @@ using Listem.Utilities;
 using Listem.ViewModel;
 
 // ReSharper disable UnusedMember.Local
-
 namespace Listem.Views;
 
 public partial class ListPage
@@ -78,7 +77,7 @@ public partial class ListPage
         var menuGrid = new Grid
         {
             RowSpacing = 5,
-            Padding = new Thickness(5),
+            Padding = new Thickness(5, 15, 5, 5),
             RowDefinitions = { new RowDefinition { Height = GridLength.Auto } },
             ColumnDefinitions =
             {
@@ -103,7 +102,7 @@ public partial class ListPage
         var menuGrid = new Grid
         {
             RowSpacing = 0,
-            Padding = new Thickness(10, 5, 15, 0),
+            Padding = new Thickness(10, 15, 15, 0),
             RowDefinitions =
             {
                 new RowDefinition { Height = GridLength.Auto },
@@ -161,6 +160,7 @@ public partial class ListPage
             WidthRequest = 140,
 #elif __ANDROID__ || __IOS__
             HorizontalOptions = LayoutOptions.Fill,
+            WidthRequest = 75,
 #endif
             Text = "Add",
             Margin = new Thickness(5, 0),

@@ -190,7 +190,7 @@
                                TextColor="{DynamicResource LightTextColor}"
                                HorizontalOptions="Fill"
                                HorizontalTextAlignment="Center" />
-                        <Label Text="Nothing to buy"
+                        <Label Text="Nothing here yet"
                                Margin="10"
                                FontSize="{DynamicResource FontSizeL}"
                                TextColor="{DynamicResource LightTextColor}"

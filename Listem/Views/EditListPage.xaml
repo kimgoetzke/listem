@@ -12,12 +12,14 @@
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent" />
-            <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
-            <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
-                         Command="{Binding BackCommand}"
-                         HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
-            <Label Text="Edit list" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
-                   VerticalOptions="Center" />
+            <Grid Margin="0, 15, 0,0">
+                <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
+                <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
+                             Command="{Binding BackCommand}"
+                             HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
+                <Label Text="Edit list" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Grid>
         </Grid>
         <VerticalStackLayout Grid.Row="1"
                              Padding="70,0"
@@ -88,7 +90,7 @@
                                                    VerticalOptions="Center"
                                                    HorizontalOptions="Fill"
                                                    HeightRequest="75"
-                                                   WidthRequest="100">
+                                                   WidthRequest="75">
                                                 <Image Source="bin_white.png"
                                                        Aspect="AspectFit"
                                                        WidthRequest="25"
@@ -101,7 +103,7 @@
                                 </SwipeView.RightItems>
 
                                 <Grid Padding="5" VerticalOptions="Fill" HorizontalOptions="Fill">
-                                    <Frame Margin="20, 0"
+                                    <Frame Margin="0"
                                            Padding="0"
                                            VerticalOptions="Fill"
                                            HorizontalOptions="Fill"

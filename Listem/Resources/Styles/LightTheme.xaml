@@ -14,6 +14,7 @@
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Neutral">#D8D8D8</Color>
     <Color x:Key="Gray100">#EFF3F6</Color>
+    <Color x:Key="Gray150">#E5E5E5</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>
     <Color x:Key="Gray300">#ACACAC</Color>
     <Color x:Key="Gray400">#919191</Color>
@@ -72,7 +73,12 @@
             Offset="0,0"
             Radius="40"
             Opacity="0.8" />
-    <Shadow x:Key="PrimaryShadow"
+    <Shadow x:Key="PrimaryShadowM"
+            Brush="#3CADD3"
+            Offset="0,10"
+            Radius="10"
+            Opacity="0.4" />
+    <Shadow x:Key="PrimaryShadowL"
             Brush="#3CADD3"
             Offset="0,20"
             Radius="10"

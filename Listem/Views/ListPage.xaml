@@ -15,7 +15,7 @@
     <Shell.TitleView>
         <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}"
               VerticalOptions="Center"
-              Padding="0, 0, 20, 0"
+              Padding="0, 15, 20, 0"
               ColumnDefinitions="Auto, *, Auto, Auto">
             <ImageButton Grid.Column="0" 
                          Source="left_primary.png" 
@@ -58,7 +58,7 @@
         <!-- Main page content: List of added items -->
         <controls:ListControl BindingContext="{Binding}" Grid.Row="2" Padding="0" />
         <BoxView Grid.Row="2"
-                 Style="{StaticResource TopNeutralToBottomTransparent}"
+                 Style="{StaticResource TopGrey150ToBottomTransparent}"
                  HeightRequest="20" />
 
     </Grid>
