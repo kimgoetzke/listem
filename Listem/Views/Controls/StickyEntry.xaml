@@ -11,7 +11,7 @@
                Padding="0"
                HasShadow="True"
                BorderColor="Transparent"
-               Shadow="{DynamicResource NeutralShadow}"
+               Shadow="{DynamicResource NeutralShadowM}"
                BackgroundColor="{DynamicResource BackgroundColorAccent}">
             <Grid ColumnSpacing="10"
                   ColumnDefinitions="*,Auto,Auto"

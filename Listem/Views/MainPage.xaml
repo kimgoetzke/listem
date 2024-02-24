@@ -16,48 +16,68 @@
             StatusBarStyle="DarkContent" />
     </ContentPage.Behaviors>
 
-    <!-- Content -->
-    <Grid RowDefinitions="Auto, .4*, *, Auto"
-          x:Name="PageContentGrid"
-          VerticalOptions="Fill"
-          IgnoreSafeArea="True">
+    <Grid>
 
-        <!-- Content: Menu button -->
-        <ImageButton x:Name="MenuButton"
-                     Source="menu_neutral.png"
-                     Aspect="AspectFit"
-                     HorizontalOptions="Start"
-                     BorderWidth="0"
-                     WidthRequest="34"
-                     HeightRequest="34"
-                     Margin="25, 40, 15 ,5"
-                     VerticalOptions="Center" />
-
-        <!-- Content: Title -->
-        <Grid Grid.Row="1">
-            <Label Text="" Style="{StaticResource Headline}" VerticalOptions="Start" />
+        <!-- Main menu -->
+        <Grid>
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="1,0" EndPoint="1,1">
+                    <GradientStop Color="{DynamicResource SettingsMenuGradientStop1}" Offset="0.1" />
+                    <GradientStop Color="{DynamicResource SettingsMenuGradientStop2}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="MenuGrid_OnTapGridArea" />
+            </Grid.GestureRecognizers>
         </Grid>
 
-        <!-- Content: Collection view with list of lists -->
-        <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding}" />
+        <!-- Content -->
+        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent" 
+               HasShadow="False" Shadow="{DynamicResource NeutralShadowL}">
+            <Grid RowDefinitions="Auto, .4*, *, Auto"
+                  BackgroundColor="{DynamicResource BackgroundColor}"
+                  VerticalOptions="Fill"
+                  IgnoreSafeArea="True">
 
-        <!-- Content: Add button -->
-        <Grid Grid.Row="3">
-            <ImageButton x:Name="AddListButton"
-                         Clicked="AddListButton_OnClicked"
-                         Source="plus_white.png"
-                         Style="{StaticResource FancyImageButton}"
-                         Aspect="AspectFit"
-                         HorizontalOptions="End"
-                         VerticalOptions="Center"
-                         Padding="20"
-                         HeightRequest="50"
-                         WidthRequest="50"
-                         Margin="20, 20, 30, 30">
-            </ImageButton>
-        </Grid>
+                <!-- Content: Menu button -->
+                <ImageButton x:Name="MenuButton"
+                             Clicked="MenuButton_OnTap"
+                             Source="menu_neutral.png"
+                             Aspect="AspectFit"
+                             HorizontalOptions="Start"
+                             BorderWidth="0"
+                             WidthRequest="34"
+                             HeightRequest="34"
+                             Margin="25, 40, 15 ,5"
+                             VerticalOptions="Center" />
 
-        <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" PlaceholderText="Enter list name..." />
+                <!-- Content: Title -->
+                <Grid Grid.Row="1">
+                    <Label Text="" Style="{StaticResource Headline}" VerticalOptions="Start" />
+                </Grid>
+
+                <!-- Content: Collection view with list of lists -->
+                <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding}" />
+
+                <!-- Content: Add button -->
+                <Grid Grid.Row="3">
+                    <ImageButton x:Name="AddListButton"
+                                 Clicked="AddListButton_OnClicked"
+                                 Source="plus_white.png"
+                                 Style="{StaticResource FancyImageButton}"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="End"
+                                 VerticalOptions="Center"
+                                 Padding="20"
+                                 HeightRequest="50"
+                                 WidthRequest="50"
+                                 Margin="20, 20, 30, 30">
+                    </ImageButton>
+                </Grid>
+
+                <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" PlaceholderText="Enter list name..." />
+            </Grid>
+        </Frame>
     </Grid>
 
 </ContentPage>

@@ -1,4 +1,6 @@
-﻿using AsyncAwaitBestPractices;
+﻿using System.Diagnostics.CodeAnalysis;
+using AsyncAwaitBestPractices;
+using CommunityToolkit.Maui.Core;
 using Listem.Utilities;
 using Listem.ViewModel;
 
@@ -9,6 +11,9 @@ namespace Listem.Views;
 public partial class MainPage
 {
     private readonly MainViewModel _viewModel;
+    private const uint AnimationDuration = 400u;
+    private bool _isMenuOpen;
+    private Frame _frame = new();
 
     public MainPage(MainViewModel viewModel)
     {
@@ -41,5 +46,61 @@ public partial class MainPage
             return;
 
         StickyEntry.SetVisibility(true);
+    }
+
+    private void MenuGrid_OnTapGridArea(object? sender, TappedEventArgs e)
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        CloseMenu(cancellationTokenSource).SafeFireAndForget();
+    }
+
+    private async void MenuButton_OnTap(object sender, EventArgs e)
+    {
+        var cancellationTokenSource = new CancellationTokenSource();
+        if (!_isMenuOpen)
+        {
+            await OpenSettings(cancellationTokenSource);
+            _isMenuOpen = true;
+            return;
+        }
+
+        await CloseMenu(cancellationTokenSource);
+        _isMenuOpen = false;
+    }
+
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+    private async Task OpenSettings(CancellationTokenSource cancellationTokenSource)
+    {
+#if __ANDROID__ || __IOS__
+        var statusBarColor = (Color)Application.Current!.Resources["AccentBright"];
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
+        MainPageContent.CornerRadius = 20;
+        MainPageContent.HasShadow = true;
+        MenuButton.Source = "expand_neutral.png";
+        var resize = MainPageContent.TranslateTo(Width * 0.6, 0, AnimationDuration);
+        var scaleDown = MainPageContent.ScaleTo(0.85, AnimationDuration);
+        var tasks = new List<Task> { resize, scaleDown };
+        await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
+#endif
+    }
+
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+    private async Task CloseMenu(CancellationTokenSource cancellationTokenSource)
+    {
+#if __ANDROID__ || __IOS__
+        await MainPageContent.RotateYTo(0, AnimationDuration / 2);
+        var fadeIn = MainPageContent.FadeTo(1, AnimationDuration / 2);
+        var scaleBack = MainPageContent.ScaleTo(1, AnimationDuration / 2);
+        var resize = MainPageContent.TranslateTo(0, 0, AnimationDuration / 2);
+        var tasks = new List<Task> { fadeIn, scaleBack, resize };
+        await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token);
+        MainPageContent.CornerRadius = 0;
+        MainPageContent.HasShadow = false;
+        MenuButton.Source = "menu_neutral.png";
+        var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
+        CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
+#endif
     }
 }

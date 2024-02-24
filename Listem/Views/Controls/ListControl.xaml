@@ -151,7 +151,7 @@
                                        BorderColor="Transparent"
                                        CornerRadius="4"
                                        HasShadow="True"
-                                       Shadow="{DynamicResource NeutralShadow}"
+                                       Shadow="{DynamicResource NeutralShadowM}"
                                        BackgroundColor="{DynamicResource Tertiary}">
                                     <Label Text="{Binding CategoryName}"
                                            FontSize="{DynamicResource FontSizeS}"
