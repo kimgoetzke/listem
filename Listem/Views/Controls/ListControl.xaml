@@ -51,7 +51,6 @@
                     <SwipeView.RightItems>
                         <SwipeItems SwipeBehaviorOnInvoked="Close">
                             <SwipeItemView
-                                Invoked="SwipeItemView_OnInvoked"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
                                 CommandParameter="{Binding .}">
                                 <Frame BackgroundColor="{DynamicResource Secondary}"
@@ -146,7 +145,8 @@
                                 <BoxView Grid.Column="0" Grid.ColumnSpan="2"
                                          Style="{DynamicResource LeftTransparentToRightWhite}"
                                          Background="{DynamicResource LeftTransparentToRightWhiteBrush2}" />
-                                <Frame Grid.Column="1" HeightRequest="20" VerticalOptions="Center" HorizontalOptions="End" 
+                                <Frame Grid.Column="1" HeightRequest="20" VerticalOptions="Center"
+                                       HorizontalOptions="End"
                                        Margin="10,10" Padding="0"
                                        BorderColor="Transparent"
                                        CornerRadius="4"

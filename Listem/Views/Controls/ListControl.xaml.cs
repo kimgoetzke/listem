@@ -11,12 +11,6 @@ public partial class ListControl
         InitializeComponent();
     }
 
-    private void SwipeItemView_OnInvoked(object? sender, EventArgs e)
-    {
-        // TODO: Give user feedback through particles or animation
-        Logger.Log("OnInvokedSwipeItem");
-    }
-
     private void CheckBox_OnCheckChanged(object? sender, CheckedChangedEventArgs e)
     {
         if (sender is not CheckBox checkBox)
