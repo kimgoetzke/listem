@@ -22,6 +22,7 @@ public partial class EditListPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
+        ListTypePicker.SelectedIndex = (int)_viewModel.ObservableItemList.ListType;
         StickyEntry.SetVisibility(false);
     }
 
@@ -52,5 +53,16 @@ public partial class EditListPage
             return;
 
         StickyEntry.SetVisibility(true);
+    }
+
+    private void ListTypePicker_OnSelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (sender is not Picker picker)
+            return;
+
+        if (picker.SelectedItem is not ListType listType)
+            return;
+
+        _viewModel.ObservableItemList.ListType = listType;
     }
 }

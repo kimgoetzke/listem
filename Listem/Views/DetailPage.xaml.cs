@@ -7,14 +7,21 @@ namespace Listem.Views;
 
 public partial class DetailPage
 {
-    public DetailPage(ObservableItem observableItem)
+    public DetailPage(ObservableItem observableItem, ObservableItemList observableItemList)
     {
         InitializeComponent();
         var storeService = IPlatformApplication.Current?.Services.GetService<ICategoryService>();
         var itemService = IPlatformApplication.Current?.Services.GetService<IItemService>();
+
         if (itemService is null || storeService is null)
             throw new NullReferenceException("ItemService or StoreService is null");
-        BindingContext = new DetailViewModel(observableItem, storeService, itemService);
+
+        BindingContext = new DetailViewModel(
+            observableItem,
+            observableItemList,
+            storeService,
+            itemService
+        );
     }
 
     private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)

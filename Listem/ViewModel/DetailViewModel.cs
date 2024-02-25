@@ -21,14 +21,17 @@ public partial class DetailViewModel : ObservableObject
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
+    public ListType ListType { get; }
 
     public DetailViewModel(
         ObservableItem observableItem,
+        ObservableItemList observableItemList,
         ICategoryService categoryService,
         IItemService itemService
     )
     {
         ObservableItem = observableItem;
+        ListType = observableItemList.ListType;
         CurrentCategory = new ObservableCategory(observableItem.ListId);
         _categoryService = categoryService;
         _itemService = itemService;

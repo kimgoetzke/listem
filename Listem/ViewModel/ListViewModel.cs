@@ -144,9 +144,9 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static async Task TapItem(ObservableItem i)
+    private async Task TapItem(ObservableItem i)
     {
-        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i));
+        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i, ObservableItemList));
     }
 
     [RelayCommand]

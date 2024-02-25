@@ -92,8 +92,12 @@
             </Grid>
 
             <!-- Quantity -->
-            <Grid RowDefinitions="1*"
-                  ColumnDefinitions=".5*, .5*">
+            <Grid x:Name="QuantityGrid" RowDefinitions="1*" ColumnDefinitions=".5*, .5*" IsVisible="False">
+                <Grid.Triggers>
+                    <DataTrigger TargetType="Grid" Binding="{Binding ListType}" Value="Shopping">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Grid.Triggers>
                 <HorizontalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
                     <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="QuantityProperty"

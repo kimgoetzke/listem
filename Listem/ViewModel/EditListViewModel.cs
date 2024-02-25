@@ -18,6 +18,9 @@ public partial class EditListViewModel : ObservableObject
     private ObservableItemList _observableItemList;
 
     [ObservableProperty]
+    private ObservableCollection<ListType> _listTypes = [];
+
+    [ObservableProperty]
     private ObservableCollection<ObservableItem> _items = [];
 
     [ObservableProperty]
@@ -36,6 +39,9 @@ public partial class EditListViewModel : ObservableObject
         _categoryService = IPlatformApplication.Current?.Services.GetService<ICategoryService>()!;
         _itemService = IPlatformApplication.Current?.Services.GetService<IItemService>()!;
         ObservableItemList = observableItemList;
+        ListTypes = new ObservableCollection<ListType>(
+            Enum.GetValues(typeof(ListType)).Cast<ListType>()
+        );
         Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
         NewObservableCategory = new ObservableCategory(observableItemList.Id);
         LoadCategories().SafeFireAndForget();

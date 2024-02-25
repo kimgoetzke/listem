@@ -12,6 +12,9 @@ public partial class ObservableItemList : ObservableObject
     private string _name = string.Empty;
 
     [ObservableProperty]
+    private ListType _listType = ListType.Standard;
+
+    [ObservableProperty]
     private ObservableCollection<ObservableItem> _items = [];
 
     [ObservableProperty]
@@ -26,6 +29,7 @@ public partial class ObservableItemList : ObservableObject
         {
             Id = itemList.Id,
             Name = itemList.Name,
+            ListType = itemList.ListType,
             AddedOn = itemList.AddedOn,
             UpdatedOn = itemList.UpdatedOn
         };
@@ -38,6 +42,6 @@ public partial class ObservableItemList : ObservableObject
 
     public string ToLoggableString()
     {
-        return $"[ObservableItemList] '{Name}' ({Id}) with {Items.Count} items";
+        return $"[ObservableItemList] '{Name}' ({Id}) of type '{ListType}' with {Items.Count} items";
     }
 }
