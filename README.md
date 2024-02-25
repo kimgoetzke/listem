@@ -5,7 +5,7 @@ CommunityToolkit, and SQLite. The goal was to learn something about .NET MAUI an
 on my [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) from last week and make a look a
 little less nasty and also use some shared, custom controls.
 
-![Screenshots GIF](./assets/screenshots.png)
+![Screenshots PNG](./assets/screenshots.png)
 
 ## Features
 
@@ -21,6 +21,10 @@ little less nasty and also use some shared, custom controls.
 - Icons used are CC0 from [iconsDB.com](https://www.iconsdb.com/) or self-made
 - Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
+
+## Demo
+
+![Demo GIF](./assets/demo.gif)
 
 ## How to build develop
 
