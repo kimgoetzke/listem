@@ -25,7 +25,7 @@
                     <!-- Box -->
                     <Frame FlexLayout.Grow="1"
                            Margin="10"
-                           WidthRequest="250"
+                           WidthRequest="230"
                            BorderColor="Transparent"
                            BackgroundColor="{DynamicResource White}">
 
@@ -62,7 +62,7 @@
                             <!-- List summary: Items inside the list -->
                             <CollectionView Grid.Row="1" ItemsSource="{Binding Items}"
                                             VerticalOptions="Fill"
-                                            Margin="0,10,0,0"
+                                            Margin="0,5,0,0"
                                             BackgroundColor="Transparent"
                                             SelectionMode="None">
 
@@ -75,13 +75,13 @@
                                 <!-- Items inside the list: Content -->
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="{x:Type models:ObservableItem}">
-                                        <HorizontalStackLayout HorizontalOptions="Start">
+                                        <HorizontalStackLayout HorizontalOptions="Start" Padding="0" Margin="0">
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer
                                                     Command="{Binding Source={x:Reference ParentCollectionView}, Path=SelectedItem}"
                                                     CommandParameter="{Binding .}" />
                                             </HorizontalStackLayout.GestureRecognizers>
-                                            <CheckBox Scale="1" IsEnabled="False" />
+                                            <CheckBox Scale="0.8" IsEnabled="False" />
                                             <Label Text="{Binding Title}"
                                                    VerticalOptions="Center"
                                                    TextColor="{DynamicResource TextColor}" />

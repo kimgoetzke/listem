@@ -22,10 +22,7 @@ public partial class MainPage
         BindingContext = _viewModel;
         _viewModel.LoadItemLists().SafeFireAndForget();
 
-        StickyEntry.Submitted += (_, text) =>
-        {
-            _viewModel.AddListCommand.Execute(text);
-        };
+        StickyEntry.Submitted += (_, text) => { _viewModel.AddListCommand.Execute(text); };
     }
 
     protected override void OnAppearing()
@@ -89,11 +86,10 @@ public partial class MainPage
     private async Task CloseMenu(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__
-        await MainPageContent.RotateYTo(0, AnimationDuration / 2);
-        var fadeIn = MainPageContent.FadeTo(1, AnimationDuration / 2);
-        var scaleBack = MainPageContent.ScaleTo(1, AnimationDuration / 2);
-        var resize = MainPageContent.TranslateTo(0, 0, AnimationDuration / 2);
-        var tasks = new List<Task> { fadeIn, scaleBack, resize };
+        await MainPageContent.RotateYTo(0, AnimationDuration / 4);
+        var scaleBack = MainPageContent.ScaleTo(1, AnimationDuration / 4);
+        var resize = MainPageContent.TranslateTo(0, 0, AnimationDuration / 4);
+        var tasks = new List<Task> { scaleBack, resize };
         await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token);
         MainPageContent.CornerRadius = 0;
         MainPageContent.HasShadow = false;
