@@ -27,7 +27,7 @@
         </Grid>
 
         <VerticalStackLayout Grid.Row="1"
-                             Padding="70,0"
+                             Padding="20,0"
                              BackgroundColor="{DynamicResource BackgroundColorAccent}"
                              MinimumWidthRequest="400" MaximumWidthRequest="850"
                              VerticalOptions="Fill"
@@ -116,7 +116,7 @@
 
             <!-- Save button -->
             <Button Text="Save"
-                    Style="{DynamicResource StandardButton}"
+                    Style="{DynamicResource GradientButton}"
                     Command="{Binding SaveAndBackCommand}" />
 
         </VerticalStackLayout>

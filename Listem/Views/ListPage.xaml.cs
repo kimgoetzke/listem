@@ -165,7 +165,7 @@ public partial class ListPage
             Text = "Add",
             Margin = new Thickness(5, 0),
             AutomationId = "ListPageAddButton",
-            Style = (Style)Application.Current!.Resources["StandardButton"],
+            Style = (Style)Application.Current!.Resources["GradientButton"],
             Command = new Command(() =>
             {
                 AddButton.IsEnabled = false;

@@ -63,7 +63,7 @@
                 </Label>
                 <Button Text="View stores"
                         Grid.Row="3"
-                        Style="{DynamicResource StandardButton}"
+                        Style="{DynamicResource GradientButton}"
                         VerticalOptions="End"
                         HorizontalOptions="Center"
                         Clicked="OnButtonClicked" />

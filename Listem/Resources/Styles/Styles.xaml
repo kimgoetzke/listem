@@ -5,7 +5,7 @@
                     x:Class="Listem.Resources.Styles.Styles">
 
     <!-- Buttons -->
-    <Style TargetType="Button" x:Key="StandardButton">
+    <Style TargetType="Button" x:Key="GradientButton">
         <Setter Property="Margin" Value="5" />
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="FontFamily" Value="{OnPlatform WinUI=MulishSemiBold, Default=Bold}" />
@@ -43,7 +43,7 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
-    <Style TargetType="Button" x:Key="SimpleButton" BasedOn="{StaticResource StandardButton}">
+    <Style TargetType="Button" x:Key="SimpleButton" BasedOn="{StaticResource GradientButton}">
         <Setter Property="Background" Value="{DynamicResource White}" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeM}" />
         <Setter Property="FontFamily" Value="MulishRegular" />
@@ -267,7 +267,7 @@
 
     <!-- BoxView & Line separators -->
     <Style TargetType="BoxView" x:Key="ThinLineSeparator">
-        <Setter Property="HeightRequest" Value="{DynamicResource StandardLineHeight}" />
+        <Setter Property="HeightRequest" Value="{DynamicResource ThinLineHeight}" />
         <Setter Property="Background" Value="{DynamicResource ThinLineSeparatorColor}" />
         <Setter Property="HorizontalOptions" Value="FillAndExpand" />
     </Style>
