@@ -19,7 +19,7 @@ little less nasty and also use some shared, custom controls.
 - Theming hasn't been implemented this time but can be enabled by configuring `DarkTheme.xaml` and exposing a control to
   change theme
 - Icons used are CC0 from [iconsDB.com](https://www.iconsdb.com/) or self-made
-- Design is loosely inspired by Mailin
+- Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
 
 ## How to build develop
@@ -53,6 +53,4 @@ pass again._
 To run the tests:
 
 1. Install the APK on the device/emulator
-2. Launch the app to close the welcome popup
-3. Close it again
-4. Run the tests via your IDE or `donet test`
+2. Run the tests via your IDE or `donet test`
