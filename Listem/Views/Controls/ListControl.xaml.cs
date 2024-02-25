@@ -17,16 +17,22 @@ public partial class ListControl
         Logger.Log("OnInvokedSwipeItem");
     }
 
-    private async void CheckBox_OnTaskCompleted(object? sender, CheckedChangedEventArgs e)
+    private void CheckBox_OnCheckChanged(object? sender, CheckedChangedEventArgs e)
     {
-        if (sender is not CheckBox { IsChecked: true } checkBox)
+        if (sender is not CheckBox checkBox)
             return;
 
         if (checkBox.BindingContext is not ObservableItem item)
             return;
 
         var viewModel = BindingContext as ListViewModel;
-        viewModel!.ItemsToDelete.Add(item);
-        await Task.Delay(200);
+
+        if (checkBox.IsChecked)
+        {
+            viewModel!.ItemsToDelete.Add(item);
+            return;
+        }
+
+        viewModel!.ItemsToDelete.Remove(item);
     }
 }

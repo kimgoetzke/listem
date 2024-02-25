@@ -94,7 +94,7 @@
                                              Padding="5, 0">
                                     <CheckBox x:Name="DoneBox"
                                               IsChecked="False" Scale="1"
-                                              CheckedChanged="CheckBox_OnTaskCompleted"
+                                              CheckedChanged="CheckBox_OnCheckChanged"
                                               BindingContext="{Binding .}" />
                                     <Label Text="{Binding Title}"
                                            AutomationId="{Binding Id}"
