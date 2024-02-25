@@ -20,6 +20,6 @@ public abstract class BaseTest
     protected void TakeScreenshot(string name)
     {
         App.GetScreenshot().SaveAsFile($"{_date}-{name}.png");
-        Console.WriteLine($"[XXX] Took screenshot: UITests\\bin\\Debug\\net8.0\\{_date}-{name}.png");
+        Console.WriteLine($@"[XXX] Took screenshot: UITests\bin\Debug\net8.0\{_date}-{name}.png");
     }
 }

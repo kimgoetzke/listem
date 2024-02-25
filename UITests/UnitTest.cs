@@ -9,17 +9,17 @@ public class UnitTest : BaseTest
         var isInstalled = App.IsAppInstalled(AppName);
         Console.WriteLine($"[XXX] {AppName} is installed: {isInstalled}");
         await Task.Delay(TimeSpan.FromSeconds(5));
-        FindUiElement("MainPageEntryField");
+        FindUiElement("MenuButton");
         TakeScreenshot(nameof(CanStartApp));
     }
 
     [Test]
     [Order(2)]
-    public void CanAddItem()
+    public void CanCreateList()
     {
-        FindUiElement("MainPageEntryField").SendKeys("Bread");
-        FindUiElement("MainPageIsImportantCheckBox").Click();
-        FindUiElement("MainPageAddButton").Click();
-        TakeScreenshot(nameof(CanAddItem));
+        FindUiElement("AddListButton").Click();
+        FindUiElement("StickyEntryField").SendKeys("Test List");
+        FindUiElement("StickyEntrySubmit").Click();
+        TakeScreenshot(nameof(CanCreateList));
     }
 }
