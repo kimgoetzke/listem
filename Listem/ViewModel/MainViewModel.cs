@@ -62,58 +62,6 @@ public partial class MainViewModel : ObservableObject
 
             Lists.Add(list);
         }
-
-        await AddTestData();
-    }
-
-    // TODO: Remove this method once testing is done
-    private async Task AddTestData()
-    {
-        if (Lists.Count > 0)
-            return;
-
-        var list1 = new ObservableItemList { Name = "Shopping list" };
-        list1.Items =
-        [
-            new ObservableItem(list1.Id) { Title = "Bread" },
-            new ObservableItem(list1.Id) { Title = "Milk" },
-            new ObservableItem(list1.Id) { Title = "Eggs" },
-            new ObservableItem(list1.Id) { Title = "Butter" },
-            new ObservableItem(list1.Id) { Title = "Cheese" },
-            new ObservableItem(list1.Id) { Title = "Tomatoes" },
-            new ObservableItem(list1.Id) { Title = "Potatoes" },
-            new ObservableItem(list1.Id) { Title = "Carrots" },
-            new ObservableItem(list1.Id) { Title = "Cucumber" },
-            new ObservableItem(list1.Id) { Title = "Bananas" },
-            new ObservableItem(list1.Id) { Title = "Apples" },
-            new ObservableItem(list1.Id) { Title = "Oranges" },
-            new ObservableItem(list1.Id) { Title = "Grapes" },
-            new ObservableItem(list1.Id) { Title = "Pineapple" },
-            new ObservableItem(list1.Id) { Title = "Peaches" }
-        ];
-        var list2 = new ObservableItemList { Name = "Todo list with a very, very long title" };
-        list2.Items =
-        [
-            new ObservableItem(list2.Id) { Title = "Do this" },
-            new ObservableItem(list2.Id) { Title = "Do that" },
-            new ObservableItem(list2.Id)
-            {
-                Title = "Do something that is difficult to explain succinctly"
-            }
-        ];
-        await AddNewList(list1);
-        await AddItemsFromNewList(list1);
-        await AddNewList(list2);
-        await AddItemsFromNewList(list2);
-        Logger.Log("Added lists for testing");
-    }
-
-    private async Task AddItemsFromNewList(ObservableItemList list)
-    {
-        foreach (var item in list.Items)
-        {
-            await _itemService.CreateOrUpdateAsync(item);
-        }
     }
 
     [RelayCommand]
