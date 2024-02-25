@@ -34,6 +34,7 @@ little less nasty and also use some shared, custom controls.
 Create APK with:
 
 ```shell
+cd Listem
 dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME
 ```
 
