@@ -117,7 +117,7 @@ public partial class EditListViewModel : ObservableObject
     {
         return Shell.Current.DisplayAlert(
             "Reset categories",
-            $"This will remove all categories, except the '(Default)' one. Are you sure you want to continue?",
+            $"This will remove all categories. Are you sure you want to continue?",
             "Yes",
             "No"
         );

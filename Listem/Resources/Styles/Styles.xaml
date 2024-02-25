@@ -4,6 +4,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     x:Class="Listem.Resources.Styles.Styles">
 
+    <x:String x:Key="DefaultCategoryName">None</x:String>
+    
     <!-- Buttons -->
     <Style TargetType="Button" x:Key="GradientButton">
         <Setter Property="Margin" Value="5" />

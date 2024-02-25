@@ -12,5 +12,5 @@ public interface ICategoryService : IService
     Task DeleteAsync(ObservableCategory observableCategory);
     Task DeleteAllByListIdAsync(string listId);
 
-    const string DefaultCategoryName = "(Default)";
+    const string DefaultCategoryName = "None";
 }

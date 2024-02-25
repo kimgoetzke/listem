@@ -99,10 +99,10 @@
                 <CollectionView ItemsSource="{Binding Categories}"
                                 Margin="0"
                                 SelectionMode="None"
-                                HeightRequest="200"
+                                HeightRequest="175"
                                 VerticalScrollBarVisibility="Always">
 
-                    <!-- Category list: Categories -->
+                    <!-- Category list: Category template -->
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="{x:Type models:ObservableCategory}">
                             <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
@@ -137,6 +137,14 @@
                                            HorizontalOptions="Fill"
                                            BorderColor="Transparent"
                                            BackgroundColor="{DynamicResource White}">
+                                        
+                                        <Frame.Triggers>
+                                            <DataTrigger TargetType="Frame"
+                                                         Binding="{Binding Name}"
+                                                         Value="{StaticResource DefaultCategoryName}">
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </DataTrigger>
+                                        </Frame.Triggers>
 
                                         <VerticalStackLayout Padding="5, 5" HorizontalOptions="Fill">
                                             <Label Text="{Binding Name}"

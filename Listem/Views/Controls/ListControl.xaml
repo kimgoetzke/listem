@@ -166,7 +166,7 @@
                                     <Frame.Triggers>
                                         <DataTrigger TargetType="Frame"
                                                      Binding="{Binding CategoryName}"
-                                                     Value="(Default)">
+                                                     Value="{StaticResource DefaultCategoryName}">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>
                                     </Frame.Triggers>
