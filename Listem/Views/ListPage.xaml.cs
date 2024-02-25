@@ -83,7 +83,8 @@ public partial class ListPage
             {
                 new ColumnDefinition { Width = new GridLength(250) },
                 new ColumnDefinition { Width = new GridLength(150) },
-                new ColumnDefinition { Width = new GridLength(180) },
+                new ColumnDefinition { Width = new GridLength(150) },
+                new ColumnDefinition { Width = new GridLength(100) },
                 new ColumnDefinition { Width = GridLength.Star },
                 new ColumnDefinition { Width = new GridLength(150) }
             }
@@ -91,9 +92,19 @@ public partial class ListPage
 
         menuGrid.Add(EntryFieldFrame, 0);
         menuGrid.Add(CategoryPickerFrame, 1);
-        Grid.SetColumnSpan(CategoryPickerFrame, 2);
-        menuGrid.Add(importantGrid, 3);
-        menuGrid.Add(AddButton, 4);
+
+        if (_viewModel.ObservableItemList.ListType == ListType.Shopping)
+        {
+            var quantityGrid = GetQuantityGrid();
+            menuGrid.Add(quantityGrid, 3);
+        }
+        else
+        {
+            Grid.SetColumnSpan(CategoryPickerFrame, 2);
+        }
+
+        menuGrid.Add(importantGrid, 4);
+        menuGrid.Add(AddButton, 5);
         return menuGrid;
     }
 
@@ -110,8 +121,8 @@ public partial class ListPage
             },
             ColumnDefinitions =
             {
-                new ColumnDefinition { Width = new GridLength(0.375, GridUnitType.Star) },
-                new ColumnDefinition { Width = new GridLength(0.375, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(0.5, GridUnitType.Star) },
+                new ColumnDefinition { Width = new GridLength(0.25, GridUnitType.Star) },
                 new ColumnDefinition { Width = new GridLength(0.25, GridUnitType.Star) }
             }
         };
@@ -120,35 +131,19 @@ public partial class ListPage
         Grid.SetColumnSpan(EntryFieldFrame, 2);
         menuGrid.Add(AddButton, 2);
         menuGrid.Add(CategoryPickerFrame, 0, 1);
-        Grid.SetColumnSpan(CategoryPickerFrame, 2);
+
+        if (_viewModel.ObservableItemList.ListType == ListType.Shopping)
+        {
+            var quantityGrid = GetQuantityGrid();
+            menuGrid.Add(quantityGrid, 1, 1);
+        }
+        else
+        {
+            Grid.SetColumnSpan(CategoryPickerFrame, 2);
+        }
+
         menuGrid.Add(importantGrid, 2, 1);
         return menuGrid;
-    }
-
-    private static Grid GetImportantGrid()
-    {
-        var isImportantGrid = new Grid { Margin = new Thickness(5) };
-        var isImportantLabel = new Label
-        {
-            Text = "Important",
-            FontSize = (double)Application.Current!.Resources["FontSizeS"],
-            FontFamily = "MulishSemiBold",
-            HorizontalTextAlignment = TextAlignment.Center,
-            VerticalOptions = LayoutOptions.Start,
-            Margin = new Thickness(0, 10, 0, 0)
-        };
-        isImportantGrid.Add(isImportantLabel, 0);
-        var isImportantSwitch = new Switch
-        {
-            HorizontalOptions = LayoutOptions.Center,
-            VerticalOptions = LayoutOptions.Start,
-            Scale = 0.8,
-            AutomationId = "ListPageIsImportantSwitch",
-            Margin = new Thickness(0, 10, 0, 0)
-        };
-        isImportantSwitch.SetBinding(Switch.IsToggledProperty, "NewObservableItem.IsImportant");
-        isImportantGrid.Add(isImportantSwitch, 0);
-        return isImportantGrid;
     }
 
     private Button GetAddButton()
@@ -286,5 +281,63 @@ public partial class ListPage
             entryField.Focus();
         };
         return entryField;
+    }
+
+    private Grid GetQuantityGrid()
+    {
+        var quantityGrid = new Grid { Margin = new Thickness(5) };
+        var quantityLabel = new Label
+        {
+            Text = $"Quantity: {_viewModel.NewObservableItem.Quantity}",
+            FontSize = (double)Application.Current!.Resources["FontSizeS"],
+            FontFamily = "MulishSemiBold",
+            VerticalTextAlignment = TextAlignment.Start,
+            HorizontalTextAlignment = TextAlignment.Center,
+            Margin = new Thickness(0, 8, 0, 0)
+        };
+        quantityGrid.Add(quantityLabel, 0);
+        var quantityStepper = new Stepper
+        {
+            AutomationId = "ListPageQuantityStepper",
+            Minimum = 1,
+            Maximum = 99,
+            Increment = 1,
+            Scale = 0.6,
+            HorizontalOptions = LayoutOptions.Center,
+            Margin = new Thickness(0, 15, 0, 0)
+        };
+        quantityStepper.SetBinding(Stepper.ValueProperty, "NewObservableItem.Quantity");
+        quantityStepper.ValueChanged += (_, e) =>
+        {
+            quantityLabel.Text = $"Quantity: {e.NewValue}";
+        };
+        quantityGrid.Add(quantityStepper, 0);
+        return quantityGrid;
+    }
+
+    private static Grid GetImportantGrid()
+    {
+        var isImportantGrid = new Grid { Margin = new Thickness(5) };
+        var isImportantLabel = new Label
+        {
+            Text = "Important",
+            FontSize = (double)Application.Current!.Resources["FontSizeS"],
+            FontFamily = "MulishSemiBold",
+            HorizontalTextAlignment = TextAlignment.Center,
+            VerticalOptions = LayoutOptions.Start,
+            Margin = new Thickness(0, 8, 0, 0)
+        };
+        isImportantGrid.Add(isImportantLabel, 0);
+        var isImportantSwitch = new Switch
+        {
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Start,
+            Scale = 0.8,
+            AutomationId = "ListPageIsImportantSwitch",
+            Margin = new Thickness(0, 15, 0, 0)
+        };
+        isImportantSwitch.SetBinding(Switch.IsToggledProperty, "NewObservableItem.IsImportant");
+        isImportantGrid.Add(isImportantSwitch, 0);
+        return isImportantGrid;
     }
 }
