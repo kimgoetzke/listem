@@ -16,8 +16,10 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     )
     {
         var import = await Clipboard.GetTextAsync();
+
         if (IsClipboardEmpty(import))
             return;
+
         var stores = await categoryService.GetAllAsync();
         if (
             !WasAbleToConvertToItemList(
@@ -31,8 +33,10 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
             )
         )
             return;
+
         if (!await IsImportConfirmedByUser(itemCount, categoryCount))
             return;
+
         await CreateMissingStores(categories, categoryList);
         await ImportItemList(observableItems, itemList);
         Notifier.ShowToast($"Imported {itemCount} items from clipboard");
@@ -42,6 +46,7 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     {
         if (import != null)
             return false;
+
         Notifier.ShowToast("Nothing to import - your clipboard is empty");
         return true;
     }
@@ -84,6 +89,7 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
 
         if (itemCount != 0)
             return true;
+
         Notifier.ShowToast("Nothing to import - your clipboard may contain invalid data");
         return false;
     }
@@ -119,8 +125,10 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     {
         var extractedName = StringProcessor.ExtractCategoryName(s);
         var matchingStore = categories.Find(c => c.Name == extractedName);
+
         if (matchingStore != null)
             return extractedName;
+
         categoryList.Add(new ObservableCategory(listId) { Name = extractedName });
         categoryCount++;
         return extractedName;
@@ -138,13 +146,14 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
 
         if (!isConfirmed)
             Notifier.ShowToast("Import cancelled");
+
         return isConfirmed;
     }
 
     private static string CreateToastMessage(int itemCount, int categoryCount)
     {
         return categoryCount > 0
-            ? $"Extracted {itemCount} item(s) and {categoryCount} category/ies from your clipboard. Would you like to create the missing category/ies and add the item(s) to your list?"
+            ? $"Extracted {itemCount} item(s) and {categoryCount} category(/ies) from your clipboard. Would you like to create the missing category(/ies) and add the item(s) to your list?"
             : $"Extracted {itemCount} item(s) from your clipboard. Would you like to add the item(s) to your list?";
     }
 
