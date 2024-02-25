@@ -22,7 +22,10 @@ public partial class MainPage
         BindingContext = _viewModel;
         _viewModel.LoadItemLists().SafeFireAndForget();
 
-        StickyEntry.Submitted += (_, text) => { _viewModel.AddListCommand.Execute(text); };
+        StickyEntry.Submitted += (_, text) =>
+        {
+            _viewModel.AddListCommand.Execute(text);
+        };
     }
 
     protected override void OnAppearing()
@@ -73,7 +76,6 @@ public partial class MainPage
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
         MainPageContent.CornerRadius = 20;
-        MainPageContent.HasShadow = true;
         MenuButton.Source = "expand_neutral.png";
         var resize = MainPageContent.TranslateTo(Width * 0.6, 0, AnimationDuration);
         var scaleDown = MainPageContent.ScaleTo(0.85, AnimationDuration);
@@ -92,7 +94,6 @@ public partial class MainPage
         var tasks = new List<Task> { scaleBack, resize };
         await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token);
         MainPageContent.CornerRadius = 0;
-        MainPageContent.HasShadow = false;
         MenuButton.Source = "menu_neutral.png";
         var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);

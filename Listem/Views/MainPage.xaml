@@ -33,7 +33,7 @@
 
         <!-- Content -->
         <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent" 
-               HasShadow="False" Shadow="{DynamicResource NeutralShadowL}">
+               HasShadow="True" Shadow="{DynamicResource DarkShadowL}">
             <Grid RowDefinitions="Auto, .4*, *, Auto"
                   BackgroundColor="{DynamicResource BackgroundColor}"
                   VerticalOptions="Fill"

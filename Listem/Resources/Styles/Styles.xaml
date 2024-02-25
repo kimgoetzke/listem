@@ -168,7 +168,7 @@
 
     <!-- Spans -->
     <Style TargetType="Span" x:Key="Highlight">
-        <Setter Property="TextColor" Value="{DynamicResource Pink}" />
+        <Setter Property="TextColor" Value="{DynamicResource TextHighlightColor}" />
         <Setter Property="FontAttributes" Value="Bold" />
         <Setter Property="TextTransform" Value="Uppercase" />
     </Style>
