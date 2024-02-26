@@ -26,7 +26,7 @@ little less nasty and also use some shared, custom controls.
 
 ![Demo GIF](./assets/demo.gif)
 
-## How to build develop
+## How to configure for development
 
 1. Set environment variables for builds and running tests
     1. `ANDROID_HOME` - the absolute path of the Android SDK
