@@ -6,6 +6,7 @@
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:controls="clr-namespace:Listem.Views.Controls"
+             xmlns:models="clr-namespace:Listem.Models"
              x:DataType="viewmodel:MainViewModel"
              Shell.NavBarIsVisible="False">
 
@@ -29,10 +30,67 @@
             <Grid.GestureRecognizers>
                 <TapGestureRecognizer Tapped="MenuGrid_OnTapGridArea" />
             </Grid.GestureRecognizers>
+
+            <VerticalStackLayout Padding="0" WidthRequest="200" HorizontalOptions="Start">
+                <Label Text="Settings" Style="{DynamicResource Headline}" Margin="0, 20, 0, 0" />
+                <BoxView Style="{DynamicResource ThinLineSeparator}" Margin="25,0,0, 20" />
+                <Label Style="{DynamicResource SubHeadline}"
+                       FontFamily="MulishRegular"
+                       Text="Select theme"
+                       Padding="0,30,20,10" />
+                <CollectionView x:Name="ThemeCollectionView"
+                                SelectedItem="{Binding CurrentTheme}"
+                                ItemsSource="{Binding Themes}"
+                                VerticalScrollBarVisibility="Never"
+                                SelectionMode="Single"
+                                SelectionChangedCommand="{Binding ChangeThemeCommand}"
+                                SelectionChangedCommandParameter="{Binding Path=SelectedItem, Source={RelativeSource Self}}"
+                                BackgroundColor="Transparent"
+                                Margin="25,0,5,0"
+                                HorizontalOptions="Start">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:ObservableTheme">
+                            <Border x:Name="BorderElement"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="30"
+                                    Margin="3"
+                                    WidthRequest="65"
+                                    StrokeThickness="1.5"
+                                    StrokeShape="RoundRectangle 8,8,8,8">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Primary}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource SwitchOnColor}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tertiary}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Tertiary}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid>
+                                    <Label TextColor="{DynamicResource ButtonTextColor}"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           Text="{Binding Name}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
         </Grid>
 
         <!-- Content -->
-        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent" 
+        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent"
                HasShadow="True" Shadow="{DynamicResource DarkShadowL}">
             <Grid RowDefinitions="Auto, .4*, *, Auto"
                   BackgroundColor="{DynamicResource BackgroundColor}"

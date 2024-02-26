@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -17,6 +18,12 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableItemList _newList;
 
+    [ObservableProperty]
+    private ObservableCollection<ObservableTheme> _themes = [];
+
+    [ObservableProperty]
+    private ObservableTheme _currentTheme;
+
     private readonly IItemListService _itemListService;
     private readonly IItemService _itemService;
 
@@ -26,6 +33,8 @@ public partial class MainViewModel : ObservableObject
         _itemService = itemService;
         NewList = new ObservableItemList();
         Lists = [];
+        Themes = Settings.GetAllThemesAsCollection();
+        CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
 
         WeakReferenceMessenger.Default.Register<ItemRemovedFromListMessage>(
             this,
@@ -116,6 +125,43 @@ public partial class MainViewModel : ObservableObject
             $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?",
             "Yes",
             "No"
+        );
+    }
+
+    [RelayCommand]
+    private async Task ChangeTheme(ObservableTheme? theme)
+    {
+        if (theme == null)
+            return;
+
+        Logger.Log($"Changing theme to: {theme}");
+        Settings.LoadTheme(theme.Name);
+        CurrentTheme = theme;
+        OnPropertyChanged(nameof(CurrentTheme));
+
+#if __ANDROID__ || __IOS__
+        // The below is only necessary until GradientStops support DynamicResource which is a known problem.
+        // However, attempting to start the process is optional and is unlikely to work on most devices.
+        if (await IsRestartConfirmed())
+        {
+            Logger.Log("Restarting app");
+#if __IOS__
+            Application.Current?.Quit();
+#else
+            Process.GetCurrentProcess().Kill();
+#endif
+        }
+#endif
+    }
+
+    // ReSharper disable once UnusedMember.Local
+    private static async Task<bool> IsRestartConfirmed()
+    {
+        return await Shell.Current.DisplayAlert(
+            "Restart required",
+            $"For the theme change to take full effect, you'll need to restart the application. Would you like to close the application now or later?",
+            "Now",
+            "Later"
         );
     }
 

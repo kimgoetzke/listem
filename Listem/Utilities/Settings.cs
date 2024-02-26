@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Listem.Models;
 using Listem.Resources.Styles;
 #if __ANDROID__
 using Android.OS;
@@ -38,9 +39,9 @@ public static class Settings
         Dark
     }
 
-    public static ObservableCollection<Models.ObservableTheme> GetAllThemesAsCollection()
+    public static ObservableCollection<ObservableTheme> GetAllThemesAsCollection()
     {
-        var themes = new ObservableCollection<Models.ObservableTheme>
+        var themes = new ObservableCollection<ObservableTheme>
         {
             new() { Name = Theme.Light },
             new() { Name = Theme.Dark }
@@ -77,6 +78,7 @@ public static class Settings
         mergedDictionaries.Add(new Styles());
     }
 
+    // ReSharper disable once UnusedParameter.Local
     private static void SetStatusBarColorOnAndroid(Application application)
     {
 #if __ANDROID__
