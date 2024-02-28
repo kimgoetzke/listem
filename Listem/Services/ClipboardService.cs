@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using CommunityToolkit.Mvvm.Messaging;
+using Listem.Events;
 using Listem.Models;
 using Listem.Utilities;
 

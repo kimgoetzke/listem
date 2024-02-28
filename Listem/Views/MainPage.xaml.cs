@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
-using CommunityToolkit.Maui.Core;
 using Listem.Utilities;
 using Listem.ViewModel;
+#if __ANDROID__ || __IOS__
+using CommunityToolkit.Maui.Core;
+#endif
 
 // ReSharper disable UnusedMember.Local
 
@@ -70,6 +72,7 @@ public partial class MainPage
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+    // ReSharper disable once UnusedParameter.Local
     private async Task OpenSettings(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__
@@ -86,6 +89,7 @@ public partial class MainPage
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+    // ReSharper disable once UnusedParameter.Local
     private async Task CloseMenu(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__

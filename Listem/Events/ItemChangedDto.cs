@@ -1,6 +1,6 @@
 ﻿using Listem.Models;
 
-namespace Listem.Utilities;
+namespace Listem.Events;
 
 public class ItemChangedDto(string listId, ObservableItem item)
 {

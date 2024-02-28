@@ -1,9 +1,11 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
-using CommunityToolkit.Maui.Core;
 using Listem.Models;
 using Listem.Utilities;
 using Listem.ViewModel;
+#if __ANDROID__ || __IOS__
+using CommunityToolkit.Maui.Core;
+#endif
 
 // ReSharper disable UnusedMember.Local
 namespace Listem.Views;

@@ -1,12 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using AsyncAwaitBestPractices;
-using CommunityToolkit.Maui.Core.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
-using Listem.Views;
 
 namespace Listem.ViewModel;
 

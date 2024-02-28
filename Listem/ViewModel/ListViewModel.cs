@@ -1,14 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using Listem.Events;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
 using Listem.Views;
-using static Listem.Services.IService;
 using StringProcessor = Listem.Utilities.StringProcessor;
 
 namespace Listem.ViewModel;
