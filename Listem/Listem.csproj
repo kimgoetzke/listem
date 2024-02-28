@@ -112,4 +112,8 @@
         <Compile Remove="ViewModel\CategoryViewModel.cs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Events\" />
+    </ItemGroup>
+
 </Project>

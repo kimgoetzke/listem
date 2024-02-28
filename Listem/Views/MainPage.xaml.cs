@@ -69,6 +69,7 @@ public partial class MainPage
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     private async Task OpenSettings(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__
@@ -100,4 +101,5 @@ public partial class MainPage
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
 #endif
     }
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 }

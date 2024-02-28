@@ -1,5 +1,4 @@
 ﻿using Listem.Utilities;
-using Listem;
 
 namespace Listem;
 
@@ -10,7 +9,7 @@ public partial class App
         InitializeComponent();
         SetThemeToSystemThemeOnFirstRun();
         var currentTheme = Settings.CurrentTheme;
-        Settings.LoadTheme(currentTheme);
+        ThemeHandler.SetTheme(currentTheme);
         MainPage = new AppShell();
     }
 
@@ -21,9 +20,12 @@ public partial class App
 
         Logger.Log("Setting current theme to system theme on first run");
         var systemTheme = Current?.RequestedTheme;
-        Settings.SetCurrentThemeFromSystem(systemTheme);
+        ThemeHandler.SetCurrentThemeFromSystem(systemTheme);
     }
 
+    /**
+     * This method defines the minimum height and width of the application window for Windows.
+     */
     protected override Window CreateWindow(IActivationState? activationState)
     {
         var window = base.CreateWindow(activationState);

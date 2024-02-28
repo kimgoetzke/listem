@@ -23,13 +23,13 @@
     <Color x:Key="Gray800">#2E2E2E</Color>
     <Color x:Key="Gray900">#1F1F1F</Color>
 
-    <Color x:Key="StatusBarColor">#EFF3F6</Color>
-    <Color x:Key="BackgroundColor">#EFF3F6</Color>
-    <Color x:Key="BackgroundColorAccent">White</Color>
-    <Color x:Key="HeadlineColor">#0E3C53</Color>
-    <Color x:Key="SubHeadlineColor">#0E3C53</Color>
-    <Color x:Key="TextColor">#0E3C53</Color>
-    <Color x:Key="TextColorVariant">#1F1F1F</Color>
+    <Color x:Key="StatusBarColor">#1F1F1F</Color>
+    <Color x:Key="BackgroundColor">#1F1F1F</Color>
+    <Color x:Key="BackgroundColorAccent">#0E3C53</Color>
+    <Color x:Key="HeadlineColor">#D8D8D8</Color>
+    <Color x:Key="SubHeadlineColor">#D8D8D8</Color>
+    <Color x:Key="TextColor">#D8D8D8</Color>
+    <Color x:Key="TextColorVariant">#EFF3F6</Color>
     <Color x:Key="TextColorInverted">White</Color>
     <Color x:Key="TextHighlightColor">#CE6E4B</Color>
     <Color x:Key="LightTextColor">#D8D8D8</Color>
@@ -53,7 +53,7 @@
     <Color x:Key="NavigationPageBarTextColor">#C8C8C8</Color>
     <Color x:Key="NavigationPageIconColor">#D8D8D8</Color>
     <Color x:Key="ShellTitleColor">#0E3C53</Color>
-    <Color x:Key="ShellBackgroundColor">#EFF3F6</Color>
+    <Color x:Key="ShellBackgroundColor">#FFFFFF</Color>
     <Color x:Key="ShellForegroundColor">#0E3C53</Color>
     <Color x:Key="TabBarBackgroundColor">White</Color>
     <Color x:Key="TabBarForegroundColor">#D8D8D8</Color>

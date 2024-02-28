@@ -16,12 +16,6 @@ namespace Listem.ViewModel;
 public partial class ListViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ObservableTheme> _themes = [];
-
-    [ObservableProperty]
-    private ObservableTheme _currentTheme;
-
-    [ObservableProperty]
     private ObservableItemList _observableItemList;
 
     [ObservableProperty]
@@ -51,8 +45,6 @@ public partial class ListViewModel : ObservableObject
         ObservableItemList = observableItemList;
         Items = new ObservableCollection<ObservableItem>(observableItemList.Items);
         NewObservableItem = new ObservableItem(ObservableItemList.Id);
-        Themes = Settings.GetAllThemesAsCollection();
-        CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
         SortItems();
         LoadCategories().SafeFireAndForget();
     }
@@ -159,56 +151,6 @@ public partial class ListViewModel : ObservableObject
     private void InsertFromClipboard()
     {
         _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableItemList.Id);
-    }
-
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    [RelayCommand]
-    private async Task ChangeTheme(ObservableTheme? theme)
-    {
-        if (theme == null)
-        {
-            return;
-        }
-
-        Logger.Log($"Changing theme to: {theme}");
-        Settings.LoadTheme(theme.Name);
-        CurrentTheme = theme;
-        OnPropertyChanged(nameof(CurrentTheme));
-
-#if __ANDROID__ || __IOS__
-        // The below is a poor attempt to deal with: https://github.com/dotnet/maui/issues/18545 (GradientStop
-        // not working with DynamicResource).
-        // However, attempting to start the process is optional and is unlikely to work on most devices.
-        if (await IsRestartConfirmed())
-        {
-            Logger.Log("Restarting app");
-            var currentProcess = Process.GetCurrentProcess();
-            var filename = currentProcess.MainModule?.FileName;
-            Logger.Log("Main module name: " + filename);
-#if __IOS__
-            Application.Current?.Quit();
-#else
-            if (filename != null)
-            {
-                Process.Start(filename);
-            }
-
-            currentProcess.Kill();
-#endif
-        }
-#endif
-    }
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-
-    // ReSharper disable once UnusedMember.Local
-    private static async Task<bool> IsRestartConfirmed()
-    {
-        return await Shell.Current.DisplayAlert(
-            "Restart required",
-            $"For the theme change to take full effect, you'll need to restart the application. Would you like to close the application now or later?",
-            "Now",
-            "Later"
-        );
     }
 
     public string ProcessedObservableItemListName

@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -33,7 +32,7 @@ public partial class MainViewModel : ObservableObject
         _itemService = itemService;
         NewList = new ObservableItemList();
         Lists = [];
-        Themes = Settings.GetAllThemesAsCollection();
+        Themes = ThemeHandler.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
 
         WeakReferenceMessenger.Default.Register<ItemRemovedFromListMessage>(
@@ -129,29 +128,16 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ChangeTheme(ObservableTheme? theme)
+    private Task SetTheme(ObservableTheme? theme)
     {
         if (theme == null)
-            return;
+            return Task.CompletedTask;
 
         Logger.Log($"Changing theme to: {theme}");
-        Settings.LoadTheme(theme.Name);
+        ThemeHandler.SetTheme(theme.Name);
         CurrentTheme = theme;
         OnPropertyChanged(nameof(CurrentTheme));
-
-#if __ANDROID__ || __IOS__
-        // The below is only necessary until GradientStops support DynamicResource which is a known problem.
-        // However, attempting to start the process is optional and is unlikely to work on most devices.
-        if (await IsRestartConfirmed())
-        {
-            Logger.Log("Restarting app");
-#if __IOS__
-            Application.Current?.Quit();
-#else
-            Process.GetCurrentProcess().Kill();
-#endif
-        }
-#endif
+        return Task.CompletedTask;
     }
 
     // ReSharper disable once UnusedMember.Local

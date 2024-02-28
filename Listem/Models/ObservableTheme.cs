@@ -6,7 +6,7 @@ namespace Listem.Models;
 public partial class ObservableTheme : ObservableObject
 {
     [ObservableProperty]
-    private Settings.Theme _name;
+    private ThemeHandler.Theme _name;
 
     public override string ToString()
     {

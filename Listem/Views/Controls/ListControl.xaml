@@ -77,7 +77,7 @@
                                Padding="0"
                                VerticalOptions="Fill"
                                BorderColor="Transparent"
-                               BackgroundColor="{DynamicResource White}">
+                               BackgroundColor="{DynamicResource BackgroundColorAccent}">
 
                             <!-- Contents of list: Settings -->
                             <Frame.GestureRecognizers>

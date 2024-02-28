@@ -43,7 +43,7 @@
                                 ItemsSource="{Binding Themes}"
                                 VerticalScrollBarVisibility="Never"
                                 SelectionMode="Single"
-                                SelectionChangedCommand="{Binding ChangeThemeCommand}"
+                                SelectionChangedCommand="{Binding SetThemeCommand}"
                                 SelectionChangedCommandParameter="{Binding Path=SelectedItem, Source={RelativeSource Self}}"
                                 BackgroundColor="Transparent"
                                 Margin="25,0,5,0"

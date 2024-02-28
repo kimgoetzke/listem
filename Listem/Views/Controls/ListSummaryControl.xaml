@@ -27,7 +27,7 @@
                            Margin="10"
                            WidthRequest="230"
                            BorderColor="Transparent"
-                           BackgroundColor="{DynamicResource White}">
+                           BackgroundColor="{DynamicResource BackgroundColorAccent}">
 
                         <Frame.GestureRecognizers>
                             <TapGestureRecognizer

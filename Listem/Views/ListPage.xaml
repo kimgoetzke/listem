@@ -6,12 +6,12 @@
              xmlns:viewmodel="clr-namespace:Listem.ViewModel"
              xmlns:controls="clr-namespace:Listem.Views.Controls"
              x:DataType="viewmodel:ListViewModel"
+             Shell.BackgroundColor="{DynamicResource BackgroundColorAccent}"
              Shell.NavBarIsVisible="True">
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" />  
     </Shell.BackButtonBehavior>
-    <Shell.BackgroundColor>White</Shell.BackgroundColor>
     <Shell.TitleView>
         <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}"
               VerticalOptions="Center"
