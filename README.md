@@ -47,7 +47,7 @@ This assumes that the Android SDK is installed and the `ANDROID_HOME` environmen
 APK file can then be found in `ShoppingList\bin\Release\net8.0-android\publish\` and installed directly on any Android
 phone.
 
-## How to run tests
+## How to run UI tests
 
 _Note: Currently, I am unable to get Appium to install the APK correctly on the emulator. The only way to make the app
 start during tests is to first install the APK on the device, close the welcome popup, and then run the tests. If the
@@ -57,4 +57,12 @@ pass again._
 To run the tests:
 
 1. Install the APK on the device/emulator
-2. Run the tests via your IDE or `donet test`
+2. Navigate to the `Listem.UITests` project with `cd Listem.UITests`
+3. Run the tests via your IDE or `donet test`
+
+## How to use the backend
+
+```shell
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
