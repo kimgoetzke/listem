@@ -1,7 +1,8 @@
-﻿using Listem.Contracts;
-using Listem.Models;
+﻿using Listem.Models;
 using Listem.Utilities;
 using SQLite;
+using Category = Listem.Models.Category;
+using ItemList = Listem.Models.ItemList;
 
 namespace Listem.Services;
 

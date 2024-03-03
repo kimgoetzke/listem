@@ -112,8 +112,4 @@
         <Compile Remove="ViewModel\CategoryViewModel.cs" />
     </ItemGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\Listem.Contracts\Listem.Contracts.csproj" />
-    </ItemGroup>
-
 </Project>

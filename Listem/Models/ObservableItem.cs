@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Listem.Contracts;
 using Listem.Services;
 
 namespace Listem.Models;

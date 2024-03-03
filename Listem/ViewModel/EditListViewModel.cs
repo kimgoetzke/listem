@@ -2,10 +2,10 @@
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Listem.Contracts;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
+using ListType = Listem.Models.ListType;
 
 namespace Listem.ViewModel;
 

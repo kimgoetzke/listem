@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
-using Listem.Contracts;
 using Listem.Models;
 using Listem.Utilities;
 using Listem.ViewModel;
+using ListType = Listem.Models.ListType;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif

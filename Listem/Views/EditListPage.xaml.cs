@@ -1,6 +1,6 @@
-﻿using Listem.Contracts;
-using Listem.Models;
+﻿using Listem.Models;
 using Listem.ViewModel;
+using ListType = Listem.Models.ListType;
 
 namespace Listem.Views;
 

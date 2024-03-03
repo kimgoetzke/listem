@@ -1,8 +1,8 @@
-using Listem.Contracts;
 using Listem.Models;
 using Listem.Utilities;
 using SQLite;
 using static Listem.Services.ICategoryService;
+using Category = Listem.Models.Category;
 
 namespace Listem.Services;
 

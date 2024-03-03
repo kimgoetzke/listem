@@ -1,6 +1,6 @@
-using Listem.Contracts;
 using Listem.Models;
 using Listem.Utilities;
+using Item = Listem.Models.Item;
 
 namespace Listem.Services;
 
