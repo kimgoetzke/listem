@@ -100,6 +100,15 @@ public partial class MainViewModel : ObservableObject
         Lists.Add(newList);
         Notifier.ShowToast($"Added: {newList.Name}");
         Logger.Log($"Added list: {newList.ToLoggableString()}");
+        SortLists();
+    }
+
+    private void SortLists()
+    {
+        Lists = new ObservableCollection<ObservableItemList>(
+            Lists.OrderBy(l => l.UpdatedOn).Reverse()
+        );
+        OnPropertyChanged(nameof(Lists));
     }
 
     [RelayCommand]
