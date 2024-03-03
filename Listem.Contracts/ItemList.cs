@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace Listem.Models;
+namespace Listem.Contracts;
 
 public class ItemList
 {
@@ -11,17 +11,6 @@ public class ItemList
     public DateTime AddedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
 
-    public static ItemList From(ObservableItemList observableItemList)
-    {
-        return new ItemList
-        {
-            Id = observableItemList.Id,
-            Name = observableItemList.Name,
-            ListType = observableItemList.ListType,
-            AddedOn = observableItemList.AddedOn,
-            UpdatedOn = observableItemList.UpdatedOn
-        };
-    }
 
     public override string ToString()
     {

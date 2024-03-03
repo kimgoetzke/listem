@@ -14,6 +14,10 @@
 # Other ignored files
 /Listem/obj/
 /Listem/bin/
+/Listem.API/obj/
+/Listem.API/bin/
+/Listem.Contracts/obj/
+/Listem.Contracts/bin/
 /.idea/
 /UITests/obj/
 /UITests/bin/

@@ -1,3 +1,4 @@
+using Listem.Contracts;
 using Listem.Models;
 using Listem.Utilities;
 
@@ -27,7 +28,7 @@ public class ItemService(IDatabaseProvider db) : IItemService
     public async Task CreateOrUpdateAsync(ObservableItem observableItem)
     {
         var connection = await db.GetConnection();
-        var item = Item.From(observableItem);
+        var item = observableItem.ToItem();
         var allItems = await connection.Table<Item>().ToListAsync();
         var existingItem = allItems.FirstOrDefault(i => i.Id == observableItem.Id);
         if (existingItem != null)
@@ -45,7 +46,7 @@ public class ItemService(IDatabaseProvider db) : IItemService
     {
         Logger.Log($"Removing item: {observableItem.Title} {observableItem.Id}");
         var connection = await db.GetConnection();
-        var item = Item.From(observableItem);
+        var item = observableItem.ToItem();
         await connection.DeleteAsync(item);
     }
 

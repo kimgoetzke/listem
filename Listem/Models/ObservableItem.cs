@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Listem.Contracts;
 using Listem.Services;
 
 namespace Listem.Models;
@@ -36,6 +37,20 @@ public partial class ObservableItem(string listId) : ObservableObject
             IsImportant = item.IsImportant,
             CategoryName = item.CategoryName,
             AddedOn = item.AddedOn
+        };
+    }
+
+    public Item ToItem()
+    {
+        return new Item
+        {
+            Id = Id,
+            ListId = ListId,
+            Title = Title,
+            Quantity = Quantity,
+            IsImportant = IsImportant,
+            CategoryName = CategoryName,
+            AddedOn = AddedOn
         };
     }
 

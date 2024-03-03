@@ -1,4 +1,5 @@
-﻿using Listem.Models;
+﻿using Listem.Contracts;
+using Listem.Models;
 using Listem.Utilities;
 using SQLite;
 
@@ -21,7 +22,7 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
     public async Task CreateOrUpdateAsync(ObservableItemList observableItemList)
     {
         var connection = await db.GetConnection();
-        var list = ItemList.From(observableItemList);
+        var list = observableItemList.ToItemList();
         var existingList = await connection
             .Table<ItemList>()
             .Where(i => i.Id == observableItemList.Id)
@@ -55,7 +56,7 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
         {
             Name = ICategoryService.DefaultCategoryName
         };
-        var category = Category.From(observableCategory);
+        var category = observableCategory.ToCategory();
         await connection.InsertAsync(category).ConfigureAwait(false);
         Logger.Log($"Added category '{ICategoryService.DefaultCategoryName}' to list {listId}");
     }
@@ -65,7 +66,7 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
         // TODO: Delete all categories and items associated with this list
         Logger.Log($"Removing list: '{observableItemList.Name}' {observableItemList.Id}");
         var connection = await db.GetConnection();
-        var list = ItemList.From(observableItemList);
+        var list = observableItemList.ToItemList();
         await connection.DeleteAsync(list);
     }
 

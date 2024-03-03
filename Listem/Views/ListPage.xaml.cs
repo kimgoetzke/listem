@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
+using Listem.Contracts;
 using Listem.Models;
 using Listem.Utilities;
 using Listem.ViewModel;

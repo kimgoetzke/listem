@@ -1,4 +1,5 @@
-﻿using Listem.Models;
+﻿using Listem.Contracts;
+using Listem.Models;
 using Listem.ViewModel;
 
 namespace Listem.Views;

@@ -1,4 +1,4 @@
-using Listem.Models;
+using Listem.Contracts;
 using Listem.Utilities;
 using SQLite;
 

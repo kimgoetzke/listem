@@ -1,3 +1,4 @@
+using Listem.Contracts;
 using Listem.Models;
 using Listem.Utilities;
 using SQLite;
@@ -51,7 +52,7 @@ public class CategoryService(IDatabaseProvider db) : ICategoryService
     public async Task CreateOrUpdateAsync(ObservableCategory observableCategory)
     {
         var connection = await db.GetConnection();
-        var category = Category.From(observableCategory);
+        var category = observableCategory.ToCategory();
         var existingCategory = await connection
             .Table<Category>()
             .Where(c => c.Id == observableCategory.Id)
@@ -71,7 +72,7 @@ public class CategoryService(IDatabaseProvider db) : ICategoryService
     {
         Logger.Log($"Removing category: {observableCategory.ToLoggableString()}");
         var connection = await db.GetConnection();
-        var category = Category.From(observableCategory);
+        var category = observableCategory.ToCategory();
         await connection.DeleteAsync(category);
     }
 

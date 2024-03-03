@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem", "Listem\Listem.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITests", "UITests\UITests.csproj", "{A68F80BB-8144-46FD-889B-6C376D928570}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.API", "Listem.API\Listem.API.csproj", "{CDF703EE-C292-4415-94D7-E4BEC9DAA171}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.Contracts", "Listem.Contracts\Listem.Contracts.csproj", "{D5A0274C-66D1-4E6B-89A4-47FA469101CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{A68F80BB-8144-46FD-889B-6C376D928570}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A68F80BB-8144-46FD-889B-6C376D928570}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A68F80BB-8144-46FD-889B-6C376D928570}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF703EE-C292-4415-94D7-E4BEC9DAA171}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF703EE-C292-4415-94D7-E4BEC9DAA171}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF703EE-C292-4415-94D7-E4BEC9DAA171}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF703EE-C292-4415-94D7-E4BEC9DAA171}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5A0274C-66D1-4E6B-89A4-47FA469101CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5A0274C-66D1-4E6B-89A4-47FA469101CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5A0274C-66D1-4E6B-89A4-47FA469101CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5A0274C-66D1-4E6B-89A4-47FA469101CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

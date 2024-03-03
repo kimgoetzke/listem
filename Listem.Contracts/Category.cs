@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace Listem.Models;
+namespace Listem.Contracts;
 
 public class Category
 {
@@ -8,16 +8,6 @@ public class Category
     public string Id { get; init; } = null!;
     public string Name { get; init; } = null!;
     public string ListId { get; init; } = null!;
-
-    public static Category From(ObservableCategory observableCategory)
-    {
-        return new Category
-        {
-            Id = observableCategory.Id,
-            Name = observableCategory.Name,
-            ListId = observableCategory.ListId
-        };
-    }
 
     public override string ToString()
     {

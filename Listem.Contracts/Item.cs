@@ -1,6 +1,6 @@
 using SQLite;
 
-namespace Listem.Models;
+namespace Listem.Contracts;
 
 public class Item
 {
@@ -12,20 +12,6 @@ public class Item
     public bool IsImportant { get; init; }
     public DateTime AddedOn { get; init; }
     public string CategoryName { get; set; } = null!;
-
-    public static Item From(ObservableItem observableItem)
-    {
-        return new Item
-        {
-            Id = observableItem.Id,
-            ListId = observableItem.ListId,
-            Title = observableItem.Title,
-            Quantity = observableItem.Quantity,
-            IsImportant = observableItem.IsImportant,
-            CategoryName = observableItem.CategoryName,
-            AddedOn = observableItem.AddedOn
-        };
-    }
 
     public override string ToString()
     {
