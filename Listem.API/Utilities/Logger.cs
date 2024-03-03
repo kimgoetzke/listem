@@ -8,9 +8,4 @@ public static class Logger
     {
         Console.WriteLine($"{Prefix} {message}");
     }
-    
-    public static void Warn(string message)
-    {
-        Console.WriteLine($"{Prefix} {message}");
-    }
 }

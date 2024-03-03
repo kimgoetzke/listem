@@ -24,10 +24,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Listem.Contracts\Listem.Contracts.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Folder Include="Database\" />
     </ItemGroup>
 

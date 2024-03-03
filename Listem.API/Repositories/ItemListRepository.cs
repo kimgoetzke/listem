@@ -1,20 +1,21 @@
-﻿using Listem.API.Utilities;
-using Listem.Contracts;
+﻿using Listem.API.Contracts;
+using Listem.API.Utilities;
 
 namespace Listem.API.Repositories;
 
+#pragma warning disable CS1998
 public class ItemListRepository : IItemListRepository
 {
     private readonly List<ItemList> _itemLists = [];
 
-    public Task<List<ItemList>> GetAllAsync()
+    public Task<List<ItemList>> GetAllAsync(string userId)
     {
-        return Task.FromResult(_itemLists);
+        return Task.FromResult(_itemLists.FindAll(i => i.OwnerId == userId));
     }
 
-    public Task<ItemList?> GetByIdAsync(string id)
+    public Task<ItemList?> GetByIdAsync(string userId, string listId)
     {
-        var itemList = _itemLists.FirstOrDefault(i => i.Id == id);
+        var itemList = _itemLists.FirstOrDefault(i => i.Id == listId && i.OwnerId == userId);
         Logger.Log($"Retrieved list: {itemList?.ToLoggableString() ?? "null"}");
         return Task.FromResult(itemList);
     }
@@ -47,4 +48,5 @@ public class ItemListRepository : IItemListRepository
         Logger.Log($"Removing list: '{itemList.Name}' {itemList.Id}");
         return _itemLists.Remove(itemList);
     }
+#pragma warning restore CS1998
 }

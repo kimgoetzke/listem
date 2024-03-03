@@ -1,29 +1,34 @@
-﻿using Listem.Contracts;
-
-namespace Listem.API.Contracts;
+﻿namespace Listem.API.Contracts;
 
 public class ItemListRequest
 {
     public string Name { get; init; } = null!;
     public ListType ListType { get; init; } = ListType.Standard;
-    public DateTime AddedOn { get; init; } = DateTime.Now;
-    public DateTime UpdatedOn { get; init; } = DateTime.Now;
 
-    public ItemList ToItemList()
+    public ItemList ToItemList(string userId)
     {
         var id = "LST~" + Guid.NewGuid().ToString().Replace("-", "");
-        return ToItemList(id);
-    }
-
-    public ItemList ToItemList(string id)
-    {
         return new ItemList
         {
             Id = id,
             Name = Name,
             ListType = ListType,
-            AddedOn = AddedOn,
-            UpdatedOn = UpdatedOn
+            OwnerId = userId,
+            AddedOn = DateTime.Now,
+            UpdatedOn = DateTime.Now
+        };
+    }
+
+    public ItemList ToItemList(ItemList existingList)
+    {
+        return new ItemList
+        {
+            Id = existingList.Id,
+            Name = Name,
+            ListType = ListType,
+            OwnerId = existingList.OwnerId,
+            AddedOn = existingList.AddedOn,
+            UpdatedOn = DateTime.Now
         };
     }
 }

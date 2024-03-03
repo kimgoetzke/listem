@@ -1,8 +1,8 @@
 using Listem.API.Contracts;
 using Listem.API.Controllers;
+using Listem.API.Filters;
 using Listem.API.Repositories;
 using Listem.API.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -21,10 +21,15 @@ builder.Services.AddHttpLogging(logging =>
     logging.ResponseBodyLogLimit = 4096;
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<HttpResponseExceptionFilter>();
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "Listem API", Version = "v1" });
     options.AddSecurityDefinition(
         "Bearer",
         new OpenApiSecurityScheme
@@ -32,7 +37,8 @@ builder.Services.AddSwaggerGen(options =>
             Description = "Authorization header using the Bearer scheme",
             Name = "Authorization",
             In = ParameterLocation.Header,
-            Type = SecuritySchemeType.ApiKey
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer"
         }
     );
     options.AddSecurityRequirement(
@@ -62,7 +68,6 @@ builder
     .AddEntityFrameworkStores<ListemDbContext>()
     .AddApiEndpoints();
 
-builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
 builder.Services.AddSingleton<ItemListService>();
 builder.Services.AddSingleton<IItemListRepository, ItemListRepository>();
 builder.Services.AddSingleton<ItemListController>();
