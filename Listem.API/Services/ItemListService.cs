@@ -1,6 +1,6 @@
 using Listem.API.Contracts;
+using Listem.API.Exceptions;
 using Listem.API.Repositories;
-using Listem.API.Utilities;
 
 namespace Listem.API.Services;
 
@@ -15,14 +15,18 @@ public class ItemListService(IItemListRepository itemListRepository)
     public async Task<ItemListResponse?> GetByIdAsync(string userId, string id)
     {
         var fetched = await itemListRepository.GetByIdAsync(userId, id);
-        return fetched is not null ? ItemListResponse.FromItemList(fetched) : null;
+        return fetched is not null
+            ? ItemListResponse.FromItemList(fetched)
+            : throw new NotFoundException("List not found");
     }
 
     public async Task<ItemListResponse?> CreateAsync(string userId, ItemListRequest itemListRequest)
     {
         var toCreate = itemListRequest.ToItemList(userId);
         var result = await itemListRepository.CreateAsync(toCreate);
-        return ItemListResponse.FromItemList(result!);
+        return result is not null
+            ? ItemListResponse.FromItemList(result)
+            : throw new ConflictException("List cannot be created, it already exists");
     }
 
     public async Task<ItemListResponse?> UpdateAsync(
@@ -33,36 +37,24 @@ public class ItemListService(IItemListRepository itemListRepository)
     {
         var existing = await itemListRepository.GetByIdAsync(userId, id);
 
-        if (existing is not null)
-        {
-            var toUpdate = requested.ToItemList(existing);
-            var result = await itemListRepository.UpdateAsync(toUpdate);
+        if (existing is null)
+            throw new NotFoundException($"Failed to update list {id} because it does not exist");
 
-            if (result is not null)
-                return ItemListResponse.FromItemList(result);
+        var toUpdate = requested.ToItemList(existing);
+        var result = await itemListRepository.UpdateAsync(toUpdate);
 
-            Logger.Log($"Failed to update list with {id} even though it was found");
-            return null;
-        }
+        if (result is not null)
+            return ItemListResponse.FromItemList(result);
 
-        Logger.Log($"Failed to update list with {id} because it does not exist");
-        return null;
+        throw new NotFoundException($"Failed to update list {id} even though it was found");
     }
 
-    public async Task<bool> DeleteAsync(string userId, string id)
+    public async Task DeleteByIdAsync(string userId, string id)
     {
-        var existing = await itemListRepository.GetByIdAsync(userId, id);
-        if (existing is null)
+        var hasBeenDeleted = await itemListRepository.DeleteByIdAsync(userId, id);
+        if (!hasBeenDeleted)
         {
-            Logger.Log($"Failed to delete list with {id} because it does not exist");
-            return false;
+            throw new NotFoundException($"Failed to delete list {id}");
         }
-
-        var hasSucceeded = await itemListRepository.DeleteAsync(existing);
-        if (!hasSucceeded)
-        {
-            Logger.Log($"Failed to delete list with id {id} even though it was found");
-        }
-        return hasSucceeded;
     }
 }

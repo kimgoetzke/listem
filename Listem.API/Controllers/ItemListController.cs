@@ -16,7 +16,7 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
     [HttpGet, Authorize]
     public async Task<IActionResult> GetAll()
     {
-        var userId = ValidateUserRequestOrThrow("GET all lists");
+        var userId = ValidateUserRequestOrThrow("GET all");
         var itemLists = await itemListService.GetAllAsync(userId);
         return Ok(itemLists);
     }
@@ -24,27 +24,17 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
     [HttpGet("{id}"), Authorize]
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
-        var userId = ValidateUserRequestOrThrow("GET list by id");
+        var userId = ValidateUserRequestOrThrow($"GET {id}");
         var itemList = await itemListService.GetByIdAsync(userId, id);
-        if (itemList is null)
-        {
-            return NotFound();
-        }
-
         return Ok(itemList);
     }
 
     [HttpPost, Authorize]
     public async Task<IActionResult> Create([FromBody] ItemListRequest itemList)
     {
-        var userId = ValidateUserRequestOrThrow("POST list");
+        var userId = ValidateUserRequestOrThrow($"POST {itemList}");
         var createdItemList = await itemListService.CreateAsync(userId, itemList);
-        if (createdItemList is null)
-        {
-            return Conflict();
-        }
-
-        return Created($"api/item-list/{createdItemList.Id}", createdItemList);
+        return Created($"api/item-list/{createdItemList!.Id}", createdItemList);
     }
 
     [HttpPut("{id}"), Authorize]
@@ -53,21 +43,17 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
         [FromBody] ItemListRequest itemList
     )
     {
-        var userId = ValidateUserRequestOrThrow("UPDATE list");
+        var userId = ValidateUserRequestOrThrow($"UPDATE {itemList}");
         var updatedItemList = await itemListService.UpdateAsync(userId, id, itemList);
-        if (updatedItemList is null)
-        {
-            return NotFound();
-        }
-
         return Ok(updatedItemList);
     }
 
-    [HttpDelete("{listId}"), Authorize]
-    public async Task<IActionResult> Delete([FromRoute] string listId)
+    [HttpDelete("{id}"), Authorize]
+    public async Task<IActionResult> Delete([FromRoute] string id)
     {
-        var userId = ValidateUserRequestOrThrow("DELETE list");
-        return await itemListService.DeleteAsync(userId, listId) ? NoContent() : NotFound();
+        var userId = ValidateUserRequestOrThrow($"DELETE {id}");
+        await itemListService.DeleteByIdAsync(userId, id);
+        return NoContent();
     }
 
     private string ValidateUserRequestOrThrow(string message)
@@ -83,6 +69,6 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
 
         const string errorMessage = "User is not authenticated or cannot be identified";
         Logger.Log(errorMessage);
-        throw new HttpResponseException(HttpStatusCode.BadRequest, errorMessage);
+        throw new BadRequestException(errorMessage);
     }
 }

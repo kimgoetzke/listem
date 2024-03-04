@@ -1,4 +1,5 @@
 ﻿using Listem.API.Exceptions;
+using Listem.API.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -20,20 +21,19 @@ public class HttpResponseExceptionFilter(ProblemDetailsFactory factory)
         if (context.Exception is not HttpResponseException httpResponseException)
             return;
 
+        Logger.Log(httpResponseException.Message);
         var problemDetails = factory.CreateProblemDetails(
             context.HttpContext,
             (int)httpResponseException.StatusCode,
-            httpResponseException.StatusCode.ToString(),
+            httpResponseException.Title,
             null,
             httpResponseException.Message
         );
-
         context.Result = new ObjectResult(problemDetails)
         {
             StatusCode = (int)httpResponseException.StatusCode,
             ContentTypes = { "application/json" }
         };
-
         context.ExceptionHandled = true;
     }
 }

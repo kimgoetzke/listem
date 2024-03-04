@@ -9,4 +9,5 @@ public interface IItemListRepository
     Task<ItemList?> CreateAsync(ItemList itemList);
     Task<ItemList?> UpdateAsync(ItemList itemList);
     Task<bool> DeleteAsync(ItemList itemList);
+    Task<bool> DeleteByIdAsync(string userId, string listId);
 }

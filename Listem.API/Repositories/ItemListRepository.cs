@@ -48,5 +48,12 @@ public class ItemListRepository : IItemListRepository
         Logger.Log($"Removing list: '{itemList.Name}' {itemList.Id}");
         return _itemLists.Remove(itemList);
     }
+
+    public async Task<bool> DeleteByIdAsync(string userId, string listId)
+    {
+        // TODO: Delete all categories and items associated with this list
+        Logger.Log($"Removing list: {listId} by {userId}");
+        return _itemLists.RemoveAll(i => i.Id == listId && i.OwnerId == userId) > 0;
+    }
 #pragma warning restore CS1998
 }
