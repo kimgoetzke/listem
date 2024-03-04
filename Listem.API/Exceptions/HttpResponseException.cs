@@ -1,8 +1,11 @@
-﻿namespace Listem.API.Exceptions;
+﻿using System.Net;
 
-public class HttpResponseException(int statusCode, object? value = null) : Exception
+namespace Listem.API.Exceptions;
+
+public class HttpResponseException(HttpStatusCode statusCode, string message, string? value = null)
+    : Exception
 {
-    public int StatusCode { get; } = statusCode;
-
+    public HttpStatusCode StatusCode { get; } = statusCode;
+    public new string Message { get; } = message;
     public object? Value { get; } = value;
 }

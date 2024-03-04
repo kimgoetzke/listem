@@ -1,10 +1,15 @@
 ﻿using Listem.API.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+
+// ReSharper disable ClassNeverInstantiated.Global
 
 namespace Listem.API.Filters;
 
-public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
+public class HttpResponseExceptionFilter(ProblemDetailsFactory factory)
+    : IActionFilter,
+        IOrderedFilter
 {
     public int Order => int.MaxValue - 10;
 
@@ -15,9 +20,18 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
         if (context.Exception is not HttpResponseException httpResponseException)
             return;
 
-        context.Result = new ObjectResult(httpResponseException.Value)
+        var problemDetails = factory.CreateProblemDetails(
+            context.HttpContext,
+            (int)httpResponseException.StatusCode,
+            httpResponseException.StatusCode.ToString(),
+            null,
+            httpResponseException.Message
+        );
+
+        context.Result = new ObjectResult(problemDetails)
         {
-            StatusCode = httpResponseException.StatusCode
+            StatusCode = (int)httpResponseException.StatusCode,
+            ContentTypes = { "application/json" }
         };
 
         context.ExceptionHandled = true;

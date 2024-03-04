@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.Net;
+using System.Security.Claims;
 using Listem.API.Contracts;
 using Listem.API.Exceptions;
 using Listem.API.Services;
@@ -43,7 +44,7 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
             return Conflict();
         }
 
-        return Ok(createdItemList);
+        return Created($"api/item-list/{createdItemList.Id}", createdItemList);
     }
 
     [HttpPut("{id}"), Authorize]
@@ -82,6 +83,6 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
 
         const string errorMessage = "User is not authenticated or cannot be identified";
         Logger.Log(errorMessage);
-        throw new HttpResponseException(400, errorMessage);
+        throw new HttpResponseException(HttpStatusCode.BadRequest, errorMessage);
     }
 }
