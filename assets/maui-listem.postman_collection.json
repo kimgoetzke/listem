@@ -1,0 +1,418 @@
+{
+	"info": {
+		"_postman_id": "838d926e-51f0-4493-ad4f-4b7234a3d72c",
+		"name": "maui-listem",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25192558"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "/register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(pm.request.body.raw);\r",
+									"var email = jsonData.email;\r",
+									"var password = jsonData.password;\r",
+									"pm.collectionVariables.set(\"currentPassword\", password);\r",
+									"pm.collectionVariables.set(\"currentUser\", email);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{$randomExampleEmail}}\",\r\n  \"password\": \"{{defaultPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let res = pm.response.json();\r",
+									"pm.collectionVariables.set(\"currentAccessToken\", res.accessToken);\r",
+									"pm.collectionVariables.set(\"currentRefreshToken\", res.refreshToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{currentUser}}\",\r\n  \"password\": \"{{currentPassword}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Item Lists",
+			"item": [
+				{
+					"name": "/api/item-list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/item-list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"item-list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/item-list/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/item-list/{{currentItemList}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"item-list",
+								"{{currentItemList}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/item-list/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"updated {{$randomNoun}} list\",\r\n  \"listType\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/item-list/{{currentItemList}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"item-list",
+								"{{currentItemList}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/item-list/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/item-list/{{currentItemList}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"item-list",
+								"{{currentItemList}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/api/item-list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"    let res = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"currentItemList\", res.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{$randomNoun}} list\",\r\n  \"listType\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/item-list",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"item-list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "currentUser",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "currentPassword",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "currentAccessToken",
+			"value": ""
+		},
+		{
+			"key": "currentRefreshToken",
+			"value": ""
+		},
+		{
+			"key": "defaultPassword",
+			"value": "Password1!",
+			"type": "string"
+		},
+		{
+			"key": "currentItemList",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
