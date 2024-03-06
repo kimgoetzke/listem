@@ -1,8 +1,8 @@
 using Listem.API.Contracts;
-using Listem.API.Controllers;
+using Listem.API.Domain.Categories;
+using Listem.API.Domain.ItemLists;
 using Listem.API.Filters;
 using Listem.API.Repositories;
-using Listem.API.Services;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -68,9 +68,12 @@ builder
     .AddEntityFrameworkStores<ListemDbContext>()
     .AddApiEndpoints();
 
-builder.Services.AddSingleton<ItemListService>();
-builder.Services.AddSingleton<IItemListRepository, ItemListRepository>();
+builder.Services.AddSingleton<IItemListService, ItemListService>();
+builder.Services.AddSingleton<IItemListRepository, SimpleItemListRepository>();
 builder.Services.AddSingleton<ItemListController>();
+builder.Services.AddSingleton<ICategoryService, CategoryService>();
+builder.Services.AddSingleton<ICategoryRepository, SimpleCategoryRepository>();
+builder.Services.AddSingleton<CategoryController>();
 
 var app = builder.Build();
 

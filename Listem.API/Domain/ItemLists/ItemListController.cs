@@ -1,17 +1,16 @@
-﻿using System.Net;
-using System.Security.Claims;
-using Listem.API.Contracts;
+﻿using System.Security.Claims;
+using Listem.API.Domain.Categories;
 using Listem.API.Exceptions;
-using Listem.API.Services;
 using Listem.API.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Listem.API.Controllers;
+namespace Listem.API.Domain.ItemLists;
 
 [Route("api/item-list")]
 [ApiController]
-public class ItemListController(ItemListService itemListService) : ControllerBase
+public class ItemListController(IItemListService itemListService, ICategoryService categoryService)
+    : ControllerBase
 {
     [HttpGet, Authorize]
     public async Task<IActionResult> GetAll()
@@ -34,7 +33,9 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
     {
         var userId = ValidateUserRequestOrThrow($"POST {itemList}");
         var createdItemList = await itemListService.CreateAsync(userId, itemList);
-        return Created($"api/item-list/{createdItemList!.Id}", createdItemList);
+        var defaultCategory = new CategoryRequest { Name = ICategoryService.DefaultCategoryName };
+        await categoryService.CreateAsync(userId, createdItemList!.Id, defaultCategory);
+        return Created($"api/item-list/{createdItemList.Id}", createdItemList);
     }
 
     [HttpPut("{id}"), Authorize]
@@ -52,6 +53,7 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
         var userId = ValidateUserRequestOrThrow($"DELETE {id}");
+        await categoryService.DeleteAllByListIdAsync(userId, id);
         await itemListService.DeleteByIdAsync(userId, id);
         return NoContent();
     }
@@ -59,11 +61,14 @@ public class ItemListController(ItemListService itemListService) : ControllerBas
     private string ValidateUserRequestOrThrow(string message)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
+        var user =
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+                ? User.FindFirst(ClaimTypes.Email)?.Value
+                : userId;
 
         if (userId is not null)
         {
-            Logger.Log($"Request from {email}: {message}");
+            Logger.Log($"Request from {user}: {message}");
             return userId;
         }
 

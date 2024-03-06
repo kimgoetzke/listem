@@ -1,4 +1,10 @@
-﻿namespace Listem.API.Contracts;
+﻿using Listem.API.Contracts;
+using Listem.API.Utilities;
+
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
+
+namespace Listem.API.Domain.ItemLists;
 
 public class ItemListRequest
 {
@@ -7,10 +13,9 @@ public class ItemListRequest
 
     public ItemList ToItemList(string userId)
     {
-        var id = "LST~" + Guid.NewGuid().ToString().Replace("-", "");
         return new ItemList
         {
-            Id = id,
+            Id = IdProvider.NewId(nameof(ListType)),
             Name = Name,
             ListType = ListType,
             OwnerId = userId,
@@ -19,16 +24,21 @@ public class ItemListRequest
         };
     }
 
-    public ItemList ToItemList(ItemList existingList)
+    public ItemList ToItemList(ItemList list)
     {
         return new ItemList
         {
-            Id = existingList.Id,
+            Id = list.Id,
             Name = Name,
             ListType = ListType,
-            OwnerId = existingList.OwnerId,
-            AddedOn = existingList.AddedOn,
+            OwnerId = list.OwnerId,
+            AddedOn = list.AddedOn,
             UpdatedOn = DateTime.Now
         };
+    }
+
+    public override string ToString()
+    {
+        return $"[ItemListRequest] '{Name}', type: {ListType}";
     }
 }
