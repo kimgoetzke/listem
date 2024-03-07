@@ -2,7 +2,7 @@
 
 namespace Listem.API.Domain.ItemLists;
 
-public class ItemListResponse
+public class ListResponse
 {
     public string Id { get; private init; } = null!;
     public string Name { get; private init; } = null!;
@@ -10,9 +10,9 @@ public class ItemListResponse
     public DateTime AddedOn { get; private init; }
     public DateTime UpdatedOn { get; private init; }
 
-    public static ItemListResponse FromItemList(ItemList list)
+    public static ListResponse FromItemList(List list)
     {
-        return new ItemListResponse
+        return new ListResponse
         {
             Id = list.Id,
             Name = list.Name,
@@ -24,6 +24,6 @@ public class ItemListResponse
 
     public override string ToString()
     {
-        return $"[ItemListResponse] '{Name}' {Id}, type: {ListType}";
+        return $"[ListResponse] '{Name}' {Id}, type: {ListType}";
     }
 }

@@ -15,8 +15,8 @@ public class CategoryRequest
         {
             Id = IdProvider.NewId(nameof(Category)),
             Name = Name,
-            OwnerId = userId,
             ListId = listId,
+            OwnerId = userId,
             AddedOn = DateTime.Now,
             UpdatedOn = DateTime.Now
         };
@@ -28,8 +28,8 @@ public class CategoryRequest
         {
             Id = category.Id,
             Name = Name,
-            OwnerId = category.OwnerId,
             ListId = category.ListId,
+            OwnerId = category.OwnerId,
             AddedOn = category.AddedOn,
             UpdatedOn = DateTime.Now
         };

@@ -6,16 +6,16 @@ using Listem.API.Utilities;
 
 namespace Listem.API.Domain.ItemLists;
 
-public class ItemListRequest
+public class ListRequest
 {
     public string Name { get; init; } = null!;
     public ListType ListType { get; init; } = ListType.Standard;
 
-    public ItemList ToItemList(string userId)
+    public List ToItemList(string userId)
     {
-        return new ItemList
+        return new List
         {
-            Id = IdProvider.NewId(nameof(ListType)),
+            Id = IdProvider.NewId(nameof(ListRequest)),
             Name = Name,
             ListType = ListType,
             OwnerId = userId,
@@ -24,9 +24,9 @@ public class ItemListRequest
         };
     }
 
-    public ItemList ToItemList(ItemList list)
+    public List ToItemList(List list)
     {
-        return new ItemList
+        return new List
         {
             Id = list.Id,
             Name = Name,
@@ -39,6 +39,6 @@ public class ItemListRequest
 
     public override string ToString()
     {
-        return $"[ItemListRequest] '{Name}', type: {ListType}";
+        return $"[ListRequest] '{Name}', type: {ListType}";
     }
 }

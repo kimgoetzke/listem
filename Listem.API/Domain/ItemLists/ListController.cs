@@ -7,16 +7,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Listem.API.Domain.ItemLists;
 
-[Route("api/item-list")]
+[Route("api/list")]
 [ApiController]
-public class ItemListController(IItemListService itemListService, ICategoryService categoryService)
+public class ListController(IListService listService, ICategoryService categoryService)
     : ControllerBase
 {
     [HttpGet, Authorize]
     public async Task<IActionResult> GetAll()
     {
         var userId = ValidateUserRequestOrThrow("GET all");
-        var itemLists = await itemListService.GetAllAsync(userId);
+        var itemLists = await listService.GetAllAsync(userId);
         return Ok(itemLists);
     }
 
@@ -24,28 +24,28 @@ public class ItemListController(IItemListService itemListService, ICategoryServi
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         var userId = ValidateUserRequestOrThrow($"GET {id}");
-        var itemList = await itemListService.GetByIdAsync(userId, id);
+        var itemList = await listService.GetByIdAsync(userId, id);
         return Ok(itemList);
     }
 
     [HttpPost, Authorize]
-    public async Task<IActionResult> Create([FromBody] ItemListRequest itemList)
+    public async Task<IActionResult> Create([FromBody] ListRequest list)
     {
-        var userId = ValidateUserRequestOrThrow($"POST {itemList}");
-        var createdItemList = await itemListService.CreateAsync(userId, itemList);
+        var userId = ValidateUserRequestOrThrow($"POST {list}");
+        var createdItemList = await listService.CreateAsync(userId, list);
         var defaultCategory = new CategoryRequest { Name = ICategoryService.DefaultCategoryName };
         await categoryService.CreateAsync(userId, createdItemList!.Id, defaultCategory);
-        return Created($"api/item-list/{createdItemList.Id}", createdItemList);
+        return Created($"api/list/{createdItemList.Id}", createdItemList);
     }
 
     [HttpPut("{id}"), Authorize]
     public async Task<IActionResult> Update(
         [FromRoute] string id,
-        [FromBody] ItemListRequest itemList
+        [FromBody] ListRequest list
     )
     {
-        var userId = ValidateUserRequestOrThrow($"UPDATE {itemList}");
-        var updatedItemList = await itemListService.UpdateAsync(userId, id, itemList);
+        var userId = ValidateUserRequestOrThrow($"UPDATE {list}");
+        var updatedItemList = await listService.UpdateAsync(userId, id, list);
         return Ok(updatedItemList);
     }
 
@@ -54,7 +54,7 @@ public class ItemListController(IItemListService itemListService, ICategoryServi
     {
         var userId = ValidateUserRequestOrThrow($"DELETE {id}");
         await categoryService.DeleteAllByListIdAsync(userId, id);
-        await itemListService.DeleteByIdAsync(userId, id);
+        await listService.DeleteByIdAsync(userId, id);
         return NoContent();
     }
 

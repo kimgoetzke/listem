@@ -9,7 +9,7 @@ namespace Listem.API.Domain.Categories;
 
 [Route("api/category")]
 [ApiController]
-public class CategoryController(ICategoryService categoryService, IItemListService itemListService)
+public class CategoryController(ICategoryService categoryService, IListService listService)
     : ControllerBase
 {
     [HttpGet, Authorize]
@@ -91,7 +91,7 @@ public class CategoryController(ICategoryService categoryService, IItemListServi
 
     private async Task ThrowIfListDoesNotExist(string userId, string listId)
     {
-        if (!await itemListService.ExistsAsync(userId, listId))
+        if (!await listService.ExistsAsync(userId, listId))
         {
             throw new NotFoundException($"List {listId} does not exist");
         }

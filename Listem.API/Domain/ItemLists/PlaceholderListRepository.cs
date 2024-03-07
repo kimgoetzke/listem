@@ -3,16 +3,16 @@
 namespace Listem.API.Domain.ItemLists;
 
 #pragma warning disable CS1998
-public class SimpleItemListRepository : IItemListRepository
+public class PlaceholderListRepository : IListRepository
 {
-    private readonly List<ItemList> _itemLists = [];
+    private readonly List<List> _itemLists = [];
 
-    public Task<List<ItemList>> GetAllAsync(string userId)
+    public Task<List<List>> GetAllAsync(string userId)
     {
         return Task.FromResult(_itemLists.FindAll(i => i.OwnerId == userId));
     }
 
-    public Task<ItemList?> GetByIdAsync(string userId, string listId)
+    public Task<List?> GetByIdAsync(string userId, string listId)
     {
         var itemList = _itemLists.FirstOrDefault(i => i.Id == listId && i.OwnerId == userId);
         Logger.Log($"Retrieved list: {itemList?.ToString() ?? "null"}");
@@ -24,22 +24,22 @@ public class SimpleItemListRepository : IItemListRepository
         return Task.FromResult(_itemLists.Exists(i => i.Id == listId && i.OwnerId == userId));
     }
 
-    public async Task<ItemList?> CreateAsync(ItemList itemList)
+    public async Task<List?> CreateAsync(List list)
     {
-        _itemLists.Add(itemList);
-        Logger.Log($"Added list: {itemList}");
-        return _itemLists.FirstOrDefault(i => i.Id == itemList.Id);
+        _itemLists.Add(list);
+        Logger.Log($"Added list: {list}");
+        return _itemLists.FirstOrDefault(i => i.Id == list.Id);
     }
 
-    public async Task<ItemList?> UpdateAsync(ItemList itemList)
+    public async Task<List?> UpdateAsync(List list)
     {
-        var existingList = _itemLists.FirstOrDefault(i => i.Id == itemList.Id);
+        var existingList = _itemLists.FirstOrDefault(i => i.Id == list.Id);
 
         if (existingList is null)
             return null;
 
-        existingList.Name = itemList.Name;
-        existingList.ListType = itemList.ListType;
+        existingList.Name = list.Name;
+        existingList.ListType = list.ListType;
         existingList.UpdatedOn = DateTime.Now;
         Logger.Log($"Updated list: {existingList}");
         return existingList;

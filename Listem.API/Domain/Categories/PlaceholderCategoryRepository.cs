@@ -3,7 +3,7 @@
 namespace Listem.API.Domain.Categories;
 
 #pragma warning disable CS1998
-public class SimpleCategoryRepository : ICategoryRepository
+public class PlaceholderCategoryRepository : ICategoryRepository
 {
     private readonly List<Category> _categories = [];
 
