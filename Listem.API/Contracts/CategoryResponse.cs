@@ -1,26 +1,11 @@
-﻿using Listem.API.Domain.Categories;
+﻿namespace Listem.API.Contracts;
 
-namespace Listem.API.Contracts;
-
-public class CategoryResponse
+public class CategoryResponse : Entity
 {
-    public string Id { get; private init; } = null!;
-    public string Name { get; private init; } = null!;
-    public string ListId { get; private init; } = null!;
-    public DateTime AddedOn { get; private init; }
-    public DateTime UpdatedOn { get; private init; }
-
-    public static CategoryResponse FromCategory(Category category)
-    {
-        return new CategoryResponse
-        {
-            Id = category.Id,
-            Name = category.Name,
-            ListId = category.ListId,
-            AddedOn = category.AddedOn,
-            UpdatedOn = category.UpdatedOn
-        };
-    }
+    public string Name { get; init; } = null!;
+    public string ListId { get; init; } = null!;
+    public DateTime AddedOn { get; init; }
+    public DateTime UpdatedOn { get; init; }
 
     public override string ToString()
     {

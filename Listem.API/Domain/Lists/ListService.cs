@@ -7,15 +7,15 @@ public class ListService(IListRepository listRepository) : IListService
 {
     public async Task<List<ListResponse>> GetAllAsync(string userId)
     {
-        var itemLists = await listRepository.GetAllAsync(userId);
-        return itemLists.Select(ListResponse.FromItemList).ToList();
+        var result = await listRepository.GetAllAsync(userId);
+        return result.Select(l => l.ToResponse()).ToList();
     }
 
     public async Task<ListResponse?> GetByIdAsync(string userId, string listId)
     {
-        var fetched = await listRepository.GetByIdAsync(userId, listId);
-        return fetched is not null
-            ? ListResponse.FromItemList(fetched)
+        var result = await listRepository.GetByIdAsync(userId, listId);
+        return result is not null
+            ? result.ToResponse()
             : throw new NotFoundException("List not found");
     }
 
@@ -26,7 +26,7 @@ public class ListService(IListRepository listRepository) : IListService
 
     public async Task<ListResponse?> CreateAsync(string userId, ListRequest listRequest)
     {
-        var toCreate = listRequest.ToItemList(userId);
+        var toCreate = List.From(listRequest, userId);
         var result = await listRepository.CreateAsync(toCreate);
 
         if (result is null)
@@ -34,7 +34,7 @@ public class ListService(IListRepository listRepository) : IListService
             throw new ConflictException("List cannot be created, it already exists");
         }
 
-        return ListResponse.FromItemList(result);
+        return result.ToResponse();
     }
 
     public async Task<ListResponse?> UpdateAsync(
@@ -50,11 +50,11 @@ public class ListService(IListRepository listRepository) : IListService
                 $"Failed to update list {listId} because it does not exist"
             );
 
-        var toUpdate = requested.ToItemList(existing);
-        var result = await listRepository.UpdateAsync(toUpdate);
+        existing.Update(requested);
+        var result = await listRepository.UpdateAsync(existing);
 
         if (result is not null)
-            return ListResponse.FromItemList(result);
+            return result.ToResponse();
 
         throw new NotFoundException($"Failed to update list {listId} even though it was found");
     }

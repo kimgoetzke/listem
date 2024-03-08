@@ -60,8 +60,12 @@ builder.Services.AddSwaggerGen(options =>
     );
 });
 
-builder.Services.AddDbContext<UserDbContext>(options => options.UseSqlite(connectionString));
-builder.Services.AddDbContext<ListemDbContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddDbContext<UserDbContext>(options =>
+{
+    // If not using SQLite, replace with other DB provider and add the following line to the options:
+    // Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "users");
+    options.UseSqlite(connectionString);
+});
 
 builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder();

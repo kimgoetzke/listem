@@ -1,6 +1,6 @@
 ﻿namespace Listem.API.Domain.Items;
 
-public interface IItemRepository
+internal interface IItemRepository
 {
     Task<List<Item>> GetAllAsync(string userId);
     Task<List<Item>> GetAllByListIdAsync(string userId, string listId);

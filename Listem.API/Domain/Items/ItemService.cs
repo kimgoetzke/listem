@@ -3,26 +3,26 @@ using Listem.API.Exceptions;
 
 namespace Listem.API.Domain.Items;
 
-public class ItemService(IItemRepository itemRepository) : IItemService
+internal class ItemService(IItemRepository itemRepository) : IItemService
 {
     public async Task<List<ItemResponse>> GetAllAsync(string userId)
     {
-        var categories = await itemRepository.GetAllAsync(userId);
-        return categories.Select(ItemResponse.FromItem).ToList();
+        var result = await itemRepository.GetAllAsync(userId);
+        return result.Select(i => i.ToResponse()).ToList();
     }
 
     public async Task<List<ItemResponse>> GetAllByListIdAsync(string userId, string listId)
     {
-        var categories = await itemRepository.GetAllByListIdAsync(userId, listId);
-        return categories.Select(ItemResponse.FromItem).ToList();
+        var result = await itemRepository.GetAllByListIdAsync(userId, listId);
+        return result.Select(i => i.ToResponse()).ToList();
     }
 
     public async Task<ItemResponse?> CreateAsync(string userId, string listId, ItemRequest item)
     {
-        var toCreate = item.ToItem(userId, listId);
+        var toCreate = Item.From(item, userId, listId);
         var result = await itemRepository.CreateAsync(toCreate);
         return result is not null
-            ? ItemResponse.FromItem(result)
+            ? result.ToResponse()
             : throw new ConflictException("Item cannot be created, it already exists");
     }
 
@@ -30,7 +30,7 @@ public class ItemService(IItemRepository itemRepository) : IItemService
         string userId,
         string listId,
         string itemId,
-        ItemRequest requested
+        ItemRequest itemRequest
     )
     {
         var existing = await itemRepository.GetByIdAsync(userId, itemId);
@@ -45,12 +45,12 @@ public class ItemService(IItemRepository itemRepository) : IItemService
                 $"Failed to update item {itemId} because it does not belong to list {listId}"
             );
 
-        var toUpdate = requested.ToItem(existing);
-        var result = await itemRepository.UpdateAsync(toUpdate);
+        existing.Update(itemRequest);
+        var result = await itemRepository.UpdateAsync(existing);
 
         if (result is not null)
         {
-            return ItemResponse.FromItem(result);
+            return result.ToResponse();
         }
 
         throw new NotFoundException($"Failed to update item {itemId} even though it was found");

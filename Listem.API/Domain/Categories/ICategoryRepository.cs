@@ -1,6 +1,6 @@
 ﻿namespace Listem.API.Domain.Categories;
 
-public interface ICategoryRepository
+internal interface ICategoryRepository
 {
     Task<List<Category>> GetAllAsync(string userId);
     Task<List<Category>> GetAllByListIdAsync(string userId, string listId);

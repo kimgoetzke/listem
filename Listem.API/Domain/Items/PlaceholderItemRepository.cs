@@ -3,7 +3,7 @@
 namespace Listem.API.Domain.Items;
 
 #pragma warning disable CS1998
-public class PlaceholderItemRepository : IItemRepository
+internal class PlaceholderItemRepository : IItemRepository
 {
     private readonly List<Item> _items = [];
 

@@ -63,6 +63,7 @@ To run the tests:
 ## How to use the backend
 
 ```shell
+cd Listem.API
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
