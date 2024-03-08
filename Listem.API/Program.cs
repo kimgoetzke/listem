@@ -1,7 +1,7 @@
 using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
-using Listem.API.Domain.ItemLists;
 using Listem.API.Domain.Items;
+using Listem.API.Domain.Lists;
 using Listem.API.Filters;
 using Listem.API.Repositories;
 using Microsoft.AspNetCore.HttpLogging;
@@ -60,13 +60,14 @@ builder.Services.AddSwaggerGen(options =>
     );
 });
 
+builder.Services.AddDbContext<UserDbContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddDbContext<ListemDbContext>(options => options.UseSqlite(connectionString));
 
 builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder();
 builder
     .Services.AddIdentityCore<ListemUser>()
-    .AddEntityFrameworkStores<ListemDbContext>()
+    .AddEntityFrameworkStores<UserDbContext>()
     .AddApiEndpoints();
 
 builder.Services.AddSingleton<IListService, ListService>();

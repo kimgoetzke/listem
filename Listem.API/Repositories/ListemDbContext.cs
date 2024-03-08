@@ -1,6 +1,6 @@
 ﻿using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
-using Listem.API.Domain.ItemLists;
+using Listem.API.Domain.Lists;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

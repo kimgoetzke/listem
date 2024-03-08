@@ -1,10 +1,10 @@
-﻿using Listem.API.Contracts;
+﻿using Listem.API.Domain.Lists;
 using Listem.API.Utilities;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Listem.API.Domain.ItemLists;
+namespace Listem.API.Contracts;
 
 public class ListRequest
 {

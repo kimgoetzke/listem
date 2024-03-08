@@ -1,6 +1,7 @@
+using Listem.API.Contracts;
 using Listem.API.Exceptions;
 
-namespace Listem.API.Domain.ItemLists;
+namespace Listem.API.Domain.Lists;
 
 public class ListService(IListRepository listRepository) : IListService
 {
@@ -27,10 +28,13 @@ public class ListService(IListRepository listRepository) : IListService
     {
         var toCreate = listRequest.ToItemList(userId);
         var result = await listRepository.CreateAsync(toCreate);
-        // await CreateDefaultCategory(itemList.Id);
-        return result is not null
-            ? ListResponse.FromItemList(result)
-            : throw new ConflictException("List cannot be created, it already exists");
+
+        if (result is null)
+        {
+            throw new ConflictException("List cannot be created, it already exists");
+        }
+
+        return ListResponse.FromItemList(result);
     }
 
     public async Task<ListResponse?> UpdateAsync(

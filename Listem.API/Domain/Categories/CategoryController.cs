@@ -1,16 +1,17 @@
-﻿using System.Security.Claims;
-using Listem.API.Domain.ItemLists;
-using Listem.API.Exceptions;
-using Listem.API.Utilities;
+﻿using Listem.API.Contracts;
+using Listem.API.Domain.Items;
+using Listem.API.Domain.Lists;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Listem.API.Domain.Categories;
 
-[Route("api/category")]
-[ApiController]
-public class CategoryController(ICategoryService categoryService, IListService listService)
-    : ControllerBase
+[Route("api/categories")]
+public class CategoryController(
+    ICategoryService categoryService,
+    IListService listService,
+    IItemService itemService
+) : ApiController(listService)
 {
     [HttpGet, Authorize]
     public async Task<IActionResult> GetAll()
@@ -48,52 +49,50 @@ public class CategoryController(ICategoryService categoryService, IListService l
     )
     {
         var userId = ValidateUserRequestOrThrow($"UPDATE {category} in list {listId}");
+        await ThrowIfListDoesNotExist(userId, listId);
         var updatedCategory = await categoryService.UpdateAsync(userId, listId, id, category);
         return Ok(updatedCategory);
     }
 
     [HttpDelete("{listId}/{id}"), Authorize]
-    public async Task<IActionResult> Delete([FromRoute] string listId, [FromRoute] string id)
+    public async Task<IActionResult> DeleteById([FromRoute] string listId, [FromRoute] string id)
     {
         var userId = ValidateUserRequestOrThrow($"DELETE {id} in list {listId}");
         await ThrowIfListDoesNotExist(userId, listId);
+        var defaultCategory = await categoryService.GetDefaultCategory(userId, listId);
+        await UpdateItemsToDefaultCategory(listId, userId, defaultCategory.Id, id);
         await categoryService.DeleteByIdAsync(userId, listId, id);
         return NoContent();
     }
 
     [HttpDelete("{listId}"), Authorize]
-    public async Task<IActionResult> ResetForList([FromRoute] string listId)
+    public async Task<IActionResult> ResetByListId([FromRoute] string listId)
     {
-        var userId = ValidateUserRequestOrThrow($"DELETE all for list {listId}");
+        var userId = ValidateUserRequestOrThrow($"DELETE all (except default) for list {listId}");
         await ThrowIfListDoesNotExist(userId, listId);
-        await categoryService.DeleteAllByListIdAsync(userId, listId);
+        var defaultCategory = await categoryService.GetDefaultCategory(userId, listId);
+        await UpdateItemsToDefaultCategory(listId, userId, defaultCategory.Id);
+        await categoryService.DeleteAllByListIdAsync(userId, listId, defaultCategory.Id);
         return NoContent();
     }
 
-    private string ValidateUserRequestOrThrow(string message)
+    private async Task UpdateItemsToDefaultCategory(
+        string listId,
+        string userId,
+        string defaultCategoryId,
+        string? currentCategoryId = null
+    )
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var user =
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
-                ? User.FindFirst(ClaimTypes.Email)?.Value
-                : userId;
-
-        if (userId is not null)
+        if (currentCategoryId is null)
         {
-            Logger.Log($"Request from {user}: {message}");
-            return userId;
+            await itemService.UpdateToDefaultCategoryAsync(userId, listId, defaultCategoryId);
+            return;
         }
-
-        const string errorMessage = "User is not authenticated or cannot be identified";
-        Logger.Log(errorMessage);
-        throw new BadRequestException(errorMessage);
-    }
-
-    private async Task ThrowIfListDoesNotExist(string userId, string listId)
-    {
-        if (!await listService.ExistsAsync(userId, listId))
-        {
-            throw new NotFoundException($"List {listId} does not exist");
-        }
+        await itemService.UpdateToDefaultCategoryAsync(
+            userId,
+            listId,
+            defaultCategoryId,
+            currentCategoryId
+        );
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Listem.API.Domain.ItemLists;
+﻿namespace Listem.API.Domain.Lists;
 
 public interface IListRepository
 {

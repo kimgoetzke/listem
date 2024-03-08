@@ -1,3 +1,4 @@
+using Listem.API.Contracts;
 using Listem.API.Exceptions;
 
 namespace Listem.API.Domain.Items;
@@ -13,10 +14,6 @@ public class ItemService(IItemRepository itemRepository) : IItemService
     public async Task<List<ItemResponse>> GetAllByListIdAsync(string userId, string listId)
     {
         var categories = await itemRepository.GetAllByListIdAsync(userId, listId);
-        if (categories.Count == 0)
-        {
-            throw new NotFoundException($"List {listId} does not exist");
-        }
         return categories.Select(ItemResponse.FromItem).ToList();
     }
 
@@ -29,7 +26,12 @@ public class ItemService(IItemRepository itemRepository) : IItemService
             : throw new ConflictException("Item cannot be created, it already exists");
     }
 
-    public async Task<ItemResponse?> UpdateAsync(string userId, string listId, string itemId, ItemRequest requested)
+    public async Task<ItemResponse?> UpdateAsync(
+        string userId,
+        string listId,
+        string itemId,
+        ItemRequest requested
+    )
     {
         var existing = await itemRepository.GetByIdAsync(userId, itemId);
 
@@ -51,9 +53,36 @@ public class ItemService(IItemRepository itemRepository) : IItemService
             return ItemResponse.FromItem(result);
         }
 
-        throw new NotFoundException(
-            $"Failed to update item {itemId} even though it was found"
-        );
+        throw new NotFoundException($"Failed to update item {itemId} even though it was found");
+    }
+
+    public async Task UpdateToDefaultCategoryAsync(
+        string userId,
+        string listId,
+        string defaultCategoryId
+    )
+    {
+        var items = await itemRepository.GetAllByListIdAsync(userId, listId);
+        foreach (var item in items.Where(item => item.CategoryId != defaultCategoryId))
+        {
+            item.CategoryId = defaultCategoryId;
+            await itemRepository.UpdateAsync(item);
+        }
+    }
+
+    public async Task UpdateToDefaultCategoryAsync(
+        string userId,
+        string listId,
+        string defaultCategoryId,
+        string currentCategoryId
+    )
+    {
+        var items = await itemRepository.GetAllByListIdAsync(userId, listId);
+        foreach (var item in items.Where(item => item.CategoryId == currentCategoryId))
+        {
+            item.CategoryId = defaultCategoryId;
+            await itemRepository.UpdateAsync(item);
+        }
     }
 
     public async Task DeleteAllByListIdAsync(string userId, string listId)
@@ -61,16 +90,16 @@ public class ItemService(IItemRepository itemRepository) : IItemService
         var hasBeenDeleted = await itemRepository.DeleteAllByListIdAsync(userId, listId);
         if (!hasBeenDeleted)
         {
-            throw new NotFoundException($"Failed to reset categories in list {listId}");
+            throw new NotFoundException($"Failed to delete all items in list {listId}");
         }
     }
 
     public async Task DeleteByIdAsync(string userId, string listId, string itemId)
     {
-        var hasBeenDeleted = await itemRepository.DeleteByIdAsync(userId, itemId);
+        var hasBeenDeleted = await itemRepository.DeleteByIdAsync(userId, listId, itemId);
         if (!hasBeenDeleted)
         {
-            throw new NotFoundException($"Failed to delete item {itemId}");
+            throw new NotFoundException($"Failed to delete item {itemId} because it doesn't exist");
         }
     }
 }

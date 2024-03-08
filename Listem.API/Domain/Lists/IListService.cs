@@ -1,4 +1,6 @@
-﻿namespace Listem.API.Domain.ItemLists;
+﻿using Listem.API.Contracts;
+
+namespace Listem.API.Domain.Lists;
 
 public interface IListService
 {

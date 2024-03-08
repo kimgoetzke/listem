@@ -1,6 +1,7 @@
+using Listem.API.Domain.Categories;
 using Listem.API.Utilities;
 
-namespace Listem.API.Domain.Categories;
+namespace Listem.API.Contracts;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable MemberCanBePrivate.Global

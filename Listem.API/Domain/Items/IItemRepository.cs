@@ -8,5 +8,5 @@ public interface IItemRepository
     Task<Item?> CreateAsync(Item item);
     Task<Item?> UpdateAsync(Item item);
     Task<bool> DeleteAllByListIdAsync(string userId, string listId);
-    Task<bool> DeleteByIdAsync(string userId, string itemId);
+    Task<bool> DeleteByIdAsync(string userId, string listId, string itemId);
 }

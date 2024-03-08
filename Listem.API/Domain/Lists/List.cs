@@ -1,6 +1,6 @@
 using Listem.API.Contracts;
 
-namespace Listem.API.Domain.ItemLists;
+namespace Listem.API.Domain.Lists;
 
 public class List
 {

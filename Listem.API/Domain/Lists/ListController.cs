@@ -1,22 +1,26 @@
-﻿using System.Security.Claims;
+﻿using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
-using Listem.API.Exceptions;
-using Listem.API.Utilities;
+using Listem.API.Domain.Items;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Listem.API.Domain.ItemLists;
+namespace Listem.API.Domain.Lists;
 
-[Route("api/list")]
+[Route("api/lists")]
 [ApiController]
-public class ListController(IListService listService, ICategoryService categoryService)
-    : ControllerBase
+public class ListController(
+    IListService listService,
+    ICategoryService categoryService,
+    IItemService itemService
+) : ApiController(listService)
 {
+    private readonly IListService _listService = listService;
+
     [HttpGet, Authorize]
     public async Task<IActionResult> GetAll()
     {
         var userId = ValidateUserRequestOrThrow("GET all");
-        var itemLists = await listService.GetAllAsync(userId);
+        var itemLists = await _listService.GetAllAsync(userId);
         return Ok(itemLists);
     }
 
@@ -24,7 +28,7 @@ public class ListController(IListService listService, ICategoryService categoryS
     public async Task<IActionResult> GetById([FromRoute] string id)
     {
         var userId = ValidateUserRequestOrThrow($"GET {id}");
-        var itemList = await listService.GetByIdAsync(userId, id);
+        var itemList = await _listService.GetByIdAsync(userId, id);
         return Ok(itemList);
     }
 
@@ -32,20 +36,17 @@ public class ListController(IListService listService, ICategoryService categoryS
     public async Task<IActionResult> Create([FromBody] ListRequest list)
     {
         var userId = ValidateUserRequestOrThrow($"POST {list}");
-        var createdItemList = await listService.CreateAsync(userId, list);
+        var createdItemList = await _listService.CreateAsync(userId, list);
         var defaultCategory = new CategoryRequest { Name = ICategoryService.DefaultCategoryName };
         await categoryService.CreateAsync(userId, createdItemList!.Id, defaultCategory);
         return Created($"api/list/{createdItemList.Id}", createdItemList);
     }
 
     [HttpPut("{id}"), Authorize]
-    public async Task<IActionResult> Update(
-        [FromRoute] string id,
-        [FromBody] ListRequest list
-    )
+    public async Task<IActionResult> Update([FromRoute] string id, [FromBody] ListRequest list)
     {
         var userId = ValidateUserRequestOrThrow($"UPDATE {list}");
-        var updatedItemList = await listService.UpdateAsync(userId, id, list);
+        var updatedItemList = await _listService.UpdateAsync(userId, id, list);
         return Ok(updatedItemList);
     }
 
@@ -53,27 +54,10 @@ public class ListController(IListService listService, ICategoryService categoryS
     public async Task<IActionResult> Delete([FromRoute] string id)
     {
         var userId = ValidateUserRequestOrThrow($"DELETE {id}");
+        await ThrowIfListDoesNotExist(userId, id);
         await categoryService.DeleteAllByListIdAsync(userId, id);
-        await listService.DeleteByIdAsync(userId, id);
+        await itemService.DeleteAllByListIdAsync(userId, id);
+        await _listService.DeleteByIdAsync(userId, id);
         return NoContent();
-    }
-
-    private string ValidateUserRequestOrThrow(string message)
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var user =
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
-                ? User.FindFirst(ClaimTypes.Email)?.Value
-                : userId;
-
-        if (userId is not null)
-        {
-            Logger.Log($"Request from {user}: {message}");
-            return userId;
-        }
-
-        const string errorMessage = "User is not authenticated or cannot be identified";
-        Logger.Log(errorMessage);
-        throw new BadRequestException(errorMessage);
     }
 }

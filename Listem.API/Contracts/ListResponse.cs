@@ -1,6 +1,6 @@
-﻿using Listem.API.Contracts;
+﻿using Listem.API.Domain.Lists;
 
-namespace Listem.API.Domain.ItemLists;
+namespace Listem.API.Contracts;
 
 public class ListResponse
 {

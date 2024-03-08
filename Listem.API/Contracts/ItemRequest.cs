@@ -1,6 +1,7 @@
+using Listem.API.Domain.Items;
 using Listem.API.Utilities;
 
-namespace Listem.API.Domain.Items;
+namespace Listem.API.Contracts;
 
 public class ItemRequest
 {

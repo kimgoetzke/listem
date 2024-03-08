@@ -8,5 +8,10 @@ public interface ICategoryRepository
     Task<Category?> CreateAsync(Category category);
     Task<Category?> UpdateAsync(Category category);
     Task<bool> DeleteAllByListIdAsync(string userId, string listId);
-    Task<bool> DeleteByIdAsync(string userId, string categoryId);
+    Task<bool> DeleteAllExceptDefaultByListIdAsync(
+        string userId,
+        string listId,
+        string defaultCategoryId
+    );
+    Task<bool> DeleteByIdAsync(string userId, string listId, string categoryId);
 }

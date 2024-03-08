@@ -1,9 +1,13 @@
+using Listem.API.Contracts;
 using Listem.API.Exceptions;
+using Listem.API.Utilities;
 
 namespace Listem.API.Domain.Categories;
 
 public class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
 {
+    private const string DefaultCategoryName = ICategoryService.DefaultCategoryName;
+
     public async Task<List<CategoryResponse>> GetAllAsync(string userId)
     {
         var categories = await categoryRepository.GetAllAsync(userId);
@@ -65,22 +69,51 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         );
     }
 
-    public async Task DeleteAllByListIdAsync(string userId, string listId)
+    public async Task DeleteAllByListIdAsync(
+        string userId,
+        string listId,
+        string? defaultCategoryId = null
+    )
     {
-        var hasBeenDeleted = await categoryRepository.DeleteAllByListIdAsync(userId, listId);
-        if (!hasBeenDeleted)
+        if (defaultCategoryId is not null)
         {
-            throw new NotFoundException($"Failed to reset categories in list {listId}");
+            await categoryRepository.DeleteAllExceptDefaultByListIdAsync(
+                userId,
+                listId,
+                defaultCategoryId
+            );
         }
-        await CreateAsync(userId, listId, new CategoryRequest());
+        else
+        {
+            if (!await categoryRepository.DeleteAllByListIdAsync(userId, listId))
+            {
+                throw new NotFoundException($"Failed to reset categories in list {listId}");
+            }
+        }
+    }
+
+    public async Task<CategoryResponse> GetDefaultCategory(string userId, string listId)
+    {
+        var categories = await categoryRepository.GetAllByListIdAsync(userId, listId);
+        var defaultCategory = categories.FirstOrDefault(c => c.Name == DefaultCategoryName);
+        if (defaultCategory is null)
+        {
+            throw new ServerErrorException(
+                $"Default category '{DefaultCategoryName}' does not exist in list {listId} but it must always exist"
+            );
+        }
+
+        Logger.Log($"Retrieved default category: {defaultCategory}");
+        return CategoryResponse.FromCategory(defaultCategory);
     }
 
     public async Task DeleteByIdAsync(string userId, string listId, string categoryId)
     {
-        var hasBeenDeleted = await categoryRepository.DeleteByIdAsync(userId, categoryId);
-        if (!hasBeenDeleted)
+        if (!await categoryRepository.DeleteByIdAsync(userId, listId, categoryId))
         {
-            throw new NotFoundException($"Failed to delete category {categoryId}");
+            throw new NotFoundException(
+                $"Failed to delete category {categoryId} because it does not exist"
+            );
         }
     }
 }

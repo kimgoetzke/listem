@@ -1,4 +1,6 @@
-namespace Listem.API.Domain.Items;
+using Listem.API.Domain.Items;
+
+namespace Listem.API.Contracts;
 
 public class ItemResponse
 {
@@ -10,7 +12,7 @@ public class ItemResponse
     public string CategoryId { get; set; } = null!;
     public DateTime AddedOn { get; init; }
     public DateTime UpdatedOn { get; set; }
-    
+
     public static ItemResponse FromItem(Item item)
     {
         return new ItemResponse

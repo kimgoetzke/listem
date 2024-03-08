@@ -1,6 +1,6 @@
 ﻿using Listem.API.Utilities;
 
-namespace Listem.API.Domain.ItemLists;
+namespace Listem.API.Domain.Lists;
 
 #pragma warning disable CS1998
 public class PlaceholderListRepository : IListRepository

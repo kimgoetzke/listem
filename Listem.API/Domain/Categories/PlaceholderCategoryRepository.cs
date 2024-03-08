@@ -15,7 +15,7 @@ public class PlaceholderCategoryRepository : ICategoryRepository
     public Task<List<Category>> GetAllByListIdAsync(string userId, string listId)
     {
         var categories = _categories.FindAll(i => i.ListId == listId && i.OwnerId == userId);
-        Logger.Log($"Retrieved categories: {categories}");
+        Logger.Log($"Retrieved {categories.Count} categories for list {listId}");
         return Task.FromResult(categories);
     }
 
@@ -46,22 +46,32 @@ public class PlaceholderCategoryRepository : ICategoryRepository
         return existingCategory;
     }
 
-    public async Task<bool> DeleteAsync(Category category)
-    {
-        Logger.Log($"Removing category: '{category.Name}' {category.Id}");
-        return _categories.Remove(category);
-    }
-
     public async Task<bool> DeleteAllByListIdAsync(string userId, string listId)
     {
         Logger.Log($"Removing all categories in list {listId} by {userId}");
         return _categories.RemoveAll(i => i.ListId == listId && i.OwnerId == userId) > 0;
     }
 
-    public async Task<bool> DeleteByIdAsync(string userId, string categoryId)
+    public async Task<bool> DeleteAllExceptDefaultByListIdAsync(
+        string userId,
+        string listId,
+        string defaultCategoryId
+    )
+    {
+        Logger.Log(
+            $"Removing all categories, except default category, in list {listId} by {userId}"
+        );
+        return _categories.RemoveAll(i =>
+                i.ListId == listId && i.OwnerId == userId && i.Id != defaultCategoryId
+            ) > 0;
+    }
+
+    public async Task<bool> DeleteByIdAsync(string userId, string listId, string categoryId)
     {
         Logger.Log($"Removing category: {categoryId} by {userId}");
-        return _categories.RemoveAll(i => i.Id == categoryId && i.OwnerId == userId) > 0;
+        return _categories.RemoveAll(i =>
+                i.Id == categoryId && i.ListId == listId && i.OwnerId == userId
+            ) > 0;
     }
 #pragma warning restore CS1998
 }

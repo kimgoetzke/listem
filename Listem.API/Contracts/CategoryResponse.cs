@@ -1,4 +1,6 @@
-﻿namespace Listem.API.Domain.Categories;
+﻿using Listem.API.Domain.Categories;
+
+namespace Listem.API.Contracts;
 
 public class CategoryResponse
 {
