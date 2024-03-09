@@ -80,7 +80,6 @@ builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<ICategoryRepository, PlaceholderCategoryRepository>();
 builder.Services.AddSingleton<IItemService, ItemService>();
 builder.Services.AddSingleton<IItemRepository, PlaceholderItemRepository>();
-builder.Services.AddSingleton<ItemController>();
 
 var app = builder.Build();
 
@@ -93,6 +92,7 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 app.MapListEndpoints();
 app.MapCategoryEndpoints();
+app.MapItemEndpoints();
 app.MapIdentityApi<ListemUser>();
 app.UseAuthentication();
 app.UseAuthorization();
