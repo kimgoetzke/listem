@@ -9,11 +9,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
-var connectionString = configuration.GetConnectionString("DefaultConnection");
+var connectionString = configuration.GetConnectionString("OnDiskDatabase");
 
+builder.Host.UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration));
 builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

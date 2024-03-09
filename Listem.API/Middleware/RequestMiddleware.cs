@@ -8,7 +8,7 @@ public class RequestMiddleware(RequestDelegate next, ILogger<RequestMiddleware> 
         requestContext.Set(context.User);
 
         logger.LogInformation(
-            "Before {RequestId}: {Method} {Path} by user {UserId} with email {UserEmail}",
+            "[BEFORE REQUEST] {RequestId}: {Method} {Path} by user {UserId} with email {UserEmail}",
             requestContext.RequestId,
             context.Request.Method,
             context.Request.Path,
@@ -23,12 +23,12 @@ public class RequestMiddleware(RequestDelegate next, ILogger<RequestMiddleware> 
         {
             var duration = TimeProvider.System.GetElapsedTime(start);
             logger.LogInformation(
-                "After {RequestId}: {Method} {Path} took {Duration} ms and returned {StatusCode} status code",
+                "[AFTER REQUEST] {RequestId}: {Method} {Path} responded {StatusCode} and took {Duration} ms",
                 requestContext.RequestId,
                 context.Request.Method,
                 context.Request.Path,
-                duration,
-                context.Response.StatusCode
+                context.Response.StatusCode,
+                (int)duration.TotalMilliseconds
             );
         }
     }
