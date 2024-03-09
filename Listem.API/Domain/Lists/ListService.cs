@@ -3,7 +3,7 @@ using Listem.API.Exceptions;
 
 namespace Listem.API.Domain.Lists;
 
-public class ListService(IListRepository listRepository) : IListService
+internal class ListService(IListRepository listRepository) : IListService
 {
     public async Task<List<ListResponse>> GetAllAsync(string userId)
     {

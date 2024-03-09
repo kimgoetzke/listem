@@ -3,7 +3,7 @@ using Listem.API.Utilities;
 
 namespace Listem.API.Domain.Lists;
 
-public class List
+internal class List
 {
     public string Id { get; private init; } = null!;
     public string Name { get; set; } = null!;

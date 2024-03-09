@@ -3,7 +3,8 @@ using Listem.API.Exceptions;
 
 namespace Listem.API.Domain.Items;
 
-internal class ItemService(IItemRepository itemRepository) : IItemService
+internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> logger)
+    : IItemService
 {
     public async Task<List<ItemResponse>> GetAllAsync(string userId)
     {
@@ -90,7 +91,7 @@ internal class ItemService(IItemRepository itemRepository) : IItemService
         var hasBeenDeleted = await itemRepository.DeleteAllByListIdAsync(userId, listId);
         if (!hasBeenDeleted)
         {
-            throw new NotFoundException($"Failed to delete all items in list {listId}");
+            logger.LogInformation("There are no items to delete in list {ListId}", listId);
         }
     }
 

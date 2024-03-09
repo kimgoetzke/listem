@@ -4,7 +4,10 @@ using Listem.API.Utilities;
 
 namespace Listem.API.Domain.Categories;
 
-internal class CategoryService(ICategoryRepository categoryRepository) : ICategoryService
+internal class CategoryService(
+    ICategoryRepository categoryRepository,
+    ILogger<CategoryService> logger
+) : ICategoryService
 {
     private const string DefaultCategoryName = ICategoryService.DefaultCategoryName;
 
@@ -77,17 +80,25 @@ internal class CategoryService(ICategoryRepository categoryRepository) : ICatego
     {
         if (defaultCategoryId is not null)
         {
-            await categoryRepository.DeleteAllExceptDefaultByListIdAsync(
-                userId,
-                listId,
-                defaultCategoryId
-            );
+            if (
+                !await categoryRepository.DeleteAllExceptDefaultByListIdAsync(
+                    userId,
+                    listId,
+                    defaultCategoryId
+                )
+            )
+            {
+                logger.LogInformation(
+                    "List {listId} only has a default category which cannot be deleted",
+                    listId
+                );
+            }
         }
         else
         {
             if (!await categoryRepository.DeleteAllByListIdAsync(userId, listId))
             {
-                throw new NotFoundException($"Failed to reset categories in list {listId}");
+                logger.LogWarning("There are no categories to delete in list {listId}", listId);
             }
         }
     }

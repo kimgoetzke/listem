@@ -1,6 +1,6 @@
 ﻿namespace Listem.API.Domain.Lists;
 
-public interface IListRepository
+internal interface IListRepository
 {
     Task<List<List>> GetAllAsync(string userId);
     Task<List?> GetByIdAsync(string userId, string listId);
