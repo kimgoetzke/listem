@@ -1,7 +1,6 @@
-﻿using System.Security.Claims;
-using Listem.API.Contracts;
+﻿using Listem.API.Contracts;
 using Listem.API.Domain.Lists;
-using Microsoft.AspNetCore.Authorization;
+using Listem.API.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using static Listem.API.Utilities.EndpointUtilities;
 
@@ -14,91 +13,78 @@ public static class ItemEndpoints
     public static void MapItemEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("api/items", GetAll).RequireAuthorization();
-        var group = endpoints.MapGroup("api/lists");
-        group.MapGet("{listId}/items", GetAllByListId).RequireAuthorization();
-        group.MapPost("{listId}/items", Create).RequireAuthorization();
-        group.MapPut("{listId}/items/{id}", Update).RequireAuthorization();
-        group.MapDelete("{listId}/items/{id}", Delete).RequireAuthorization();
-        group.MapDelete("{listId}/items", DeleteAllByList).RequireAuthorization();
+        endpoints.MapGet("api/lists/{listId}/items", GetAllByListId).RequireAuthorization();
+        endpoints.MapPost("api/lists/{listId}/items", Create).RequireAuthorization();
+        endpoints.MapPut("api/lists/{listId}/items/{id}", Update).RequireAuthorization();
+        endpoints.MapDelete("api/lists/{listId}/items/{id}", Delete).RequireAuthorization();
+        endpoints.MapDelete("api/lists/{listId}/items", DeleteAllByList).RequireAuthorization();
     }
 
-    [HttpGet, Authorize]
-    private static async Task<IResult> GetAll(ClaimsPrincipal user, IItemService itemService)
+    private static async Task<IResult> GetAll(IRequestContext req, IItemService itemService)
     {
-        var userId = GetUserForLoggedRequest(user, "GET all items");
-        var items = await itemService.GetAllAsync(userId);
+        var items = await itemService.GetAllAsync(req.UserId);
         return Results.Ok(items);
     }
 
-    [HttpGet("{listId}"), Authorize]
     private static async Task<IResult> GetAllByListId(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string listId,
         IItemService itemService,
         IListService listService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"GET all items for list {listId}");
-        await ThrowIfListDoesNotExist(listService, userId, listId);
-        var items = await itemService.GetAllByListIdAsync(userId, listId);
+        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
+        var items = await itemService.GetAllByListIdAsync(req.UserId, listId);
         return Results.Ok(items);
     }
 
-    [HttpPost("{listId}"), Authorize]
     private static async Task<IResult> Create(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string listId,
         [FromBody] ItemRequest item,
         IItemService itemService,
         IListService listService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"CREATE {item} in list {listId}");
-        await ThrowIfListDoesNotExist(listService, userId, listId);
-        var createdItem = await itemService.CreateAsync(userId, listId, item);
+        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
+        var createdItem = await itemService.CreateAsync(req.UserId, listId, item);
         return Results.Created($"api/lists/{listId}/items/{createdItem!.Id}", createdItem);
     }
 
-    [HttpPut("{listId}/{id}"), Authorize]
     private static async Task<IResult> Update(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string listId,
         [FromRoute] string id,
         [FromBody] ItemRequest item,
         IItemService itemService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"UPDATE item {id} in list {listId}");
-        var updatedItem = await itemService.UpdateAsync(userId, listId, id, item);
+        var updatedItem = await itemService.UpdateAsync(req.UserId, listId, id, item);
         return Results.Ok(updatedItem);
     }
 
-    [HttpDelete("{listId}/{id}"), Authorize]
     private static async Task<IResult> Delete(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string listId,
         [FromRoute] string id,
         IItemService itemService,
         IListService listService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"DELETE item {id} in list {listId}");
-        await ThrowIfListDoesNotExist(listService, userId, listId);
-        await itemService.DeleteByIdAsync(userId, listId, id);
+        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
+        await itemService.DeleteByIdAsync(req.UserId, listId, id);
         return Results.NoContent();
     }
 
-    [HttpDelete("{listId}"), Authorize]
     private static async Task<IResult> DeleteAllByList(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string listId,
         IItemService itemService,
         IListService listService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"DELETE all items in list {listId}");
-        await ThrowIfListDoesNotExist(listService, userId, listId);
-        await itemService.DeleteAllByListIdAsync(userId, listId);
+        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
+        await itemService.DeleteAllByListIdAsync(req.UserId, listId);
         return Results.NoContent();
     }
 }

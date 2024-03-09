@@ -1,7 +1,7 @@
-﻿using System.Security.Claims;
-using Listem.API.Contracts;
+﻿using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
 using Listem.API.Domain.Items;
+using Listem.API.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using static Listem.API.Utilities.EndpointUtilities;
 
@@ -11,71 +11,65 @@ public static class ListEndpoints
 {
     public static void MapListEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("api/lists");
-        group.MapGet("", GetAll).RequireAuthorization();
-        group.MapGet("{id}", GetById).RequireAuthorization();
-        group.MapPost("", Create).RequireAuthorization();
-        group.MapPut("{id}", Update).RequireAuthorization();
-        group.MapDelete("{id}", Delete).RequireAuthorization();
+        endpoints.MapGet("api/lists", GetAll).RequireAuthorization();
+        endpoints.MapGet("api/lists/{id}", GetById).RequireAuthorization();
+        endpoints.MapPost("api/lists", Create).RequireAuthorization();
+        endpoints.MapPut("api/lists/{id}", Update).RequireAuthorization();
+        endpoints.MapDelete("api/lists/{id}", Delete).RequireAuthorization();
     }
 
-    private static async Task<IResult> GetAll(ClaimsPrincipal user, IListService listService)
+    private static async Task<IResult> GetAll(IRequestContext req, IListService listService)
     {
-        var userId = GetUserForLoggedRequest(user, "GET all lists");
-        var itemLists = await listService.GetAllAsync(userId);
+        var itemLists = await listService.GetAllAsync(req.UserId);
         return Results.Ok(itemLists);
     }
 
     private static async Task<IResult> GetById(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string id,
         IListService listService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"GET list {id}");
-        var itemList = await listService.GetByIdAsync(userId, id);
+        var itemList = await listService.GetByIdAsync(req.UserId, id);
         return Results.Ok(itemList);
     }
 
     private static async Task<IResult> Create(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromBody] ListRequest list,
         IListService listService,
         ICategoryService categoryService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"CREATE {list}");
-        var createdItemList = await listService.CreateAsync(userId, list);
+        var createdItemList = await listService.CreateAsync(req.UserId, list);
         var defaultCategory = new CategoryRequest { Name = ICategoryService.DefaultCategoryName };
-        await categoryService.CreateAsync(userId, createdItemList!.Id, defaultCategory);
+        await categoryService.CreateAsync(req.UserId, createdItemList!.Id, defaultCategory);
         return Results.Created($"api/lists/{createdItemList.Id}", createdItemList);
     }
 
     private static async Task<IResult> Update(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string id,
         [FromBody] ListRequest list,
         IListService listService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"UPDATE list {id}");
-        var updatedItemList = await listService.UpdateAsync(userId, id, list);
+        var updatedItemList = await listService.UpdateAsync(req.UserId, id, list);
         return Results.Ok(updatedItemList);
     }
 
     private static async Task<IResult> Delete(
-        ClaimsPrincipal user,
+        IRequestContext req,
         [FromRoute] string id,
         IListService listService,
         ICategoryService categoryService,
         IItemService itemService
     )
     {
-        var userId = GetUserForLoggedRequest(user, $"DELETE list {id}");
-        await ThrowIfListDoesNotExist(listService, userId, id);
-        await categoryService.DeleteAllByListIdAsync(userId, id);
-        await itemService.DeleteAllByListIdAsync(userId, id);
-        await listService.DeleteByIdAsync(userId, id);
+        await ThrowIfListDoesNotExist(listService, req.UserId, id);
+        await categoryService.DeleteAllByListIdAsync(req.UserId, id);
+        await itemService.DeleteAllByListIdAsync(req.UserId, id);
+        await listService.DeleteByIdAsync(req.UserId, id);
         return Results.NoContent();
     }
 }
