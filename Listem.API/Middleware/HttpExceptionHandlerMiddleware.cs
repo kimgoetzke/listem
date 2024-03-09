@@ -18,26 +18,23 @@ public class HttpExceptionHandlerMiddleware(
         }
         catch (HttpResponseException ex)
         {
-            var jsonError = ExceptionToJson(context, ex.Message, ex.StatusCode, ex.Title);
-            await context.Response.WriteAsync(jsonError);
+            logger.LogInformation("Handling {ExceptionType}: {Message}", ex.GetType(), ex.Message);
+            await ProcessException(context, ex.Message, ex.StatusCode, ex.Title);
         }
         catch (Exception ex)
         {
             logger.LogWarning(ex, "An unhandled exception occurred");
-            var jsonError = ExceptionToJson(context, ex.Message);
-            await context.Response.WriteAsync(jsonError);
+            await ProcessException(context, ex.Message);
         }
     }
 
-    private string ExceptionToJson(
+    private static async Task ProcessException(
         HttpContext context,
         string detail,
         HttpStatusCode? statusCode = null,
         string? exceptionTitle = null
     )
     {
-        context.Response.ContentType = "application/problem+json";
-        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         var status = (int)(statusCode ?? HttpStatusCode.InternalServerError);
         var title = exceptionTitle ?? "Internal Server Error";
         var details = new ProblemDetails
@@ -47,7 +44,10 @@ public class HttpExceptionHandlerMiddleware(
             Title = title,
             Detail = detail
         };
-        return JsonSerializer.Serialize(details);
+        context.Response.ContentType = "application/problem+json";
+        context.Response.StatusCode = status;
+        var json = JsonSerializer.Serialize(details);
+        await context.Response.WriteAsync(json);
     }
 }
 
