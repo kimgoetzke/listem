@@ -63,7 +63,19 @@ To run the tests:
 ## How to use the backend
 
 ```shell
+cd Listem.API && dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists  && dotnet ef database update --context ListDbContext && dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories && dotnet ef database update --context CategoryDbContext && dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items && dotnet ef database update --context ItemDbContext && dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users && dotnet ef database update --context UserDbContext
+```
+
+Alternatively, if you want to run each command separately:
+
+```shell
 cd Listem.API
-dotnet ef migrations add InitialCreate
-dotnet ef database update
+dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists
+dotnet ef database update --context ListDbContext
+dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories 
+dotnet ef database update --context CategoryDbContext
+dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items
+dotnet ef database update --context ItemDbContext
+dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users 
+dotnet ef database update --context UserDbContext
 ```

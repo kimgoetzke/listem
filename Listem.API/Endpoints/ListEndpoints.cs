@@ -68,8 +68,8 @@ public static class ListEndpoints
     )
     {
         await ThrowIfListDoesNotExist(listService, req.UserId, id);
-        await categoryService.DeleteAllByListIdAsync(req.UserId, id);
         await itemService.DeleteAllByListIdAsync(req.UserId, id);
+        await categoryService.DeleteAllByListIdAsync(req.UserId, id);
         await listService.DeleteByIdAsync(req.UserId, id);
         return Results.NoContent();
     }

@@ -7,6 +7,7 @@ using Listem.API.Middleware;
 using Listem.API.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,11 +49,29 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddDbContext<UserDbContext>(options =>
-{
-    // If not using SQLite, replace with other DB provider and add the following line to the options:
-    // Action<SqliteDbContextOptionsBuilder>? sqliteOptionsAction = o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "users");
-    options.UseSqlite(connectionString);
-});
+    options.UseSqlite(
+        connectionString,
+        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "users")
+    )
+);
+builder.Services.AddDbContext<ListDbContext>(options =>
+    options.UseSqlite(
+        connectionString,
+        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "lists")
+    )
+);
+builder.Services.AddDbContext<CategoryDbContext>(options =>
+    options.UseSqlite(
+        connectionString,
+        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "categories")
+    )
+);
+builder.Services.AddDbContext<ItemDbContext>(options =>
+    options.UseSqlite(
+        connectionString,
+        o => o.MigrationsHistoryTable(HistoryRepository.DefaultTableName, "items")
+    )
+);
 
 builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder();
@@ -60,14 +79,14 @@ builder
     .Services.AddIdentityCore<ListemUser>()
     .AddEntityFrameworkStores<UserDbContext>()
     .AddApiEndpoints();
-builder.Services.AddScoped<IRequestContext, RequestContext>();
 
-builder.Services.AddSingleton<IListService, ListService>();
-builder.Services.AddSingleton<IListRepository, PlaceholderListRepository>();
-builder.Services.AddSingleton<ICategoryService, CategoryService>();
-builder.Services.AddSingleton<ICategoryRepository, PlaceholderCategoryRepository>();
-builder.Services.AddSingleton<IItemService, ItemService>();
-builder.Services.AddSingleton<IItemRepository, PlaceholderItemRepository>();
+builder.Services.AddScoped<IRequestContext, RequestContext>();
+builder.Services.AddScoped<IListService, ListService>();
+builder.Services.AddScoped<IListRepository, ListRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
 
 var app = builder.Build();
 
