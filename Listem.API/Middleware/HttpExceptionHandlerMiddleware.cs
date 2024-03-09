@@ -10,21 +10,30 @@ public class HttpExceptionHandlerMiddleware(
     ILogger<HttpExceptionHandlerMiddleware> logger
 )
 {
-    public async Task InvokeAsync(HttpContext context, IRequestContext requestContext)
+    public async Task InvokeAsync(HttpContext httpContext, IRequestContext requestContext)
     {
         try
         {
-            await next(context);
+            await next(httpContext);
         }
         catch (HttpResponseException ex)
         {
-            logger.LogInformation("Handling {ExceptionType}: {Message}", ex.GetType(), ex.Message);
-            await ProcessException(context, ex.Message, ex.StatusCode, ex.Title);
+            logger.LogInformation(
+                "Handling {ExceptionType} with message '{Message}' for {RequestId}",
+                ex.GetType(),
+                ex.Message,
+                requestContext.RequestId
+            );
+            await ProcessException(httpContext, ex.Message, ex.StatusCode, ex.Title);
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "An unhandled exception occurred");
-            await ProcessException(context, ex.Message);
+            logger.LogWarning(
+                ex,
+                "An unhandled exception occurred while processing {RequestId}",
+                requestContext.RequestId
+            );
+            await ProcessException(httpContext, ex.Message);
         }
     }
 
