@@ -8,22 +8,7 @@ public static class EndpointUtilities
 {
     public static string GetUserForLoggedRequest(ClaimsPrincipal user, string message)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        var email =
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
-                ? user.FindFirst(ClaimTypes.Email)?.Value
-                : "<Redacted>";
-
-        if (userId is not null)
-        {
-            Logger.Log($"Request from {email}, id {userId}: {message}");
-            return userId;
-        }
-
-        const string errorMessage = "User is not authenticated or cannot be identified";
-        Logger.Log(errorMessage);
-        throw new BadRequestException(errorMessage);
+        return user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
     }
 
     public static async Task ThrowIfListDoesNotExist(

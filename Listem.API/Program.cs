@@ -2,9 +2,8 @@ using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
 using Listem.API.Domain.Items;
 using Listem.API.Domain.Lists;
-using Listem.API.Filters;
+using Listem.API.Middleware;
 using Listem.API.Repositories;
-using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -13,20 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddHttpLogging(logging =>
-{
-    logging.LoggingFields = HttpLoggingFields.All;
-    logging.RequestHeaders.Add("sec-ch-ua");
-    logging.MediaTypeOptions.AddText("application/json");
-    logging.RequestBodyLogLimit = 4096;
-    logging.ResponseBodyLogLimit = 4096;
-});
-
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<HttpResponseExceptionFilter>();
-});
-
+builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -73,6 +59,7 @@ builder
     .Services.AddIdentityCore<ListemUser>()
     .AddEntityFrameworkStores<UserDbContext>()
     .AddApiEndpoints();
+builder.Services.AddScoped<IRequestContext, RequestContext>();
 
 builder.Services.AddSingleton<IListService, ListService>();
 builder.Services.AddSingleton<IListRepository, PlaceholderListRepository>();
@@ -89,13 +76,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
 app.MapListEndpoints();
 app.MapCategoryEndpoints();
 app.MapItemEndpoints();
-app.MapIdentityApi<ListemUser>();
+app.MapIdentityApi<ListemUser>().ShortCircuit();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRequestMiddleware();
+app.UseHttpExceptionHandler();
+app.MapShortCircuit(404, "robots.txt", "favicon.ico", "404.html", "sitemap.xml");
 
-// app.UseHttpLogging();
 app.Run();
