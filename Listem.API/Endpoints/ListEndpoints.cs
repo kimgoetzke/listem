@@ -1,11 +1,12 @@
 ﻿using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
 using Listem.API.Domain.Items;
+using Listem.API.Domain.Lists;
 using Listem.API.Middleware;
 using Microsoft.AspNetCore.Mvc;
 using static Listem.API.Utilities.EndpointUtilities;
 
-namespace Listem.API.Domain.Lists;
+namespace Listem.API.Endpoints;
 
 public static class ListEndpoints
 {
