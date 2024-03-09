@@ -1,28 +1,36 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Listem.API.Middleware;
+using Microsoft.EntityFrameworkCore;
 
 namespace Listem.API.Domain.Lists;
 
 #pragma warning disable CS1998
-internal class ListRepository(ListDbContext dbContext, ILogger<ListRepository> logger)
-    : IListRepository
+internal class ListRepository(
+    ListDbContext dbContext,
+    ILogger<ListRepository> logger,
+    IRequestContext reqContext
+) : IListRepository
 {
-    public Task<List<List>> GetAllAsync(string userId)
+    public Task<List<List>> GetAllAsync()
     {
-        var lists = dbContext.Lists.Where(i => i.OwnerId == userId).ToList();
+        var lists = dbContext.Lists.Where(i => i.OwnerId == reqContext.UserId).ToList();
         logger.LogInformation("Retrieved {Count} lists", lists.Count);
         return Task.FromResult(lists);
     }
 
-    public Task<List?> GetByIdAsync(string userId, string listId)
+    public Task<List?> GetByIdAsync(string listId)
     {
-        var list = dbContext.Lists.FirstOrDefault(i => i.Id == listId && i.OwnerId == userId);
+        var list = dbContext.Lists.FirstOrDefault(i =>
+            i.Id == listId && i.OwnerId == reqContext.UserId
+        );
         logger.LogInformation("Retrieved list: {Item}", list?.ToString() ?? "null");
         return Task.FromResult(list);
     }
 
-    public Task<bool> ExistsAsync(string userId, string listId)
+    public Task<bool> ExistsAsync(string listId)
     {
-        return Task.FromResult(dbContext.Lists.Any(i => i.Id == listId && i.OwnerId == userId));
+        return Task.FromResult(
+            dbContext.Lists.Any(i => i.Id == listId && i.OwnerId == reqContext.UserId)
+        );
     }
 
     public async Task<List?> CreateAsync(List list)
@@ -55,10 +63,10 @@ internal class ListRepository(ListDbContext dbContext, ILogger<ListRepository> l
         return existingList;
     }
 
-    public async Task<bool> DeleteByIdAsync(string userId, string listId)
+    public async Task<bool> DeleteByIdAsync(string listId)
     {
-        logger.LogInformation("Removing list: {ListId} by {UserId}", listId, userId);
-        var toDelete = dbContext.Lists.Where(i => i.Id == listId && i.OwnerId == userId);
+        logger.LogInformation("Removing list: {ListId} by {UserId}", listId, reqContext.UserId);
+        var toDelete = dbContext.Lists.Where(i => i.Id == listId && i.OwnerId == reqContext.UserId);
         dbContext.Lists.RemoveRange(toDelete);
         return await dbContext.SaveChangesAsync() > 0;
     }

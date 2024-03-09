@@ -7,13 +7,13 @@ internal class ListService(IListRepository listRepository) : IListService
 {
     public async Task<List<ListResponse>> GetAllAsync(string userId)
     {
-        var result = await listRepository.GetAllAsync(userId);
+        var result = await listRepository.GetAllAsync();
         return result.Select(l => l.ToResponse()).ToList();
     }
 
     public async Task<ListResponse?> GetByIdAsync(string userId, string listId)
     {
-        var result = await listRepository.GetByIdAsync(userId, listId);
+        var result = await listRepository.GetByIdAsync(listId);
         return result is not null
             ? result.ToResponse()
             : throw new NotFoundException($"List {listId} not found");
@@ -21,7 +21,7 @@ internal class ListService(IListRepository listRepository) : IListService
 
     public Task<bool> ExistsAsync(string userId, string listId)
     {
-        return listRepository.ExistsAsync(userId, listId);
+        return listRepository.ExistsAsync(listId);
     }
 
     public async Task<ListResponse?> CreateAsync(string userId, ListRequest listRequest)
@@ -43,7 +43,7 @@ internal class ListService(IListRepository listRepository) : IListService
         ListRequest requested
     )
     {
-        var existing = await listRepository.GetByIdAsync(userId, listId);
+        var existing = await listRepository.GetByIdAsync(listId);
 
         if (existing is null)
             throw new NotFoundException(
@@ -61,7 +61,7 @@ internal class ListService(IListRepository listRepository) : IListService
 
     public async Task DeleteByIdAsync(string userId, string listId)
     {
-        var hasBeenDeleted = await listRepository.DeleteByIdAsync(userId, listId);
+        var hasBeenDeleted = await listRepository.DeleteByIdAsync(listId);
         if (!hasBeenDeleted)
         {
             throw new NotFoundException(

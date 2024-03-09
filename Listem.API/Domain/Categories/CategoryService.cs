@@ -13,13 +13,13 @@ internal class CategoryService(
 
     public async Task<List<CategoryResponse>> GetAllAsync(string userId)
     {
-        var result = await categoryRepository.GetAllAsync(userId);
+        var result = await categoryRepository.GetAllAsync();
         return result.Select(c => c.ToResponse()).ToList();
     }
 
     public async Task<List<CategoryResponse>> GetAllByListIdAsync(string userId, string listId)
     {
-        var result = await categoryRepository.GetAllByListIdAsync(userId, listId);
+        var result = await categoryRepository.GetAllByListIdAsync(listId);
         if (result.Count == 0)
         {
             throw new NotFoundException($"List {listId} does not exist");
@@ -47,7 +47,7 @@ internal class CategoryService(
         CategoryRequest categoryRequest
     )
     {
-        var existing = await categoryRepository.GetByIdAsync(userId, categoryId);
+        var existing = await categoryRepository.GetByIdAsync(categoryId);
 
         if (existing is null)
             throw new NotFoundException(
@@ -82,7 +82,6 @@ internal class CategoryService(
         {
             if (
                 !await categoryRepository.DeleteAllExceptDefaultByListIdAsync(
-                    userId,
                     listId,
                     defaultCategoryId
                 )
@@ -96,7 +95,7 @@ internal class CategoryService(
         }
         else
         {
-            if (!await categoryRepository.DeleteAllByListIdAsync(userId, listId))
+            if (!await categoryRepository.DeleteAllByListIdAsync(listId))
             {
                 logger.LogWarning("There are no categories to delete in list {listId}", listId);
             }
@@ -105,7 +104,7 @@ internal class CategoryService(
 
     public async Task<CategoryResponse> GetDefaultCategory(string userId, string listId)
     {
-        var categories = await categoryRepository.GetAllByListIdAsync(userId, listId);
+        var categories = await categoryRepository.GetAllByListIdAsync(listId);
         var result = categories.FirstOrDefault(c => c.Name == DefaultCategoryName);
         if (result is null)
         {
@@ -120,7 +119,7 @@ internal class CategoryService(
 
     public async Task DeleteByIdAsync(string userId, string listId, string categoryId)
     {
-        if (!await categoryRepository.DeleteByIdAsync(userId, listId, categoryId))
+        if (!await categoryRepository.DeleteByIdAsync(listId, categoryId))
         {
             throw new NotFoundException(
                 $"Failed to delete category {categoryId} because it does not exist"

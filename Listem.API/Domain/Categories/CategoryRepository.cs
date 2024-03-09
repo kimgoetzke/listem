@@ -1,23 +1,27 @@
 ﻿using Listem.API.Domain.Items;
+using Listem.API.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 namespace Listem.API.Domain.Categories;
 
 #pragma warning disable CS1998
-internal class CategoryRepository(CategoryDbContext dbContext, ILogger<ItemRepository> logger)
-    : ICategoryRepository
+internal class CategoryRepository(
+    CategoryDbContext dbContext,
+    ILogger<ItemRepository> logger,
+    IRequestContext reqContext
+) : ICategoryRepository
 {
-    public Task<List<Category>> GetAllAsync(string userId)
+    public Task<List<Category>> GetAllAsync()
     {
-        var categories = dbContext.Categories.Where(i => i.OwnerId == userId).ToList();
+        var categories = dbContext.Categories.Where(i => i.OwnerId == reqContext.UserId).ToList();
         logger.LogInformation("Retrieved {Count} categories", categories.Count);
         return Task.FromResult(categories);
     }
 
-    public Task<List<Category>> GetAllByListIdAsync(string userId, string listId)
+    public Task<List<Category>> GetAllByListIdAsync(string listId)
     {
         var categories = dbContext
-            .Categories.Where(i => i.ListId == listId && i.OwnerId == userId)
+            .Categories.Where(i => i.ListId == listId && i.OwnerId == reqContext.UserId)
             .ToList();
         logger.LogInformation(
             "Retrieved {Count} categories for list {ListId}",
@@ -27,10 +31,10 @@ internal class CategoryRepository(CategoryDbContext dbContext, ILogger<ItemRepos
         return Task.FromResult(categories);
     }
 
-    public Task<Category?> GetByIdAsync(string userId, string categoryId)
+    public Task<Category?> GetByIdAsync(string categoryId)
     {
         var category = dbContext.Categories.FirstOrDefault(i =>
-            i.Id == categoryId && i.OwnerId == userId
+            i.Id == categoryId && i.OwnerId == reqContext.UserId
         );
         logger.LogInformation("Retrieved category: {Category}", category?.ToString() ?? "null");
         return Task.FromResult(category);
@@ -65,43 +69,48 @@ internal class CategoryRepository(CategoryDbContext dbContext, ILogger<ItemRepos
         return existingCategory;
     }
 
-    public async Task<bool> DeleteAllByListIdAsync(string userId, string listId)
+    public async Task<bool> DeleteAllByListIdAsync(string listId)
     {
-        var toDelete = dbContext.Categories.Where(i => i.ListId == listId && i.OwnerId == userId);
+        var toDelete = dbContext.Categories.Where(i =>
+            i.ListId == listId && i.OwnerId == reqContext.UserId
+        );
         logger.LogInformation(
             "Removing all {Count} categories in list {ListId} by {UserId}",
             toDelete.Count(),
             listId,
-            userId
+            reqContext.UserId
         );
         dbContext.Categories.RemoveRange(toDelete);
         return await dbContext.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> DeleteAllExceptDefaultByListIdAsync(
-        string userId,
         string listId,
         string defaultCategoryId
     )
     {
         var toDelete = dbContext.Categories.Where(i =>
-            i.ListId == listId && i.OwnerId == userId && i.Id != defaultCategoryId
+            i.ListId == listId && i.OwnerId == reqContext.UserId && i.Id != defaultCategoryId
         );
         logger.LogInformation(
             "Removing {Count} categories (all except default category) in list {ListId} by {UserId}",
             toDelete.Count(),
             listId,
-            userId
+            reqContext.UserId
         );
         dbContext.Categories.RemoveRange(toDelete);
         return await dbContext.SaveChangesAsync() > 0;
     }
 
-    public async Task<bool> DeleteByIdAsync(string userId, string listId, string categoryId)
+    public async Task<bool> DeleteByIdAsync(string listId, string categoryId)
     {
-        logger.LogInformation("Removing category: {CategoryId} by {UserId}", categoryId, userId);
+        logger.LogInformation(
+            "Removing category: {CategoryId} by {UserId}",
+            categoryId,
+            reqContext.UserId
+        );
         var toDelete = dbContext.Categories.Where(i =>
-            i.Id == categoryId && i.ListId == listId && i.OwnerId == userId
+            i.Id == categoryId && i.ListId == listId && i.OwnerId == reqContext.UserId
         );
         dbContext.Categories.RemoveRange(toDelete);
         return await dbContext.SaveChangesAsync() > 0;

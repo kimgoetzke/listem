@@ -8,13 +8,13 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
 {
     public async Task<List<ItemResponse>> GetAllAsync(string userId)
     {
-        var result = await itemRepository.GetAllAsync(userId);
+        var result = await itemRepository.GetAllAsync();
         return result.Select(i => i.ToResponse()).ToList();
     }
 
     public async Task<List<ItemResponse>> GetAllByListIdAsync(string userId, string listId)
     {
-        var result = await itemRepository.GetAllByListIdAsync(userId, listId);
+        var result = await itemRepository.GetAllByListIdAsync(listId);
         return result.Select(i => i.ToResponse()).ToList();
     }
 
@@ -34,7 +34,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
         ItemRequest itemRequest
     )
     {
-        var existing = await itemRepository.GetByIdAsync(userId, itemId);
+        var existing = await itemRepository.GetByIdAsync(itemId);
 
         if (existing is null)
             throw new NotFoundException(
@@ -63,7 +63,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
         string defaultCategoryId
     )
     {
-        var items = await itemRepository.GetAllByListIdAsync(userId, listId);
+        var items = await itemRepository.GetAllByListIdAsync(listId);
         foreach (var item in items.Where(item => item.CategoryId != defaultCategoryId))
         {
             item.CategoryId = defaultCategoryId;
@@ -78,7 +78,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
         string currentCategoryId
     )
     {
-        var items = await itemRepository.GetAllByListIdAsync(userId, listId);
+        var items = await itemRepository.GetAllByListIdAsync(listId);
         foreach (var item in items.Where(item => item.CategoryId == currentCategoryId))
         {
             item.CategoryId = defaultCategoryId;
@@ -88,7 +88,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
 
     public async Task DeleteAllByListIdAsync(string userId, string listId)
     {
-        var hasBeenDeleted = await itemRepository.DeleteAllByListIdAsync(userId, listId);
+        var hasBeenDeleted = await itemRepository.DeleteAllByListIdAsync(listId);
         if (!hasBeenDeleted)
         {
             logger.LogInformation("There are no items to delete in list {ListId}", listId);
@@ -97,7 +97,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
 
     public async Task DeleteByIdAsync(string userId, string listId, string itemId)
     {
-        var hasBeenDeleted = await itemRepository.DeleteByIdAsync(userId, listId, itemId);
+        var hasBeenDeleted = await itemRepository.DeleteByIdAsync(listId, itemId);
         if (!hasBeenDeleted)
         {
             throw new NotFoundException($"Failed to delete item {itemId} because it doesn't exist");
