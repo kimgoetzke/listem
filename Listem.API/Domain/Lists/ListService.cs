@@ -16,7 +16,7 @@ public class ListService(IListRepository listRepository) : IListService
         var result = await listRepository.GetByIdAsync(userId, listId);
         return result is not null
             ? result.ToResponse()
-            : throw new NotFoundException("List not found");
+            : throw new NotFoundException($"List {listId} not found");
     }
 
     public Task<bool> ExistsAsync(string userId, string listId)
@@ -56,7 +56,7 @@ public class ListService(IListRepository listRepository) : IListService
         if (result is not null)
             return result.ToResponse();
 
-        throw new NotFoundException($"Failed to update list {listId} even though it was found");
+        throw new SystemException($"Failed to update list {listId} even though it was found");
     }
 
     public async Task DeleteByIdAsync(string userId, string listId)
@@ -64,7 +64,9 @@ public class ListService(IListRepository listRepository) : IListService
         var hasBeenDeleted = await listRepository.DeleteByIdAsync(userId, listId);
         if (!hasBeenDeleted)
         {
-            throw new NotFoundException($"Failed to delete list {listId}");
+            throw new NotFoundException(
+                $"Failed to delete list {listId} because it doesn't exist or user has no access to it"
+            );
         }
     }
 }
