@@ -2,9 +2,8 @@
 using Listem.API.Contracts;
 using Listem.API.Domain.Items;
 using Listem.API.Domain.Lists;
-using Listem.API.Exceptions;
-using Listem.API.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using static Listem.API.Utilities.EndpointUtilities;
 
 namespace Listem.API.Domain.Categories;
 
@@ -21,14 +20,17 @@ public static class CategoryEndpoints
         group.MapDelete("{listId}/categories", ResetByListId).RequireAuthorization();
     }
 
-    public static async Task<IResult> GetAll(ClaimsPrincipal user, ICategoryService categoryService)
+    private static async Task<IResult> GetAll(
+        ClaimsPrincipal user,
+        ICategoryService categoryService
+    )
     {
         var userId = GetUserAndLog(user, $"{nameof(Category)} {nameof(GetAll)}");
         var categories = await categoryService.GetAllAsync(userId);
         return Results.Ok(categories);
     }
 
-    public static async Task<IResult> GetAllByListId(
+    private static async Task<IResult> GetAllByListId(
         ClaimsPrincipal user,
         [FromRoute] string listId,
         ICategoryService categoryService
@@ -39,7 +41,7 @@ public static class CategoryEndpoints
         return Results.Ok(categories);
     }
 
-    public static async Task<IResult> Create(
+    private static async Task<IResult> Create(
         ClaimsPrincipal user,
         [FromRoute] string listId,
         [FromBody] CategoryRequest category,
@@ -53,7 +55,7 @@ public static class CategoryEndpoints
         return Results.Created($"api/category/{createdCategory!.Id}", createdCategory);
     }
 
-    public static async Task<IResult> Update(
+    private static async Task<IResult> Update(
         ClaimsPrincipal user,
         [FromRoute] string listId,
         [FromRoute] string id,
@@ -68,7 +70,7 @@ public static class CategoryEndpoints
         return Results.Ok(updatedCategory);
     }
 
-    public static async Task<IResult> DeleteById(
+    private static async Task<IResult> DeleteById(
         ClaimsPrincipal user,
         [FromRoute] string listId,
         [FromRoute] string id,
@@ -88,7 +90,7 @@ public static class CategoryEndpoints
         return Results.NoContent();
     }
 
-    public static async Task<IResult> ResetByListId(
+    private static async Task<IResult> ResetByListId(
         ClaimsPrincipal user,
         [FromRoute] string listId,
         ICategoryService categoryService,
@@ -123,37 +125,5 @@ public static class CategoryEndpoints
             defaultCategoryId,
             currentCategoryId
         );
-    }
-
-    private static string GetUserAndLog(ClaimsPrincipal user, string message)
-    {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        var email =
-            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
-                ? user.FindFirst(ClaimTypes.Email)?.Value
-                : "";
-
-        if (userId is not null)
-        {
-            Logger.Log($"Request from {email}, id {user}: {message}");
-            return userId;
-        }
-
-        const string errorMessage = "User is not authenticated or cannot be identified";
-        Logger.Log(errorMessage);
-        throw new BadRequestException(errorMessage);
-    }
-
-    private static async Task ThrowIfListDoesNotExist(
-        IListService listService,
-        string userId,
-        string listId
-    )
-    {
-        if (!await listService.ExistsAsync(userId, listId))
-        {
-            throw new BadRequestException($"List {listId} does not exist");
-        }
     }
 }

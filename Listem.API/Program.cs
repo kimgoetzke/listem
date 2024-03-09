@@ -76,7 +76,6 @@ builder
 
 builder.Services.AddSingleton<IListService, ListService>();
 builder.Services.AddSingleton<IListRepository, PlaceholderListRepository>();
-builder.Services.AddSingleton<ListController>();
 builder.Services.AddSingleton<ICategoryService, CategoryService>();
 builder.Services.AddSingleton<ICategoryRepository, PlaceholderCategoryRepository>();
 builder.Services.AddSingleton<IItemService, ItemService>();
@@ -92,9 +91,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+app.MapListEndpoints();
 app.MapCategoryEndpoints();
 app.MapIdentityApi<ListemUser>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpLogging();
+
+// app.UseHttpLogging();
 app.Run();
