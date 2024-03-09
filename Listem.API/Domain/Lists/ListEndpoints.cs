@@ -21,7 +21,7 @@ public static class ListEndpoints
 
     private static async Task<IResult> GetAll(ClaimsPrincipal user, IListService listService)
     {
-        var userId = GetUserAndLog(user, "GET all");
+        var userId = GetUserForLoggedRequest(user, "GET all lists");
         var itemLists = await listService.GetAllAsync(userId);
         return Results.Ok(itemLists);
     }
@@ -32,7 +32,7 @@ public static class ListEndpoints
         IListService listService
     )
     {
-        var userId = GetUserAndLog(user, $"GET {id}");
+        var userId = GetUserForLoggedRequest(user, $"GET list {id}");
         var itemList = await listService.GetByIdAsync(userId, id);
         return Results.Ok(itemList);
     }
@@ -44,11 +44,11 @@ public static class ListEndpoints
         ICategoryService categoryService
     )
     {
-        var userId = GetUserAndLog(user, $"POST {list}");
+        var userId = GetUserForLoggedRequest(user, $"CREATE {list}");
         var createdItemList = await listService.CreateAsync(userId, list);
         var defaultCategory = new CategoryRequest { Name = ICategoryService.DefaultCategoryName };
         await categoryService.CreateAsync(userId, createdItemList!.Id, defaultCategory);
-        return Results.Created($"api/list/{createdItemList.Id}", createdItemList);
+        return Results.Created($"api/lists/{createdItemList.Id}", createdItemList);
     }
 
     private static async Task<IResult> Update(
@@ -58,7 +58,7 @@ public static class ListEndpoints
         IListService listService
     )
     {
-        var userId = GetUserAndLog(user, $"UPDATE {list}");
+        var userId = GetUserForLoggedRequest(user, $"UPDATE list {id}");
         var updatedItemList = await listService.UpdateAsync(userId, id, list);
         return Results.Ok(updatedItemList);
     }
@@ -71,7 +71,7 @@ public static class ListEndpoints
         IItemService itemService
     )
     {
-        var userId = GetUserAndLog(user, $"DELETE {id}");
+        var userId = GetUserForLoggedRequest(user, $"DELETE list {id}");
         await ThrowIfListDoesNotExist(listService, userId, id);
         await categoryService.DeleteAllByListIdAsync(userId, id);
         await itemService.DeleteAllByListIdAsync(userId, id);

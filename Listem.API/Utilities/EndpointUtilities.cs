@@ -6,18 +6,18 @@ namespace Listem.API.Utilities;
 
 public static class EndpointUtilities
 {
-    public static string GetUserAndLog(ClaimsPrincipal user, string message)
+    public static string GetUserForLoggedRequest(ClaimsPrincipal user, string message)
     {
         var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var email =
             Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
                 ? user.FindFirst(ClaimTypes.Email)?.Value
-                : "";
+                : "<Redacted>";
 
         if (userId is not null)
         {
-            Logger.Log($"Request from {email}, id {user}: {message}");
+            Logger.Log($"Request from {email}, id {userId}: {message}");
             return userId;
         }
 

@@ -25,7 +25,7 @@ public static class CategoryEndpoints
         ICategoryService categoryService
     )
     {
-        var userId = GetUserAndLog(user, $"{nameof(Category)} {nameof(GetAll)}");
+        var userId = GetUserForLoggedRequest(user, $"GET all categories");
         var categories = await categoryService.GetAllAsync(userId);
         return Results.Ok(categories);
     }
@@ -36,7 +36,7 @@ public static class CategoryEndpoints
         ICategoryService categoryService
     )
     {
-        var userId = GetUserAndLog(user, $"{nameof(Category)} {nameof(GetAllByListId)} {listId}");
+        var userId = GetUserForLoggedRequest(user, $"GET all categories for {listId}");
         var categories = await categoryService.GetAllByListIdAsync(userId, listId);
         return Results.Ok(categories);
     }
@@ -49,10 +49,13 @@ public static class CategoryEndpoints
         IListService listService
     )
     {
-        var userId = GetUserAndLog(user, $"{nameof(Create)} {nameof(Category)} in {listId}");
+        var userId = GetUserForLoggedRequest(user, $"CREATE {category} in {listId}");
         await ThrowIfListDoesNotExist(listService, userId, listId);
         var createdCategory = await categoryService.CreateAsync(userId, listId, category);
-        return Results.Created($"api/category/{createdCategory!.Id}", createdCategory);
+        return Results.Created(
+            $"api/lists/{listId}/categories/{createdCategory!.Id}",
+            createdCategory
+        );
     }
 
     private static async Task<IResult> Update(
@@ -64,7 +67,7 @@ public static class CategoryEndpoints
         IListService listService
     )
     {
-        var userId = GetUserAndLog(user, $"{nameof(Update)} {nameof(Category)} {id} in {listId}");
+        var userId = GetUserForLoggedRequest(user, $"UPDATE category {id} in {listId}");
         await ThrowIfListDoesNotExist(listService, userId, listId);
         var updatedCategory = await categoryService.UpdateAsync(userId, listId, id, category);
         return Results.Ok(updatedCategory);
@@ -79,10 +82,7 @@ public static class CategoryEndpoints
         IItemService itemService
     )
     {
-        var userId = GetUserAndLog(
-            user,
-            $"{nameof(Category)} {nameof(DeleteById)} {id} in {listId}"
-        );
+        var userId = GetUserForLoggedRequest(user, $"DELETE category {id} in {listId}");
         await ThrowIfListDoesNotExist(listService, userId, listId);
         var defaultCategory = await categoryService.GetDefaultCategory(userId, listId);
         await UpdateItemsToDefaultCategory(itemService, listId, userId, defaultCategory.Id, id);
@@ -98,7 +98,10 @@ public static class CategoryEndpoints
         IItemService itemService
     )
     {
-        var userId = GetUserAndLog(user, $"{nameof(Category)} {nameof(ResetByListId)} {listId}");
+        var userId = GetUserForLoggedRequest(
+            user,
+            $"DELETE all categories except default in {listId}"
+        );
         await ThrowIfListDoesNotExist(listService, userId, listId);
         var defaultCategory = await categoryService.GetDefaultCategory(userId, listId);
         await UpdateItemsToDefaultCategory(itemService, listId, userId, defaultCategory.Id);
