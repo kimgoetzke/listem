@@ -6,13 +6,13 @@ namespace Listem.API.Domain.Items;
 internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> logger)
     : IItemService
 {
-    public async Task<List<ItemResponse>> GetAllAsync(string userId)
+    public async Task<List<ItemResponse>> GetAllAsync()
     {
         var result = await itemRepository.GetAllAsync();
         return result.Select(i => i.ToResponse()).ToList();
     }
 
-    public async Task<List<ItemResponse>> GetAllByListIdAsync(string userId, string listId)
+    public async Task<List<ItemResponse>> GetAllByListIdAsync(string listId)
     {
         var result = await itemRepository.GetAllByListIdAsync(listId);
         return result.Select(i => i.ToResponse()).ToList();
@@ -28,7 +28,6 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
     }
 
     public async Task<ItemResponse?> UpdateAsync(
-        string userId,
         string listId,
         string itemId,
         ItemRequest itemRequest
@@ -57,11 +56,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
         throw new NotFoundException($"Failed to update item {itemId} even though it was found");
     }
 
-    public async Task UpdateToDefaultCategoryAsync(
-        string userId,
-        string listId,
-        string defaultCategoryId
-    )
+    public async Task UpdateToDefaultCategoryAsync(string listId, string defaultCategoryId)
     {
         var items = await itemRepository.GetAllByListIdAsync(listId);
         foreach (var item in items.Where(item => item.CategoryId != defaultCategoryId))
@@ -72,7 +67,6 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
     }
 
     public async Task UpdateToDefaultCategoryAsync(
-        string userId,
         string listId,
         string defaultCategoryId,
         string currentCategoryId
@@ -86,7 +80,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
         }
     }
 
-    public async Task DeleteAllByListIdAsync(string userId, string listId)
+    public async Task DeleteAllByListIdAsync(string listId)
     {
         var hasBeenDeleted = await itemRepository.DeleteAllByListIdAsync(listId);
         if (!hasBeenDeleted)
@@ -95,7 +89,7 @@ internal class ItemService(IItemRepository itemRepository, ILogger<ItemService> 
         }
     }
 
-    public async Task DeleteByIdAsync(string userId, string listId, string itemId)
+    public async Task DeleteByIdAsync(string listId, string itemId)
     {
         var hasBeenDeleted = await itemRepository.DeleteByIdAsync(listId, itemId);
         if (!hasBeenDeleted)

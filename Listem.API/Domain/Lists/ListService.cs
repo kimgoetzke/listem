@@ -5,13 +5,13 @@ namespace Listem.API.Domain.Lists;
 
 internal class ListService(IListRepository listRepository) : IListService
 {
-    public async Task<List<ListResponse>> GetAllAsync(string userId)
+    public async Task<List<ListResponse>> GetAllAsync()
     {
         var result = await listRepository.GetAllAsync();
         return result.Select(l => l.ToResponse()).ToList();
     }
 
-    public async Task<ListResponse?> GetByIdAsync(string userId, string listId)
+    public async Task<ListResponse?> GetByIdAsync(string listId)
     {
         var result = await listRepository.GetByIdAsync(listId);
         return result is not null
@@ -19,7 +19,7 @@ internal class ListService(IListRepository listRepository) : IListService
             : throw new NotFoundException($"List {listId} not found");
     }
 
-    public Task<bool> ExistsAsync(string userId, string listId)
+    public Task<bool> ExistsAsync(string listId)
     {
         return listRepository.ExistsAsync(listId);
     }
@@ -37,11 +37,7 @@ internal class ListService(IListRepository listRepository) : IListService
         return result.ToResponse();
     }
 
-    public async Task<ListResponse?> UpdateAsync(
-        string userId,
-        string listId,
-        ListRequest requested
-    )
+    public async Task<ListResponse?> UpdateAsync(string listId, ListRequest requested)
     {
         var existing = await listRepository.GetByIdAsync(listId);
 
@@ -59,7 +55,7 @@ internal class ListService(IListRepository listRepository) : IListService
         throw new SystemException($"Failed to update list {listId} even though it was found");
     }
 
-    public async Task DeleteByIdAsync(string userId, string listId)
+    public async Task DeleteByIdAsync(string listId)
     {
         var hasBeenDeleted = await listRepository.DeleteByIdAsync(listId);
         if (!hasBeenDeleted)

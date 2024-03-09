@@ -22,19 +22,18 @@ public static class CategoryEndpoints
         endpoints.MapDelete("api/lists/{listId}/categories", ResetByListId).RequireAuthorization();
     }
 
-    private static async Task<IResult> GetAll(IRequestContext req, ICategoryService categoryService)
+    private static async Task<IResult> GetAll(ICategoryService categoryService)
     {
-        var categories = await categoryService.GetAllAsync(req.UserId);
+        var categories = await categoryService.GetAllAsync();
         return Results.Ok(categories);
     }
 
     private static async Task<IResult> GetAllByListId(
-        IRequestContext req,
         [FromRoute] string listId,
         ICategoryService categoryService
     )
     {
-        var categories = await categoryService.GetAllByListIdAsync(req.UserId, listId);
+        var categories = await categoryService.GetAllByListIdAsync(listId);
         return Results.Ok(categories);
     }
 
@@ -46,7 +45,7 @@ public static class CategoryEndpoints
         IListService listService
     )
     {
-        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
+        await ThrowIfListDoesNotExist(listService, listId);
         var createdCategory = await categoryService.CreateAsync(req.UserId, listId, category);
         return Results.Created(
             $"api/lists/{listId}/categories/{createdCategory!.Id}",
@@ -55,7 +54,6 @@ public static class CategoryEndpoints
     }
 
     private static async Task<IResult> Update(
-        IRequestContext req,
         [FromRoute] string listId,
         [FromRoute] string id,
         [FromBody] CategoryRequest category,
@@ -63,13 +61,12 @@ public static class CategoryEndpoints
         IListService listService
     )
     {
-        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
-        var updatedCategory = await categoryService.UpdateAsync(req.UserId, listId, id, category);
+        await ThrowIfListDoesNotExist(listService, listId);
+        var updatedCategory = await categoryService.UpdateAsync(listId, id, category);
         return Results.Ok(updatedCategory);
     }
 
     private static async Task<IResult> DeleteById(
-        IRequestContext req,
         [FromRoute] string listId,
         [FromRoute] string id,
         ICategoryService categoryService,
@@ -77,43 +74,40 @@ public static class CategoryEndpoints
         IItemService itemService
     )
     {
-        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
-        var defaultCategory = await categoryService.GetDefaultCategory(req.UserId, listId);
-        await UpdateItemsToDefaultCategory(itemService, listId, req.UserId, defaultCategory.Id, id);
-        await categoryService.DeleteByIdAsync(req.UserId, listId, id);
+        await ThrowIfListDoesNotExist(listService, listId);
+        var defaultCategory = await categoryService.GetDefaultCategory(listId);
+        await UpdateItemsToDefaultCategory(itemService, listId, defaultCategory.Id, id);
+        await categoryService.DeleteByIdAsync(listId, id);
         return Results.NoContent();
     }
 
     private static async Task<IResult> ResetByListId(
-        IRequestContext req,
         [FromRoute] string listId,
         ICategoryService categoryService,
         IListService listService,
         IItemService itemService
     )
     {
-        await ThrowIfListDoesNotExist(listService, req.UserId, listId);
-        var defaultCategory = await categoryService.GetDefaultCategory(req.UserId, listId);
-        await UpdateItemsToDefaultCategory(itemService, listId, req.UserId, defaultCategory.Id);
-        await categoryService.DeleteAllByListIdAsync(req.UserId, listId, defaultCategory.Id);
+        await ThrowIfListDoesNotExist(listService, listId);
+        var defaultCategory = await categoryService.GetDefaultCategory(listId);
+        await UpdateItemsToDefaultCategory(itemService, listId, defaultCategory.Id);
+        await categoryService.DeleteAllByListIdAsync(listId, defaultCategory.Id);
         return Results.NoContent();
     }
 
     private static async Task UpdateItemsToDefaultCategory(
         IItemService itemService,
         string listId,
-        string userId,
         string defaultCategoryId,
         string? currentCategoryId = null
     )
     {
         if (currentCategoryId is null)
         {
-            await itemService.UpdateToDefaultCategoryAsync(userId, listId, defaultCategoryId);
+            await itemService.UpdateToDefaultCategoryAsync(listId, defaultCategoryId);
             return;
         }
         await itemService.UpdateToDefaultCategoryAsync(
-            userId,
             listId,
             defaultCategoryId,
             currentCategoryId

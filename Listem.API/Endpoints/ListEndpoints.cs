@@ -19,19 +19,15 @@ public static class ListEndpoints
         endpoints.MapDelete("api/lists/{id}", Delete).RequireAuthorization();
     }
 
-    private static async Task<IResult> GetAll(IRequestContext req, IListService listService)
+    private static async Task<IResult> GetAll(IListService listService)
     {
-        var itemLists = await listService.GetAllAsync(req.UserId);
+        var itemLists = await listService.GetAllAsync();
         return Results.Ok(itemLists);
     }
 
-    private static async Task<IResult> GetById(
-        IRequestContext req,
-        [FromRoute] string id,
-        IListService listService
-    )
+    private static async Task<IResult> GetById([FromRoute] string id, IListService listService)
     {
-        var itemList = await listService.GetByIdAsync(req.UserId, id);
+        var itemList = await listService.GetByIdAsync(id);
         return Results.Ok(itemList);
     }
 
@@ -49,28 +45,26 @@ public static class ListEndpoints
     }
 
     private static async Task<IResult> Update(
-        IRequestContext req,
         [FromRoute] string id,
         [FromBody] ListRequest list,
         IListService listService
     )
     {
-        var updatedItemList = await listService.UpdateAsync(req.UserId, id, list);
+        var updatedItemList = await listService.UpdateAsync(id, list);
         return Results.Ok(updatedItemList);
     }
 
     private static async Task<IResult> Delete(
-        IRequestContext req,
         [FromRoute] string id,
         IListService listService,
         ICategoryService categoryService,
         IItemService itemService
     )
     {
-        await ThrowIfListDoesNotExist(listService, req.UserId, id);
-        await itemService.DeleteAllByListIdAsync(req.UserId, id);
-        await categoryService.DeleteAllByListIdAsync(req.UserId, id);
-        await listService.DeleteByIdAsync(req.UserId, id);
+        await ThrowIfListDoesNotExist(listService, id);
+        await itemService.DeleteAllByListIdAsync(id);
+        await categoryService.DeleteAllByListIdAsync(id);
+        await listService.DeleteByIdAsync(id);
         return Results.NoContent();
     }
 }

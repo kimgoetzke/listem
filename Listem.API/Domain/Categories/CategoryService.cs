@@ -11,13 +11,13 @@ internal class CategoryService(
 {
     private const string DefaultCategoryName = ICategoryService.DefaultCategoryName;
 
-    public async Task<List<CategoryResponse>> GetAllAsync(string userId)
+    public async Task<List<CategoryResponse>> GetAllAsync()
     {
         var result = await categoryRepository.GetAllAsync();
         return result.Select(c => c.ToResponse()).ToList();
     }
 
-    public async Task<List<CategoryResponse>> GetAllByListIdAsync(string userId, string listId)
+    public async Task<List<CategoryResponse>> GetAllByListIdAsync(string listId)
     {
         var result = await categoryRepository.GetAllByListIdAsync(listId);
         if (result.Count == 0)
@@ -41,7 +41,6 @@ internal class CategoryService(
     }
 
     public async Task<CategoryResponse?> UpdateAsync(
-        string userId,
         string listId,
         string categoryId,
         CategoryRequest categoryRequest
@@ -72,11 +71,7 @@ internal class CategoryService(
         );
     }
 
-    public async Task DeleteAllByListIdAsync(
-        string userId,
-        string listId,
-        string? defaultCategoryId = null
-    )
+    public async Task DeleteAllByListIdAsync(string listId, string? defaultCategoryId = null)
     {
         if (defaultCategoryId is not null)
         {
@@ -102,7 +97,7 @@ internal class CategoryService(
         }
     }
 
-    public async Task<CategoryResponse> GetDefaultCategory(string userId, string listId)
+    public async Task<CategoryResponse> GetDefaultCategory(string listId)
     {
         var categories = await categoryRepository.GetAllByListIdAsync(listId);
         var result = categories.FirstOrDefault(c => c.Name == DefaultCategoryName);
@@ -113,11 +108,11 @@ internal class CategoryService(
             );
         }
 
-        Logger.Log($"Retrieved default category: {result}");
+        logger.LogInformation("Retrieved default category: {Category}", result);
         return result.ToResponse();
     }
 
-    public async Task DeleteByIdAsync(string userId, string listId, string categoryId)
+    public async Task DeleteByIdAsync(string listId, string categoryId)
     {
         if (!await categoryRepository.DeleteByIdAsync(listId, categoryId))
         {

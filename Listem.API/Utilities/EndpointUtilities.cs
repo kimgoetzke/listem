@@ -5,13 +5,9 @@ namespace Listem.API.Utilities;
 
 public static class EndpointUtilities
 {
-    public static async Task ThrowIfListDoesNotExist(
-        IListService listService,
-        string userId,
-        string listId
-    )
+    public static async Task ThrowIfListDoesNotExist(IListService listService, string listId)
     {
-        if (!await listService.ExistsAsync(userId, listId))
+        if (!await listService.ExistsAsync(listId))
         {
             throw new BadRequestException($"List {listId} does not exist");
         }
