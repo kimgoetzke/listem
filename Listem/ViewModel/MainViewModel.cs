@@ -161,6 +161,12 @@ public partial class MainViewModel : ObservableObject
             "Later"
         );
     }
+    
+    [RelayCommand]
+    private static async Task SignInOrSignUp()
+    {
+        await Shell.Current.Navigation.PushAsync(new LoginPage());
+    }
 
     [RelayCommand]
     private static async Task TapList(ObservableItemList list)

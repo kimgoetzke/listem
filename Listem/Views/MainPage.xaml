@@ -36,8 +36,23 @@
                 <BoxView Style="{DynamicResource ThinLineSeparator}" Margin="25,0,0, 20" />
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
-                       Text="Select theme"
-                       Padding="0,30,20,10" />
+                       Text="Account"
+                       HorizontalOptions="Start"
+                       Padding="25,30,20,10" />
+                <Label FontFamily="MulishRegular"
+                       Text="(Not logged in)"
+                       Padding="25,10,20,10" />
+                <Button Style="{DynamicResource SimpleButton}"
+                        HorizontalOptions="Start"
+                        WidthRequest="175"
+                        Margin="25,10,0, 20"
+                        Text="Sign up or sign in"
+                        Command="{Binding SignInOrSignUpCommand}" />
+                <Label Style="{DynamicResource SubHeadline}"
+                       FontFamily="MulishRegular"
+                       HorizontalOptions="Start"
+                       Text="Theme"
+                       Padding="25,30,20,10" />
                 <CollectionView x:Name="ThemeCollectionView"
                                 SelectedItem="{Binding CurrentTheme}"
                                 ItemsSource="{Binding Themes}"

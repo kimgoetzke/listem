@@ -56,6 +56,7 @@ public static class MauiProgram
 
     private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
+        builder.Services.AddSingleton<LoginPage>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddTransient<EditListPage>();
         builder.Services.AddTransient<DetailPage>();
