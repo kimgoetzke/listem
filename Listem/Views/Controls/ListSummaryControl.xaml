@@ -94,11 +94,6 @@
                                     <ContentView>
                                         <FlexLayout AlignItems="Stretch">
                                             <VerticalStackLayout VerticalOptions="Center">
-                                                <Label Text="Nothing here yet"
-                                                       Margin="0, 10"
-                                                       FontSize="{DynamicResource FontSizeL}"
-                                                       TextColor="{DynamicResource LightTextColor}"
-                                                       HorizontalTextAlignment="Start" />
                                                 <Label Text="Tap to open this list"
                                                        FontSize="{DynamicResource FontSizeM}"
                                                        TextColor="{DynamicResource LightTextColor}"

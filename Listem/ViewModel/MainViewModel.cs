@@ -71,6 +71,7 @@ public partial class MainViewModel : ObservableObject
 
             Lists.Add(list);
         }
+        SortLists();
     }
 
     [RelayCommand]
