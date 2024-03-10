@@ -1,5 +1,5 @@
-using Listem.API.Contracts;
 using Listem.API.Exceptions;
+using Listem.Contracts;
 
 namespace Listem.API.Domain.Lists;
 

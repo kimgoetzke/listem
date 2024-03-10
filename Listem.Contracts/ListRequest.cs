@@ -1,7 +1,7 @@
 ﻿// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Listem.API.Contracts;
+namespace Listem.Contracts;
 
 public class ListRequest
 {

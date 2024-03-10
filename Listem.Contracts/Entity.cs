@@ -1,4 +1,4 @@
-﻿namespace Listem.API.Contracts;
+﻿namespace Listem.Contracts;
 
 public abstract class Entity
 {

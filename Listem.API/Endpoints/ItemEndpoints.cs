@@ -1,7 +1,7 @@
-﻿using Listem.API.Contracts;
-using Listem.API.Domain.Items;
+﻿using Listem.API.Domain.Items;
 using Listem.API.Domain.Lists;
 using Listem.API.Middleware;
+using Listem.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using static Listem.API.Utilities.EndpointUtilities;
 

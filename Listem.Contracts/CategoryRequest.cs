@@ -1,13 +1,11 @@
-using Listem.API.Domain.Categories;
-
-namespace Listem.API.Contracts;
+namespace Listem.Contracts;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable MemberCanBePrivate.Global
 
 public class CategoryRequest
 {
-    public string Name { get; init; } = ICategoryService.DefaultCategoryName;
+    public string Name { get; init; } = CategoryDefault.Name;
 
     public override string ToString()
     {

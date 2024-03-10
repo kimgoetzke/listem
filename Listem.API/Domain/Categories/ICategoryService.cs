@@ -1,4 +1,4 @@
-﻿using Listem.API.Contracts;
+﻿using Listem.Contracts;
 
 namespace Listem.API.Domain.Categories;
 
