@@ -1,10 +1,9 @@
-﻿using Listem.API.Contracts;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Listem.API.Repositories;
+namespace Listem.API.Domain.Users;
 
-public class UserDbContext(DbContextOptions<UserDbContext> options)
+internal class UserDbContext(DbContextOptions<UserDbContext> options)
     : IdentityDbContext<ListemUser>(options)
 {
     protected override void OnModelCreating(ModelBuilder builder)

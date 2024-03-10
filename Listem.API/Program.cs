@@ -1,10 +1,9 @@
-using Listem.API.Contracts;
 using Listem.API.Domain.Categories;
 using Listem.API.Domain.Items;
 using Listem.API.Domain.Lists;
+using Listem.API.Domain.Users;
 using Listem.API.Endpoints;
 using Listem.API.Middleware;
-using Listem.API.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;

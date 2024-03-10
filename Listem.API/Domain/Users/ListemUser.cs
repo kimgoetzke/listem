@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace Listem.API.Contracts;
+namespace Listem.API.Domain.Users;
 
 public class ListemUser : IdentityUser { }
