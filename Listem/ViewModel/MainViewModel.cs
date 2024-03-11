@@ -161,11 +161,11 @@ public partial class MainViewModel : ObservableObject
             "Later"
         );
     }
-    
+
     [RelayCommand]
     private static async Task SignInOrSignUp()
     {
-        await Shell.Current.Navigation.PushAsync(new LoginPage());
+        await Shell.Current.Navigation.PushAsync(new SignInPage());
     }
 
     [RelayCommand]

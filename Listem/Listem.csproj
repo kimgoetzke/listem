@@ -82,7 +82,10 @@
         <MauiXaml Update="Views\Components\ListComponent.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
-        <MauiXaml Update="Views\LoginPage.xaml">
+        <MauiXaml Update="Views\SignInPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Views\SignUpPage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
     </ItemGroup>
@@ -113,8 +116,12 @@
           <SubType>Code</SubType>
         </Compile>
         <Compile Remove="ViewModel\CategoryViewModel.cs" />
-        <Compile Update="Views\LoginPage.xaml.cs">
+        <Compile Update="Views\SignInPage.xaml.cs">
           <DependentUpon>LoginPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\SignUpPage.xaml.cs">
+          <DependentUpon>SignUpPage.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>

@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Views.SignInPage"
+             xmlns:viewmodel="clr-namespace:Listem.ViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="viewmodel:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- The color has to be static for some reason. It will be white if any DynamicResource is used. -->
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior
+            StatusBarColor="{StaticResource StatusBarColor}"
+            StatusBarStyle="DarkContent" />
+    </ContentPage.Behaviors>
+
+    <Grid RowDefinitions="Auto, *">
+        
+        <!-- Nav bar with title -->
+        <Grid Grid.Row="0">
+            <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
+                   BackgroundColor="{DynamicResource BackgroundColorAccent}" />
+            <Grid Margin="0, 15, 0,0">
+                <BoxView VerticalOptions="End" HeightRequest="25"
+                         BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                </BoxView>
+                <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
+                             Command="{Binding BackCommand}"
+                             HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
+                <Label Text="Sign in" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Grid>
+        </Grid>
+        
+        <!-- Content -->
+        <VerticalStackLayout Grid.Row="1"
+                             Padding="20,0"
+                             BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                             MinimumWidthRequest="400" MaximumWidthRequest="850"
+                             VerticalOptions="Fill"
+                             HorizontalOptions="Fill">
+
+            <!-- Content: Email field -->
+            <Grid Margin="5, 20, 5,0"
+                  RowDefinitions="Auto, Auto">
+                <Label Grid.Row="0" Text="Email" 
+                       Style="{DynamicResource ItemProperty}"
+                       HorizontalTextAlignment="Center"/>
+                <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                    <Entry Text="{Binding EmailAddress}" />
+                </Frame>
+            </Grid>
+            
+            <!-- Content: Password field -->
+            <Grid Margin="5, 20, 5,0"
+                  RowDefinitions="Auto, Auto">
+                <Label Grid.Row="0" Text="Password" 
+                       Style="{DynamicResource ItemProperty}"
+                       HorizontalTextAlignment="Center"/>
+                <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                    <Entry Text="{Binding Password}" 
+                           IsPassword="True"/>
+                </Frame>
+            </Grid>
+            
+            <!-- Content: Reset password button -->
+            <Button Style="{DynamicResource SimpleButton}" Text="Reset password"
+                    FontSize="{DynamicResource FontSizeS}"
+                    WidthRequest="130"/>
+            
+            <!-- Content: Sign in button -->
+            <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
+                    Command="{Binding LoginCommand}"/>
+            
+            <!-- Content: Or text and description -->
+            <Label Text="- OR -" 
+                   Padding="0,40"
+                   Style="{DynamicResource ItemProperty}"
+                   TextColor="{DynamicResource LightTextColor}"
+                   HorizontalTextAlignment="Center"/>
+            <Label Text="Don't have an account yet?" 
+                   Padding="0,20"
+                   Style="{DynamicResource ItemProperty}"
+                   HorizontalTextAlignment="Center"/>
+            
+            <!-- Content: Sign up button -->
+            <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"/>
+            
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
