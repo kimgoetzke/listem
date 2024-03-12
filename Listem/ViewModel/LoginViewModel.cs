@@ -9,13 +9,13 @@ namespace Listem.ViewModel;
 public partial class LoginViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string _emailAddress = string.Empty;
+    private string _emailAddress = "Enter your email address";
 
     [ObservableProperty]
-    private string _password = string.Empty;
+    private string _password = "Enter your password";
 
     [ObservableProperty]
-    private string _passwordConfirmed = string.Empty;
+    private string _passwordConfirmed = "Re-enter your password";
 
     private readonly HttpClient _httpClient = new();
 

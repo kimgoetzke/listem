@@ -136,6 +136,14 @@
             </VisualStateGroupList>
         </Setter>
     </Style>
+    <Style TargetType="Label" x:Key="Link">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeM}" />
+        <Setter Property="FontFamily" Value="MulishBold" />
+        <Setter Property="HorizontalOptions" Value="Center" />
+        <Setter Property="TextDecorations" Value="Underline" />
+        <Setter Property="HorizontalTextAlignment" Value="Center" />
+    </Style>
     <Style TargetType="Label" x:Key="Headline">
         <Setter Property="TextColor" Value="{DynamicResource HeadlineColor}" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeXL}" />

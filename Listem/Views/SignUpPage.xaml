@@ -16,6 +16,8 @@
     </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, *">
+        
+        <!-- Nav bar with title -->
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
                    BackgroundColor="{DynamicResource BackgroundColorAccent}" />
@@ -26,10 +28,12 @@
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
                              Command="{Binding BackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
-                <Label Text="Sign in" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                <Label Text="Register" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
                        VerticalOptions="Center" />
             </Grid>
         </Grid>
+        
+        <!-- Content -->
         <VerticalStackLayout Grid.Row="1"
                              Padding="20,0"
                              BackgroundColor="{DynamicResource BackgroundColorAccent}"
@@ -72,7 +76,9 @@
                 </Frame>
             </Grid>
             
+            <!-- Content: Sign up button -->
             <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"/>
+            
         </VerticalStackLayout>
     </Grid>
 

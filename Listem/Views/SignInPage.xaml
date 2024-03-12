@@ -16,7 +16,7 @@
     </ContentPage.Behaviors>
 
     <Grid RowDefinitions="Auto, *">
-        
+
         <!-- Nav bar with title -->
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
@@ -32,7 +32,7 @@
                        VerticalOptions="Center" />
             </Grid>
         </Grid>
-        
+
         <!-- Content -->
         <VerticalStackLayout Grid.Row="1"
                              Padding="20,0"
@@ -42,51 +42,42 @@
                              HorizontalOptions="Fill">
 
             <!-- Content: Email field -->
-            <Grid Margin="5, 20, 5,0"
+            <Grid Margin="5, 60, 5,0"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Email" 
-                       Style="{DynamicResource ItemProperty}"
-                       HorizontalTextAlignment="Center"/>
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
                     <Entry Text="{Binding EmailAddress}" />
                 </Frame>
             </Grid>
-            
+
             <!-- Content: Password field -->
-            <Grid Margin="5, 20, 5,0"
+            <Grid Margin="5, 5, 5,0"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Password" 
-                       Style="{DynamicResource ItemProperty}"
-                       HorizontalTextAlignment="Center"/>
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding Password}" 
-                           IsPassword="True"/>
+                    <Entry Text="{Binding Password}" />
                 </Frame>
             </Grid>
-            
-            <!-- Content: Reset password button -->
-            <Button Style="{DynamicResource SimpleButton}" Text="Reset password"
-                    FontSize="{DynamicResource FontSizeS}"
-                    WidthRequest="130"/>
-            
+
+            <!-- Content: Reset password link -->
+            <Label Text="Forgot password?"
+                   Padding="0,20"
+                   Style="{DynamicResource Link}" />
+
             <!-- Content: Sign in button -->
             <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
-                    Command="{Binding LoginCommand}"/>
-            
-            <!-- Content: Or text and description -->
-            <Label Text="- OR -" 
-                   Padding="0,40"
-                   Style="{DynamicResource ItemProperty}"
-                   TextColor="{DynamicResource LightTextColor}"
-                   HorizontalTextAlignment="Center"/>
-            <Label Text="Don't have an account yet?" 
-                   Padding="0,20"
-                   Style="{DynamicResource ItemProperty}"
-                   HorizontalTextAlignment="Center"/>
-            
-            <!-- Content: Sign up button -->
-            <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"/>
-            
+                    Command="{Binding LoginCommand}" />
+
+            <!-- Content: Register link -->
+            <HorizontalStackLayout HorizontalOptions="Center">
+                <Label Text="Don't have an account yet?  "
+                       Padding="0,20"
+                       Style="{DynamicResource ItemProperty}"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Register"
+                       Padding="0,20"
+                       Style="{DynamicResource Link}"
+                       FontSize="{DynamicResource FontSizeM}"/>
+            </HorizontalStackLayout>
+
         </VerticalStackLayout>
     </Grid>
 </ContentPage>
