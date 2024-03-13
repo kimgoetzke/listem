@@ -9,13 +9,13 @@ namespace Listem.ViewModel;
 public partial class LoginViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string _emailAddress = "Enter your email address";
+    private string? _emailAddress;
 
     [ObservableProperty]
-    private string _password = "Enter your password";
+    private string? _password;
 
     [ObservableProperty]
-    private string _passwordConfirmed = "Re-enter your password";
+    private string? _passwordConfirmed;
 
     private readonly HttpClient _httpClient = new();
 
@@ -28,9 +28,18 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task Login()
     {
+        StopIfNull([EmailAddress, Password]);
+    }
+
+    [RelayCommand]
+    private async Task Register()
+    {
+        StopIfNull([EmailAddress, Password, PasswordConfirmed]);
+
         if (Password != PasswordConfirmed)
         {
             Logger.Log("Passwords do not match!");
+            Notifier.ShowToast("Passwords do not match.");
             return;
         }
 
@@ -48,5 +57,13 @@ public partial class LoginViewModel : ObservableObject
     private static async Task GoToSignUp()
     {
         await Shell.Current.Navigation.PushAsync(new SignUpPage());
+    }
+
+    private static void StopIfNull(IEnumerable<string> strings)
+    {
+        if (!strings.Any(string.IsNullOrEmpty))
+            return;
+
+        Notifier.ShowToast("You must enter your password and email first.");
     }
 }

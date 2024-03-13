@@ -15,7 +15,7 @@
             StatusBarStyle="DarkContent" />
     </ContentPage.Behaviors>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *" Background="{DynamicResource BackgroundColorAccent}">
 
         <!-- Nav bar with title -->
         <Grid Grid.Row="0">
@@ -35,17 +35,22 @@
 
         <!-- Content -->
         <VerticalStackLayout Grid.Row="1"
-                             Padding="20,0"
+                             Padding="20,0 ,20,150"
                              BackgroundColor="{DynamicResource BackgroundColorAccent}"
                              MinimumWidthRequest="400" MaximumWidthRequest="850"
-                             VerticalOptions="Fill"
+                             VerticalOptions="Center"
                              HorizontalOptions="Fill">
 
             <!-- Content: Email field -->
-            <Grid Margin="5, 60, 5,0"
-                  RowDefinitions="Auto, Auto">
+            <Grid Margin="5, 0" RowDefinitions="Auto, Auto">
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding EmailAddress}" />
+                    <Grid ColumnDefinitions="Auto, *"
+                          VerticalOptions="Fill"
+                          HorizontalOptions="Fill" ColumnSpacing="5">
+                        <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                        <Entry Grid.Column="1" Text="{Binding EmailAddress}"
+                               Placeholder="Enter your email address" />
+                    </Grid>
                 </Frame>
             </Grid>
 
@@ -53,7 +58,13 @@
             <Grid Margin="5, 5, 5,0"
                   RowDefinitions="Auto, Auto">
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding Password}" />
+                    <Grid ColumnDefinitions="Auto, *"
+                          VerticalOptions="Fill"
+                          HorizontalOptions="Fill" ColumnSpacing="5">
+                        <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                        <Entry Grid.Column="1" Text="{Binding Password}"
+                               Placeholder="Enter your password" IsPassword="True" />
+                    </Grid>
                 </Frame>
             </Grid>
 
@@ -66,18 +77,30 @@
             <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
                     Command="{Binding LoginCommand}" />
 
-            <!-- Content: Register link -->
-            <HorizontalStackLayout HorizontalOptions="Center">
+        </VerticalStackLayout>
+
+        <!-- Content: Register link -->
+        <Grid Grid.Row="1" VerticalOptions="End" RowDefinitions="Auto, Auto">
+            <VerticalStackLayout Grid.Row="0" Padding="60, 10">
+                <Label
+                    Text="You only need an account if you want to share lists with others or access your lists on another device."
+                    FontSize="{DynamicResource FontSizeXS}"
+                    HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+            <HorizontalStackLayout Grid.Row="1" Padding="0, 0, 0, 30"
+                                   HorizontalOptions="Center" VerticalOptions="Fill">
                 <Label Text="Don't have an account yet?  "
-                       Padding="0,20"
                        Style="{DynamicResource ItemProperty}"
                        HorizontalTextAlignment="Center" />
-                <Label Text="Register"
-                       Padding="0,20"
+                <Label Text="Sign up now!"
                        Style="{DynamicResource Link}"
-                       FontSize="{DynamicResource FontSizeM}"/>
+                       FontSize="{DynamicResource FontSizeM}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoToSignUpCommand}" NumberOfTapsRequired="1" />
+                    </Label.GestureRecognizers>
+                </Label>
             </HorizontalStackLayout>
+        </Grid>
 
-        </VerticalStackLayout>
     </Grid>
 </ContentPage>

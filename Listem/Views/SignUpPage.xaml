@@ -15,8 +15,8 @@
             StatusBarStyle="DarkContent" />
     </ContentPage.Behaviors>
 
-    <Grid RowDefinitions="Auto, *">
-        
+    <Grid RowDefinitions="Auto, *" BackgroundColor="{DynamicResource BackgroundColorAccent}">
+
         <!-- Nav bar with title -->
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
@@ -28,57 +28,65 @@
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
                              Command="{Binding BackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
-                <Label Text="Register" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                <Label Text="Create an account" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
                        VerticalOptions="Center" />
             </Grid>
         </Grid>
-        
+
         <!-- Content -->
         <VerticalStackLayout Grid.Row="1"
-                             Padding="20,0"
+                             Padding="20,0,20,150"
                              BackgroundColor="{DynamicResource BackgroundColorAccent}"
                              MinimumWidthRequest="400" MaximumWidthRequest="850"
-                             VerticalOptions="Fill"
+                             VerticalOptions="Center"
                              HorizontalOptions="Fill">
 
             <!-- Content: Email entry -->
-            <Grid Margin="5, 20, 5,0"
+            <Grid Margin="5, 0, 5,0"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Email" 
-                       Style="{DynamicResource ItemProperty}"
-                       HorizontalTextAlignment="Center"/>
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding EmailAddress}" />
+                    <Grid ColumnDefinitions="Auto, *"
+                          VerticalOptions="Fill"
+                          HorizontalOptions="Fill" ColumnSpacing="5">
+                        <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                        <Entry Grid.Column="1" Text="{Binding EmailAddress}"
+                               Placeholder="Enter your email address" />
+                    </Grid>
                 </Frame>
             </Grid>
-            
+
             <!-- Content: Password entry -->
-            <Grid Margin="5, 20, 5,0"
+            <Grid Margin="5, 0, 5,0"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Password" 
-                       Style="{DynamicResource ItemProperty}"
-                       HorizontalTextAlignment="Center"/>
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding Password}" 
-                           IsPassword="True"/>
+                    <Grid ColumnDefinitions="Auto, *"
+                          VerticalOptions="Fill"
+                          HorizontalOptions="Fill" ColumnSpacing="5">
+                        <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                        <Entry Grid.Column="1" Text="{Binding Password}"
+                               Placeholder="Enter your password" IsPassword="True" />
+                    </Grid>
                 </Frame>
             </Grid>
-            
+
             <!-- Content: Confirm password entry -->
-            <Grid Margin="5, 20, 5,0"
+            <Grid Margin="5, 0, 5,20"
                   RowDefinitions="Auto, Auto">
-                <Label Grid.Row="0" Text="Confirm password" 
-                       Style="{DynamicResource ItemProperty}"
-                       HorizontalTextAlignment="Center"/>
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding PasswordConfirmed}" 
-                           IsPassword="True"/>
+                    <Grid ColumnDefinitions="Auto, *"
+                          VerticalOptions="Fill"
+                          HorizontalOptions="Fill" ColumnSpacing="5">
+                        <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                        <Entry Grid.Column="1" Text="{Binding PasswordConfirmed}"
+                               Placeholder="Re-enter your password" IsPassword="True" />
+                    </Grid>
                 </Frame>
             </Grid>
-            
+
             <!-- Content: Sign up button -->
-            <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"/>
-            
+            <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"
+                    Command="{Binding RegisterCommand}" />
+
         </VerticalStackLayout>
     </Grid>
 
