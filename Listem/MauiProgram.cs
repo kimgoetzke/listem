@@ -48,6 +48,7 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<MainViewModel>();
+        builder.Services.AddSingleton<LoginViewModel>();
         builder.Services.AddTransient<EditListViewModel>();
         builder.Services.AddTransient<ListViewModel>();
         builder.Services.AddTransient<DetailViewModel>();

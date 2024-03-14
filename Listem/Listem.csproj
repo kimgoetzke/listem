@@ -126,4 +126,8 @@
         </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Listem.Contracts\Listem.Contracts.csproj" />
+    </ItemGroup>
+
 </Project>
