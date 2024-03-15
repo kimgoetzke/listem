@@ -79,6 +79,11 @@ To run the tests:
 
 ### How to configure the backend for development
 
+Create a new certificate if you are running the application for the first time in HTTPS mode:
+```shell
+dotnet dev-certs https --trust
+```
+
 The first time running the application, you'll need to create the database and run the migrations. This can be done by
 running the following command from the root of the repository:
 

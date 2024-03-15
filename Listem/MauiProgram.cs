@@ -31,10 +31,15 @@ public static class MauiProgram
 
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
+        builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
         builder.Services.AddSingleton<IItemListService, ItemListService>();
         builder.Services.AddSingleton<ICategoryService, CategoryService>();
         builder.Services.AddSingleton<IItemService, ItemService>();
+        builder.Services.AddHttpClient(
+            Constants.HttpClientName,
+            client => client.BaseAddress = new Uri(Constants.BaseUrlLocalhost)
+        );
         builder.Services.AddSingleton<IClipboardService, ClipboardService>();
         builder.Services.AddLogging();
 
@@ -58,8 +63,8 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<MainPage>();
-        builder.Services.AddTransient<SignInPage>();
-        builder.Services.AddTransient<SignUpPage>();
+        builder.Services.AddSingleton<SignInPage>();
+        builder.Services.AddSingleton<SignUpPage>();
         builder.Services.AddTransient<EditListPage>();
         builder.Services.AddTransient<DetailPage>();
         builder.Services.AddTransient<ListPage>();

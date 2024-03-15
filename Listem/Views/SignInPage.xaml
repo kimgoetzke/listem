@@ -48,7 +48,7 @@
                           VerticalOptions="Fill"
                           HorizontalOptions="Fill" ColumnSpacing="5">
                         <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
-                        <Entry Grid.Column="1" Text="{Binding EmailAddress}"
+                        <Entry Grid.Column="1" Text="{Binding Email}"
                                Placeholder="Enter your email address" />
                     </Grid>
                 </Frame>

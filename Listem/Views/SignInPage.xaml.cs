@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Maui.Core;
+using Listem.Services;
 using Listem.ViewModel;
 
 namespace Listem.Views;
@@ -9,7 +10,12 @@ public partial class SignInPage
     public SignInPage()
     {
         InitializeComponent();
-        BindingContext = new LoginViewModel();
+        var authService = IPlatformApplication.Current?.Services.GetService<AuthService>();
+
+        if (authService is null)
+            throw new NullReferenceException("AuthenticationService is null");
+
+        BindingContext = new LoginViewModel(authService);
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]

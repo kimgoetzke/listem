@@ -1,8 +1,9 @@
-﻿using System.Text;
-using System.Text.Json;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Listem.Contracts;
+using Listem.Events;
+using Listem.Services;
 using Listem.Utilities;
 using Listem.Views;
 
@@ -11,7 +12,7 @@ namespace Listem.ViewModel;
 public partial class LoginViewModel : ObservableObject
 {
     [ObservableProperty]
-    private string? _emailAddress;
+    private string? _email;
 
     [ObservableProperty]
     private string? _password;
@@ -19,19 +20,22 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty]
     private string? _passwordConfirmed;
 
-    private static readonly HttpClient HttpClient =
-        new(new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(1) })
-        {
-            BaseAddress = new Uri("http://10.0.2.2:5041")
-        };
+    private readonly AuthService _authService;
 
-    private static JsonSerializerOptions JsonOptions =>
-        new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true
-        };
+    public LoginViewModel(AuthService authService)
+    {
+        _authService = authService;
+
+        WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
+            this,
+            (_, m) =>
+            {
+                Logger.Log($"Received message: Setting current user email to '{m.Value}'");
+                Email = m.Value;
+                OnPropertyChanged(nameof(Email)); // TODO: Find out why email isn't pre-populated after first sign-in
+            }
+        );
+    }
 
     [RelayCommand]
     private static async Task Back()
@@ -40,66 +44,35 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task Login()
+    private async Task Register()
     {
-        StopIfNull([EmailAddress, Password]);
-        var json = JsonSerializer.Serialize(
-            new UserCredentials(EmailAddress!, Password!),
-            JsonOptions
-        );
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        StopIfNull([Email, Password, PasswordConfirmed]);
 
-        try
+        if (Password != PasswordConfirmed)
         {
-            var response = await HttpClient.PostAsync("login", content);
-            Logger.Log($"Responded {response.StatusCode} to POST /login: {response}");
+            const string msg = "Passwords do not match";
+            Logger.Log(msg);
+            Notifier.ShowToast(msg);
+            return;
         }
-        catch (HttpRequestException e)
+
+        var result = await _authService.Register(new UserCredentials(Email!, Password!));
+        Notifier.ShowToast(result.Message);
+        if (result.Success)
         {
-            Logger.Log($"Responded {e.StatusCode} to POST /login: {e}");
-            Notifier.ShowToast("Failed to connect - please try again later");
+            await Shell.Current.Navigation.PopAsync();
         }
     }
 
     [RelayCommand]
-    private async Task Register()
+    private async Task Login()
     {
-        StopIfNull([EmailAddress, Password, PasswordConfirmed]);
-
-        if (Password != PasswordConfirmed)
+        StopIfNull([Email, Password]);
+        var result = await _authService.Login(new UserCredentials(Email!, Password!));
+        Notifier.ShowToast(result.Message);
+        if (result.Success)
         {
-            Logger.Log("Passwords do not match!");
-            Notifier.ShowToast("The passwords must match");
-            return;
-        }
-
-        var json = JsonSerializer.Serialize(
-            new UserCredentials(EmailAddress!, Password!),
-            JsonOptions
-        );
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-        try
-        {
-            var response = await HttpClient.PostAsync("/register", content);
-            Logger.Log($"Responded '{response.StatusCode}' to POST /register: {response}");
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorResponse = await response.Content.ReadAsStringAsync();
-                var errorObj = JsonSerializer.Deserialize<ErrorResponse>(
-                    errorResponse,
-                    JsonOptions
-                );
-                Logger.Log($"Error response: {errorResponse}");
-                Notifier.ShowToast(
-                    errorObj!.Errors?.Values.First().First()
-                        ?? "Failed to connect - please try again later"
-                );
-            }
-        }
-        catch (HttpRequestException)
-        {
-            Notifier.ShowToast("Failed to connect - please notify the developer");
+            await Shell.Current.Navigation.PopAsync();
         }
     }
 
@@ -109,7 +82,7 @@ public partial class LoginViewModel : ObservableObject
         await Shell.Current.Navigation.PushAsync(new SignUpPage());
     }
 
-    private static void StopIfNull(IEnumerable<string> strings)
+    private static void StopIfNull(IEnumerable<string?> strings)
     {
         if (!strings.Any(string.IsNullOrEmpty))
             return;

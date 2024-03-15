@@ -34,14 +34,21 @@
             <VerticalStackLayout Padding="0" WidthRequest="200" HorizontalOptions="Start">
                 <Label Text="Settings" Style="{DynamicResource Headline}" Margin="0, 20, 0, 0" />
                 <BoxView Style="{DynamicResource ThinLineSeparator}" Margin="25,0,0, 20" />
+                
+                <!-- Account -->
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
                        Text="Account"
                        HorizontalOptions="Start"
                        Padding="25,30,20,10" />
                 <Label FontFamily="MulishRegular"
-                       Text="(Not logged in)"
-                       Padding="25,10,20,10" />
+                       FontSize="{DynamicResource FontSizeXS}"
+                       Text="Logged in as:"
+                       Padding="25,10,20,0" />
+                <Label FontFamily="MulishRegular"
+                       FontSize="{DynamicResource FontSizeXS}"
+                       Text="{Binding CurrentUserEmail}"
+                       Padding="25,0,20,10" />
                 <Button Style="{DynamicResource SimpleButton}"
                         HorizontalOptions="Start"
                         WidthRequest="175"
@@ -53,6 +60,8 @@
                        HorizontalOptions="Start"
                        Text="Theme"
                        Padding="25,30,20,10" />
+                
+                <!-- Themes -->
                 <CollectionView x:Name="ThemeCollectionView"
                                 SelectedItem="{Binding CurrentTheme}"
                                 ItemsSource="{Binding Themes}"

@@ -24,13 +24,22 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableTheme _currentTheme;
 
+    [ObservableProperty]
+    private string _currentUserEmail = "(Not signed in)";
+
+    private readonly AuthService _authService;
     private readonly IItemListService _itemListService;
     private readonly IItemService _itemService;
 
-    public MainViewModel(IItemListService itemListService, IItemService itemService)
+    public MainViewModel(
+        IItemListService itemListService,
+        IItemService itemService,
+        AuthService authService
+    )
     {
         _itemListService = itemListService;
         _itemService = itemService;
+        _authService = authService;
         NewList = new ObservableItemList();
         Lists = [];
         Themes = ThemeHandler.GetAllThemesAsCollection();
@@ -55,6 +64,25 @@ public partial class MainViewModel : ObservableObject
                 Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
             }
         );
+
+        WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
+            this,
+            (_, m) =>
+            {
+                Logger.Log($"Received message: Setting current user email to '{m.Value}'");
+                CurrentUserEmail = m.Value;
+            }
+        );
+    }
+
+    public async Task AuthenticateIfUserKnown()
+    {
+        var currentUser = await _authService.Authenticate();
+        if (currentUser != null)
+        {
+            CurrentUserEmail = currentUser.EmailAddress!;
+        }
+        Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
 
     public async Task LoadItemLists()
