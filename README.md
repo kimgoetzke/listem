@@ -36,8 +36,9 @@ little less nasty and also use some shared, custom controls. In addition, I want
 
 1. Set environment variables for builds and running tests
     1. `ANDROID_HOME` - the absolute path of the Android SDK
-    2. `SHOPPING_LIST_DEBUG_APK` - the absolute path of the debug APK
-    3. `SHOPPING_LIST_RELEASE_APK` - the absolute path of the release APK
+    2. `SHOPPING_LIST_DEBUG_APK` - the absolute path of the debug APK, used by UI tests only
+    3. `SHOPPING_LIST_RELEASE_APK` - the absolute path of the release APK, used by UI tests only
+2. Run `dotnet restore` in the base directory to restore all dependencies
 
 ### How to build the APK
 
@@ -79,28 +80,31 @@ To run the tests:
 
 ### How to configure the backend for development
 
-Create a new certificate if you are running the application for the first time in HTTPS mode:
-```shell
-dotnet dev-certs https --trust
-```
+1. Run `dotnet restore` in the base directory to restore all dependencies, if you haven't already done so
 
-The first time running the application, you'll need to create the database and run the migrations. This can be done by
-running the following command from the root of the repository:
+2. The first time running the application, you'll need to create the database and run the migrations. This can be done
+   by running the following command from the root of the repository:
 
-```shell
-cd Listem.API && dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists  && dotnet ef database update --context ListDbContext && dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories && dotnet ef database update --context CategoryDbContext && dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items && dotnet ef database update --context ItemDbContext && dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users && dotnet ef database update --context UserDbContext
-```
+    ```shell
+    cd Listem.API && dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists  && dotnet ef database update --context ListDbContext && dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories && dotnet ef database update --context CategoryDbContext && dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items && dotnet ef database update --context ItemDbContext && dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users && dotnet ef database update --context UserDbContext
+    ```
 
-Alternatively, if you want to run each command separately:
+    Alternatively, if you want to run each command separately:
 
-```shell
-cd Listem.API
-dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists
-dotnet ef database update --context ListDbContext
-dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories 
-dotnet ef database update --context CategoryDbContext
-dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items
-dotnet ef database update --context ItemDbContext
-dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users 
-dotnet ef database update --context UserDbContext
-```
+    ```shell
+    cd Listem.API
+    dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists
+    dotnet ef database update --context ListDbContext
+    dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories 
+    dotnet ef database update --context CategoryDbContext
+    dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items
+    dotnet ef database update --context ItemDbContext
+    dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users 
+    dotnet ef database update --context UserDbContext
+    ```
+
+3. Optional: Create a new certificate if you are running the application for the first time in HTTPS mode:
+
+    ```shell
+    dotnet dev-certs https --trust
+    ```
