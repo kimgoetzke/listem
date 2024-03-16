@@ -10,7 +10,7 @@
 			"name": "Authentication",
 			"item": [
 				{
-					"name": "/register",
+					"name": "register",
 					"event": [
 						{
 							"listen": "test",
@@ -53,7 +53,7 @@
 					"response": []
 				},
 				{
-					"name": "/login",
+					"name": "login",
 					"event": [
 						{
 							"listen": "test",
@@ -99,7 +99,7 @@
 			"name": "Item Lists",
 			"item": [
 				{
-					"name": "/api/item-list",
+					"name": "api/lists",
 					"event": [
 						{
 							"listen": "test",
@@ -137,7 +137,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5041/api/item-list",
+							"raw": "http://localhost:5041/api/lists",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -145,14 +145,14 @@
 							"port": "5041",
 							"path": [
 								"api",
-								"item-list"
+								"lists"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "/api/item-list/{id}",
+					"name": "api/lists/{id}",
 					"event": [
 						{
 							"listen": "test",
@@ -190,7 +190,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5041/api/item-list/{{currentItemList}}",
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -198,7 +198,7 @@
 							"port": "5041",
 							"path": [
 								"api",
-								"item-list",
+								"lists",
 								"{{currentItemList}}"
 							]
 						}
@@ -206,109 +206,7 @@
 					"response": []
 				},
 				{
-					"name": "/api/item-list/{id}",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{currentAccessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"name\": \"updated {{$randomNoun}} list\",\r\n  \"listType\": 1\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5041/api/item-list/{{currentItemList}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5041",
-							"path": [
-								"api",
-								"item-list",
-								"{{currentItemList}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "/api/item-list/{id}",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{currentAccessToken}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5041/api/item-list/{{currentItemList}}",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5041",
-							"path": [
-								"api",
-								"item-list",
-								"{{currentItemList}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "/api/item-list",
+					"name": "api/lists",
 					"event": [
 						{
 							"listen": "test",
@@ -348,7 +246,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:5041/api/item-list",
+							"raw": "http://localhost:5041/api/lists",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -356,7 +254,765 @@
 							"port": "5041",
 							"path": [
 								"api",
-								"item-list"
+								"lists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"updated {{$randomNoun}} list\",\r\n  \"listType\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "api/categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"    let res = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"currentCategory\", res.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"{{$randomNoun}} category\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/categories/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"updated {{$randomNoun}} category\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/categories/{{currentCategory}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"categories",
+								"{{currentCategory}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/categories/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/categories/{{currentCategory}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"categories",
+								"{{currentCategory}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/categories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Items",
+			"item": [
+				{
+					"name": "api/items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+									"    let res = pm.response.json();\r",
+									"    pm.collectionVariables.set(\"currentItem\", res.id);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"item {{$randomInt}}\",\r\n  \"quantity\": 1,\r\n  \"isImportant\": false,\r\n  \"categoryId\": \"{{currentCategory}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/items/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"updated item {{$randomInt}}\",\r\n  \"quantity\": 1,\r\n  \"isImportant\": false,\r\n  \"categoryId\": \"{{currentCategory}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/items/{{currentItem}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"items",
+								"{{currentItem}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/items/{id}",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/items/{{currentItem}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"items",
+								"{{currentItem}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "api/lists/{listId}/items",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{currentAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5041/api/lists/{{currentItemList}}/items",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5041",
+							"path": [
+								"api",
+								"lists",
+								"{{currentItemList}}",
+								"items"
 							]
 						}
 					},
@@ -411,6 +1067,16 @@
 		},
 		{
 			"key": "currentItemList",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "currentCategory",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "currentItem",
 			"value": "",
 			"type": "string"
 		}
