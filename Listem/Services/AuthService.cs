@@ -12,9 +12,10 @@ namespace Listem.Services;
 
 public class AuthService
 {
-    public User CurrentUser { get; private set; } = null!;
+    private User CurrentUser { get; set; } = null!;
 
     private readonly HttpClient _httpClient;
+    private readonly IConnectivity _connectivity;
 
     private static JsonSerializerOptions JsonOptions =>
         new()
@@ -24,20 +25,35 @@ public class AuthService
             WriteIndented = true
         };
 
-    public AuthService(IHttpClientFactory httpClientFactory)
+    // TODO: Implement sign in using refresh token
+    public AuthService(IHttpClientFactory httpClientFactory, IConnectivity connectivity)
     {
-        SignOut(); // TODO: Remove once auth is implemented
+        // SignOut(); // TODO: Remove once testing is done
+        _connectivity = connectivity;
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientName);
         InitialiseComponent().SafeFireAndForget();
     }
 
     private async Task InitialiseComponent()
     {
-        CurrentUser = await FetchUserFromStorage().ConfigureAwait(false) ?? new User();
-        Logger.Log($"Initialised auth service with user: {CurrentUser.EmailAddress}");
+        CurrentUser = await FetchExistingUser().ConfigureAwait(false) ?? new User();
+        Logger.Log($"Initialised auth service with user: {CurrentUser}");
     }
 
-    public async Task<User?> Authenticate()
+    public async Task<bool> IsOnline()
+    {
+        return _connectivity.NetworkAccess == NetworkAccess.Internet;
+        // if (_connectivity.NetworkAccess != NetworkAccess.Internet)
+        // {
+        //     await Shell.Current.DisplayAlert(
+        //         "Offline mode",
+        //         "Seems like you're offline. You can continue to use the app but you cannot use sharing features or backup your list in the cloud.",
+        //         "OK"
+        //     );
+        // }
+    }
+
+    public async Task<User?> FetchExistingUser()
     {
         // TODO: Login, refresh token, etc.
         return await FetchUserFromStorage();
@@ -45,21 +61,19 @@ public class AuthService
 
     private static async Task<User?> FetchUserFromStorage()
     {
-        var storedUser = await SecureStorage.Default.GetAsync("CurrentUser");
+        var storedUser = await SecureStorage.Default.GetAsync(Constants.User);
+
         if (storedUser == null)
             return null;
 
-        var deserialisedUser = JsonSerializer.Deserialize<User>(storedUser);
-        return deserialisedUser ?? null;
+        return JsonSerializer.Deserialize<User>(storedUser) ?? null;
     }
 
-    public async Task<AuthResult> Register(UserCredentials credentials)
+    public async Task<AuthResult> SignUp(UserCredentials credentials)
     {
-        var json = JsonSerializer.Serialize(credentials, JsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
         try
         {
+            var content = CreateStringContent(credentials);
             var response = await _httpClient.PostAsync("/register", content);
             if (!response.IsSuccessStatusCode)
             {
@@ -73,19 +87,17 @@ public class AuthService
         catch (HttpRequestException e)
         {
             Logger.Log($"Error: {e}");
-            const string msg = "Error code RU1 - please notify the developer";
+            const string msg = "Error code RU1 - try again or notify the developer";
             Notifier.ShowToast(msg);
             return new AuthResult(false, msg);
         }
     }
 
-    public async Task<AuthResult> Login(UserCredentials credentials)
+    public async Task<AuthResult> SignIn(UserCredentials credentials)
     {
-        var json = JsonSerializer.Serialize(credentials, JsonOptions);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
         try
         {
+            var content = CreateStringContent(credentials);
             var response = await _httpClient.PostAsync("/login", content);
             if (!response.IsSuccessStatusCode)
             {
@@ -100,18 +112,23 @@ public class AuthService
         catch (HttpRequestException e)
         {
             Logger.Log($"Error: {e}");
-            const string msg = "Error code LU2 - please notify the developer";
+            const string msg = "Error code LU2 - try again or notify the developer";
             return new AuthResult(false, msg);
         }
+    }
+
+    private static StringContent CreateStringContent(UserCredentials credentials)
+    {
+        var json = JsonSerializer.Serialize(credentials, JsonOptions);
+        return new StringContent(json, Encoding.UTF8, "application/json");
     }
 
     private static async Task<string> ParseErrorResponse(HttpResponseMessage response, string url)
     {
         var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
         Logger.Log($"Error response from {url}: {errorResponse}");
-        var msg =
-            errorResponse!.Errors?.Values.First().First() ?? "Failed to sign in - please try again";
-        return msg;
+        return errorResponse!.Errors?.Values.First().First()
+            ?? "Failed to sign in - please try again";
     }
 
     private void UpdateCurrentUser(string email, UserLoginResponse? loginResponse = null)
@@ -125,7 +142,7 @@ public class AuthService
             EmailAddress = email
         };
         SecureStorage
-            .Default.SetAsync(Constants.UserEmail, JsonSerializer.Serialize(email))
+            .Default.SetAsync(Constants.User, JsonSerializer.Serialize(CurrentUser))
             .SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserEmailSetMessage(email));
         Logger.Log($"Updated current user to: {CurrentUser}");

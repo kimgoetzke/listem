@@ -85,7 +85,7 @@
 
             <!-- Content: Sign up button -->
             <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"
-                    Command="{Binding RegisterCommand}" />
+                    Command="{Binding SignUpCommand}" />
 
         </VerticalStackLayout>
     </Grid>

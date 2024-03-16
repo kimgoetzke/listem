@@ -20,19 +20,24 @@ public partial class LoginViewModel : ObservableObject
     [ObservableProperty]
     private string? _passwordConfirmed;
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly AuthService _authService;
 
-    public LoginViewModel(AuthService authService)
+    public LoginViewModel(IServiceProvider serviceProvider)
     {
-        _authService = authService;
+        _serviceProvider = serviceProvider;
+        _authService =
+            serviceProvider.GetService<AuthService>()
+            ?? throw new NullReferenceException("AuthenticationService is null");
 
         WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
             this,
             (_, m) =>
             {
-                Logger.Log($"Received message: Setting current user email to '{m.Value}'");
+                Logger.Log(
+                    $"Received message: Setting current user email to '{m.Value}' in LoginViewModel"
+                );
                 Email = m.Value;
-                OnPropertyChanged(nameof(Email)); // TODO: Find out why email isn't pre-populated after first sign-in
             }
         );
     }
@@ -44,9 +49,11 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task Register()
+    private async Task SignUp()
     {
-        StopIfNull([Email, Password, PasswordConfirmed]);
+        var isValidated = ValidateInputFields([Email, Password, PasswordConfirmed]);
+        if (!isValidated)
+            return;
 
         if (Password != PasswordConfirmed)
         {
@@ -56,37 +63,46 @@ public partial class LoginViewModel : ObservableObject
             return;
         }
 
-        var result = await _authService.Register(new UserCredentials(Email!, Password!));
+        var result = await _authService.SignUp(new UserCredentials(Email!, Password!));
         Notifier.ShowToast(result.Message);
         if (result.Success)
         {
             await Shell.Current.Navigation.PopAsync();
+            Password = null;
+            PasswordConfirmed = null;
         }
     }
 
     [RelayCommand]
-    private async Task Login()
+    private async Task SignIn()
     {
-        StopIfNull([Email, Password]);
-        var result = await _authService.Login(new UserCredentials(Email!, Password!));
-        Notifier.ShowToast(result.Message);
-        if (result.Success)
-        {
-            await Shell.Current.Navigation.PopAsync();
-        }
-    }
-
-    [RelayCommand]
-    private static async Task GoToSignUp()
-    {
-        await Shell.Current.Navigation.PushAsync(new SignUpPage());
-    }
-
-    private static void StopIfNull(IEnumerable<string?> strings)
-    {
-        if (!strings.Any(string.IsNullOrEmpty))
+        var isValidated = ValidateInputFields([Email, Password]);
+        if (!isValidated)
             return;
 
-        Notifier.ShowToast("You must enter your email and password first");
+        var result = await _authService.SignIn(new UserCredentials(Email!, Password!));
+        Notifier.ShowToast(result.Message);
+        if (result.Success)
+        {
+            await Shell.Current.Navigation.PopAsync();
+            Password = null;
+        }
+    }
+
+    [RelayCommand]
+    private async Task GoToSignUp()
+    {
+        var signUpPage = _serviceProvider.GetService<SignUpPage>();
+        await Shell.Current.Navigation.PushAsync(signUpPage);
+    }
+
+    // TODO: Replace with real validation and visible requirements and live feedback on page
+    private static bool ValidateInputFields(IEnumerable<string?> strings)
+    {
+        if (!strings.Any(string.IsNullOrEmpty))
+            return true;
+
+        Notifier.ShowToast("You must enter both email and password");
+        return false;
     }
 }

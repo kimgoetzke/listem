@@ -36,6 +36,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IItemListService, ItemListService>();
         builder.Services.AddSingleton<ICategoryService, CategoryService>();
         builder.Services.AddSingleton<IItemService, ItemService>();
+        builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
         builder.Services.AddHttpClient(
             Constants.HttpClientName,
             client => client.BaseAddress = new Uri(Constants.BaseUrlLocalhost)

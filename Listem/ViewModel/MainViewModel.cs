@@ -27,19 +27,17 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _currentUserEmail = "(Not signed in)";
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly AuthService _authService;
     private readonly IItemListService _itemListService;
     private readonly IItemService _itemService;
 
-    public MainViewModel(
-        IItemListService itemListService,
-        IItemService itemService,
-        AuthService authService
-    )
+    public MainViewModel(IServiceProvider serviceProvider)
     {
-        _itemListService = itemListService;
-        _itemService = itemService;
-        _authService = authService;
+        _serviceProvider = serviceProvider;
+        _itemListService = serviceProvider.GetService<IItemListService>()!;
+        _itemService = serviceProvider.GetService<IItemService>()!;
+        _authService = serviceProvider.GetService<AuthService>()!;
         NewList = new ObservableItemList();
         Lists = [];
         Themes = ThemeHandler.GetAllThemesAsCollection();
@@ -77,7 +75,13 @@ public partial class MainViewModel : ObservableObject
 
     public async Task AuthenticateIfUserKnown()
     {
-        var currentUser = await _authService.Authenticate();
+        var isOnline = await _authService.IsOnline();
+        if (!isOnline)
+        {
+            Notifier.ShowToast("No internet connection - you're in offline mode");
+            return;
+        }
+        var currentUser = await _authService.FetchExistingUser();
         if (currentUser != null)
         {
             CurrentUserEmail = currentUser.EmailAddress!;
@@ -191,9 +195,10 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static async Task SignInOrSignUp()
+    private async Task SignInOrSignUp()
     {
-        await Shell.Current.Navigation.PushAsync(new SignInPage());
+        var signInPage = _serviceProvider.GetService<SignInPage>()!;
+        await Shell.Current.Navigation.PushAsync(signInPage);
     }
 
     [RelayCommand]

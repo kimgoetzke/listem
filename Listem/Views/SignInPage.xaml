@@ -75,7 +75,7 @@
 
             <!-- Content: Sign in button -->
             <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
-                    Command="{Binding LoginCommand}" />
+                    Command="{Binding SignInCommand}" />
 
         </VerticalStackLayout>
 
