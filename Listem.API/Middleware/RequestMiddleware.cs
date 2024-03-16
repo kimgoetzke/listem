@@ -5,15 +5,18 @@ public class RequestMiddleware(RequestDelegate next, ILogger<RequestMiddleware> 
     public async Task InvokeAsync(HttpContext context, IRequestContext requestContext)
     {
         var start = TimeProvider.System.GetTimestamp();
-        requestContext.Set(context.User);
+        if (context.Request.Path.StartsWithSegments("/api"))
+        {
+            requestContext.Set(context.User);
+        }
 
         logger.LogInformation(
             "[BEFORE REQUEST] {RequestId}: {Method} {Path} by user {UserId} with email {UserEmail}",
             requestContext.RequestId,
             context.Request.Method,
             context.Request.Path,
-            requestContext.UserId,
-            requestContext.UserEmail
+            requestContext.UserId == "" ? "(null)" : requestContext.UserId,
+            requestContext.UserEmail == "" ? "(null)" : requestContext.UserEmail
         );
         try
         {

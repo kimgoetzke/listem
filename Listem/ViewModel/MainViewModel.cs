@@ -27,6 +27,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private string _currentUserEmail = "(Not signed in)";
 
+    [ObservableProperty]
+    private bool _isUserSignedIn;
+
     private readonly IServiceProvider _serviceProvider;
     private readonly AuthService _authService;
     private readonly IItemListService _itemListService;
@@ -69,22 +72,24 @@ public partial class MainViewModel : ObservableObject
             {
                 Logger.Log($"Received message: Setting current user email to '{m.Value}'");
                 CurrentUserEmail = m.Value;
+                IsUserSignedIn = true;
             }
         );
     }
 
-    public async Task AuthenticateIfUserKnown()
+    public async Task SetUserIfKnown()
     {
-        var isOnline = await _authService.IsOnline();
-        if (!isOnline)
+        if (!_authService.IsOnline())
         {
             Notifier.ShowToast("No internet connection - you're in offline mode");
+            IsUserSignedIn = false;
             return;
         }
         var currentUser = await _authService.FetchExistingUser();
         if (currentUser != null)
         {
             CurrentUserEmail = currentUser.EmailAddress!;
+            IsUserSignedIn = true;
         }
         Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
@@ -199,6 +204,13 @@ public partial class MainViewModel : ObservableObject
     {
         var signInPage = _serviceProvider.GetService<SignInPage>()!;
         await Shell.Current.Navigation.PushAsync(signInPage);
+    }
+
+    [RelayCommand]
+    private void SignOut()
+    {
+        _authService.SignOut();
+        IsUserSignedIn = false;
     }
 
     [RelayCommand]

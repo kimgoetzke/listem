@@ -1,3 +1,4 @@
+using Listem.Contracts;
 using SQLite;
 
 namespace Listem.Models;

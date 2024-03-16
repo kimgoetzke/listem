@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Listem.Models;
 using Listem.Services;
 using Listem.Utilities;
-using ListType = Listem.Models.ListType;
+using ListType = Listem.Contracts.ListType;
 
 namespace Listem.ViewModel;
 

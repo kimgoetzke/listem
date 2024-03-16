@@ -100,7 +100,7 @@ if (app.Environment.IsDevelopment())
 app.MapListEndpoints();
 app.MapCategoryEndpoints();
 app.MapItemEndpoints();
-app.MapIdentityApi<ListemUser>().ShortCircuit();
+app.MapIdentityApi<ListemUser>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseRequestMiddleware();
