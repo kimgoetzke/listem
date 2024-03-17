@@ -10,6 +10,6 @@ public interface ICategoryService
     Task DeleteAllByListIdAsync(string listId);
 }
 
-public interface IApiCategoryService : ICategoryService { }
+public interface IApiCategoryService : ICategoryService;
 
-public interface ILocalCategoryService : ICategoryService { }
+public interface ILocalCategoryService : ICategoryService;

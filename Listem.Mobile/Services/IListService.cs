@@ -10,6 +10,6 @@ public interface IListService
     Task DeleteAllAsync();
 }
 
-public interface IApiListService : IListService { }
+public interface IApiListService : IListService;
 
-public interface ILocalListService : IListService { }
+public interface ILocalListService : IListService;

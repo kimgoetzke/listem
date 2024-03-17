@@ -12,6 +12,6 @@ public interface IItemService
     Task UpdateAllToCategoryAsync(string categoryName, string listId);
 }
 
-public interface IApiItemService : IItemService { }
+public interface IApiItemService : IItemService;
 
-public interface ILocalItemService : IItemService { }
+public interface ILocalItemService : IItemService;
