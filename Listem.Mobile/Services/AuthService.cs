@@ -16,6 +16,8 @@ public class AuthService
 
     public bool IsOnline() => _connectivity.NetworkAccess == NetworkAccess.Internet;
 
+    public bool IsUserSignedIn() => CurrentUser.IsAuthenticated;
+
     private readonly HttpClient _httpClient;
     private readonly IConnectivity _connectivity;
 

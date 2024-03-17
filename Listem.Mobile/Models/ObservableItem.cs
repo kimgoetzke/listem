@@ -40,6 +40,7 @@ public partial class ObservableItem(string listId) : ObservableObject
         };
     }
 
+    // TODO: Fix bug where category name is mapped to response category id
     public static ObservableItem From(ItemResponse item)
     {
         return new ObservableItem(item.ListId)
@@ -53,6 +54,7 @@ public partial class ObservableItem(string listId) : ObservableObject
         };
     }
 
+    // TODO: Fix bug where request category id is mapped to observable category name
     public ItemRequest ToItemRequest()
     {
         return new ItemRequest

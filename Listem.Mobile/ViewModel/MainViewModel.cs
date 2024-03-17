@@ -100,7 +100,7 @@ public partial class MainViewModel : ObservableObject
         var lists = await _listService.GetAllAsync();
         foreach (var list in lists)
         {
-            var items = await _itemService.GetAllByListIdAsync(list.Id);
+            var items = await _itemService.GetAllByListIdAsync(list.Id!);
             foreach (var item in items)
             {
                 list.Items.Add(item);
