@@ -4,7 +4,7 @@ using Item = Listem.Mobile.Models.Item;
 
 namespace Listem.Mobile.Services;
 
-public class OfflineItemService(IDatabaseProvider db) : IOfflineItemService
+public class LocalItemService(IDatabaseProvider db) : ILocalItemService
 {
     public async Task<List<ObservableItem>> GetAllByListIdAsync(string listId)
     {

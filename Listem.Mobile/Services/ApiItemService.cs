@@ -6,11 +6,11 @@ using static Listem.Mobile.Utilities.HttpUtilities;
 
 namespace Listem.Mobile.Services;
 
-public class OnlineItemService : IOnlineItemService
+public class ApiItemService : IApiItemService
 {
     private readonly HttpClient _httpClient;
 
-    public OnlineItemService(IServiceProvider serviceProvider)
+    public ApiItemService(IServiceProvider serviceProvider)
     {
         var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>()!;
         var authService = serviceProvider.GetService<AuthService>()!;

@@ -16,6 +16,7 @@ public class AuthService
 
     public bool IsOnline() => _connectivity.NetworkAccess == NetworkAccess.Internet;
 
+    // TODO: Set this correctly when app starts
     public bool IsUserSignedIn() => CurrentUser.IsAuthenticated;
 
     private readonly HttpClient _httpClient;

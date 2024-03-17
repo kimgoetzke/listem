@@ -32,16 +32,15 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
-        builder.Services.AddSingleton<IListService, BaseListService>();
-
-        builder.Services.AddSingleton<IOnlineListService, OnlineListService>();
-        builder.Services.AddSingleton<ICategoryService, OnlineCategoryService>();
-        builder.Services.AddSingleton<IItemService, OnlineItemService>();
-
-        builder.Services.AddSingleton<IOfflineListService, OfflineListService>();
-        // builder.Services.AddSingleton<IOfflineCategoryService, OfflineCategoryService>();
-        // builder.Services.AddSingleton<IOfflineItemService, OfflineItemService>();
-
+        builder.Services.AddSingleton<IListService, ListServiceResolver>();
+        builder.Services.AddSingleton<IApiListService, ApiListService>();
+        builder.Services.AddSingleton<ILocalListService, LocalListService>();
+        builder.Services.AddSingleton<ICategoryService, CategoryServiceResolver>();
+        builder.Services.AddSingleton<IApiCategoryService, ApiCategoryService>();
+        builder.Services.AddSingleton<ILocalCategoryService, LocalCategoryService>();
+        builder.Services.AddSingleton<IItemService, ItemServiceResolver>();
+        builder.Services.AddSingleton<IApiItemService, ApiItemService>();
+        builder.Services.AddSingleton<ILocalItemService, LocalItemService>();
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
         builder.Services.AddHttpClient(
             Constants.HttpClientName,

@@ -6,7 +6,7 @@ using Models_Category = Listem.Mobile.Models.Category;
 
 namespace Listem.Mobile.Services;
 
-public class OfflineListService(IDatabaseProvider db) : IOfflineListService
+public class LocalListService(IDatabaseProvider db) : ILocalListService
 {
     public async Task<List<ObservableList>> GetAllAsync()
     {

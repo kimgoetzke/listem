@@ -6,7 +6,7 @@ using Category = Listem.Mobile.Models.Category;
 
 namespace Listem.Mobile.Services;
 
-public class OfflineCategoryService(IDatabaseProvider db) : IOfflineCategoryService
+public class LocalCategoryService(IDatabaseProvider db) : ILocalCategoryService
 {
     private ObservableCategory? _defaultCategory;
 
@@ -25,13 +25,6 @@ public class OfflineCategoryService(IDatabaseProvider db) : IOfflineCategoryServ
             throw new NullReferenceException("This list does not have default category");
 
         return _defaultCategory;
-    }
-
-    public async Task<List<ObservableCategory>> GetAllAsync()
-    {
-        var connection = await db.GetConnection();
-        var categories = await connection.Table<Category>().ToListAsync();
-        return ConvertToObservableItems(categories);
     }
 
     public async Task<List<ObservableCategory>> GetAllByListIdAsync(string listId)

@@ -7,11 +7,11 @@ using static Listem.Mobile.Utilities.HttpUtilities;
 
 namespace Listem.Mobile.Services;
 
-public class OnlineListService : IOnlineListService
+public class ApiListService : IApiListService
 {
     private readonly HttpClient _httpClient;
 
-    public OnlineListService(IServiceProvider serviceProvider)
+    public ApiListService(IServiceProvider serviceProvider)
     {
         var httpClientFactory = serviceProvider.GetService<IHttpClientFactory>()!;
         var authService = serviceProvider.GetService<AuthService>()!;
