@@ -1,4 +1,4 @@
-﻿namespace UITests;
+﻿namespace Listem.Mobile.UITests;
 
 public class UnitTest : BaseTest
 {

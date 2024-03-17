@@ -2,7 +2,7 @@
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.Enums;
 
-namespace UITests;
+namespace Listem.Mobile.UITests;
 
 [SetUpFixture]
 public class AppiumSetup

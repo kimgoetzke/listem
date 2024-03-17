@@ -1,7 +1,7 @@
 ﻿using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 
-namespace UITests;
+namespace Listem.Mobile.UITests;
 
 public abstract class BaseTest
 {
@@ -20,6 +20,6 @@ public abstract class BaseTest
     protected void TakeScreenshot(string name)
     {
         App.GetScreenshot().SaveAsFile($"{_date}-{name}.png");
-        Console.WriteLine($@"[XXX] Took screenshot: UITests\bin\Debug\net8.0\{_date}-{name}.png");
+        Console.WriteLine($@"[XXX] Took screenshot: Listem.Mobile.UITests\bin\Debug\net8.0\{_date}-{name}.png");
     }
 }

@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium.Appium.Service;
 
-namespace UITests;
+namespace Listem.Mobile.UITests;
 
 public static class AppiumServerHelper
 {
