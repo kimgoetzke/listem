@@ -7,9 +7,11 @@ using Listem.Mobile.Utilities;
 
 namespace Listem.Mobile.Services;
 
-public class ClipboardService(ICategoryService categoryService, IItemService itemService)
-    : IClipboardService
+public class ClipboardService(IServiceProvider sp) : IClipboardService
 {
+    private readonly ICategoryService _categoryService = sp.GetService<ICategoryService>()!;
+    private readonly IItemService _itemService = sp.GetService<IItemService>()!;
+
     public async void InsertFromClipboardAsync(
         ObservableCollection<ObservableItem> observableItems,
         ObservableCollection<ObservableCategory> categories,
@@ -21,7 +23,7 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
         if (IsClipboardEmpty(import))
             return;
 
-        var observableCategories = await categoryService.GetAllByListIdAsync(listId);
+        var observableCategories = await _categoryService.GetAllByListIdAsync(listId);
         if (
             !WasAbleToConvertToItemList(
                 listId,
@@ -165,7 +167,7 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     {
         foreach (var store in toCreate)
         {
-            await categoryService.CreateOrUpdateAsync(store);
+            await _categoryService.CreateOrUpdateAsync(store);
             stores.Add(store);
         }
     }
@@ -177,7 +179,7 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     {
         foreach (var item in toImport)
         {
-            await itemService.CreateOrUpdateAsync(item);
+            await _itemService.CreateOrUpdateAsync(item);
             var value = new ItemChangedDto(item.ListId, item);
             WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
             items.Add(item);
