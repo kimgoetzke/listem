@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Listem.Mobile.Models"
+             xmlns:viewModel="clr-namespace:Listem.Mobile.ViewModel"
+             x:Class="Listem.Mobile.Views.Controls.ListSummaryControl">
+
+    <CollectionView ItemsSource="{Binding Lists}"
+                    ItemsLayout="HorizontalList"
+                    VerticalOptions="Fill"
+                    SelectionMode="None"
+                    x:Name="ParentCollectionView"
+                    x:DataType="viewModel:MainViewModel">
+
+        <CollectionView.Header>
+            <BoxView WidthRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Header>
+
+        <!-- Content: Box -->
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="{x:Type models:ObservableList}">
+                <FlexLayout>
+
+                    <!-- Box -->
+                    <Frame FlexLayout.Grow="1"
+                           Margin="10"
+                           WidthRequest="230"
+                           BorderColor="Transparent"
+                           BackgroundColor="{DynamicResource BackgroundColorAccent}">
+
+                        <Frame.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Frame.GestureRecognizers>
+
+                        <!-- Box: List summary -->
+                        <Grid RowDefinitions="Auto, *, Auto">
+
+                            <!-- List summary: Title and edit button -->
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto" HorizontalOptions="Fill">
+                                <Label Grid.Column="0"
+                                       VerticalTextAlignment="Start"
+                                       HorizontalOptions="Start"
+                                       HorizontalTextAlignment="Start"
+                                       Style="{DynamicResource SubHeadline}"
+                                       Text="{Binding Name}"
+                                       LineBreakMode="WordWrap" />
+                                <ImageButton Grid.Column="1"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=EditListCommand}"
+                                             CommandParameter="{Binding .}"
+                                             Margin="0"
+                                             Source="pencil_primary_margin.png"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="Start"
+                                             WidthRequest="40"
+                                             HeightRequest="40" />
+                            </Grid>
+
+                            <!-- List summary: Items inside the list -->
+                            <CollectionView Grid.Row="1" ItemsSource="{Binding Items}"
+                                            VerticalOptions="Fill"
+                                            Margin="0,5,0,0"
+                                            BackgroundColor="Transparent"
+                                            SelectionMode="None">
+
+                                <CollectionView.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </CollectionView.GestureRecognizers>
+
+                                <!-- Items inside the list: Content -->
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate x:DataType="{x:Type models:ObservableItem}">
+                                        <HorizontalStackLayout HorizontalOptions="Start" Padding="0" Margin="0">
+                                            <HorizontalStackLayout.GestureRecognizers>
+                                                <TapGestureRecognizer
+                                                    Command="{Binding Source={x:Reference ParentCollectionView}, Path=SelectedItem}"
+                                                    CommandParameter="{Binding .}" />
+                                            </HorizontalStackLayout.GestureRecognizers>
+                                            <CheckBox Scale="0.8" IsEnabled="False" />
+                                            <Label Text="{Binding Title}"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{DynamicResource TextColor}" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+
+                                <!-- Items inside the list: Fallback if empty -->
+                                <CollectionView.EmptyView>
+                                    <ContentView>
+                                        <FlexLayout AlignItems="Stretch">
+                                            <VerticalStackLayout VerticalOptions="Center">
+                                                <Label Text="Tap to open this list"
+                                                       FontSize="{DynamicResource FontSizeM}"
+                                                       TextColor="{DynamicResource LightTextColor}"
+                                                       HorizontalTextAlignment="Start" />
+                                                <Label Text="and start adding items"
+                                                       FontSize="{DynamicResource FontSizeM}"
+                                                       TextColor="{DynamicResource LightTextColor}"
+                                                       HorizontalTextAlignment="Start" />
+                                            </VerticalStackLayout>
+                                        </FlexLayout>
+                                    </ContentView>
+                                </CollectionView.EmptyView>
+
+                            </CollectionView>
+
+                            <!-- Box: Gradients transparent to white drawn over the CollectionView -->
+                            <BoxView Grid.Row="1"
+                                     FlexLayout.Grow="1"
+                                     Style="{DynamicResource LeftTransparentToRightWhite}" />
+
+                            <BoxView Grid.Row="1"
+                                     FlexLayout.Grow="1"
+                                     Style="{DynamicResource TopTransparentToBottomWhite}" />
+
+                            <!-- Box: Bottom bar with list options -->
+                            <Grid Grid.Row="2" HorizontalOptions="Fill">
+                                <ImageButton Source="bin_secondary_margin.png"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=RemoveListCommand}"
+                                             CommandParameter="{Binding .}"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="End"
+                                             WidthRequest="40"
+                                             HeightRequest="40" />
+                            </Grid>
+
+                        </Grid>
+
+                    </Frame>
+
+                </FlexLayout>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+
+        <!-- Content: Fallback if there are no lists -->
+        <CollectionView.EmptyView>
+            <ContentView>
+                <StackLayout HorizontalOptions="Center"
+                             VerticalOptions="Center">
+                    <Label Text="Nothing here yet"
+                           Margin="0, 10"
+                           FontSize="{DynamicResource FontSizeL}"
+                           TextColor="{DynamicResource LightTextColor}"
+                           HorizontalOptions="Fill"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Create a list to get started"
+                           FontSize="{DynamicResource FontSizeM}"
+                           HorizontalOptions="Fill"
+                           TextColor="{DynamicResource LightTextColor}"
+                           HorizontalTextAlignment="Center" />
+                </StackLayout>
+            </ContentView>
+        </CollectionView.EmptyView>
+
+        <CollectionView.Footer>
+            <BoxView WidthRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Footer>
+
+    </CollectionView>
+</ContentView>

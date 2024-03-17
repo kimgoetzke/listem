@@ -1,5 +1,5 @@
-using Listem.API.Utilities;
-using Listem.Contracts;
+using Listem.Shared.Contracts;
+using Listem.Shared.Utilities;
 
 namespace Listem.API.Domain.Items;
 

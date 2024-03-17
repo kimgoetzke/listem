@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Mobile.Views.DetailPage"
+             xmlns:converters="clr-namespace:Listem.Mobile.Converters"
+             xmlns:viewModel1="clr-namespace:Listem.Mobile.ViewModel"
+             x:DataType="viewModel1:DetailViewModel">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:BoolToYesNoConverter x:Key="BoolToTextConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto, *">
+        <Grid Grid.Row="0">
+            <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent" />
+            <Grid Margin="0, 15, 0,0">
+                <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
+                <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
+                             Command="{Binding BackCommand}"
+                             HorizontalOptions="Start" VerticalOptions="Center" Margin="15, 0" />
+                <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Grid>
+        </Grid>
+
+        <VerticalStackLayout Grid.Row="1"
+                             Padding="20,0"
+                             BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                             MinimumWidthRequest="400" MaximumWidthRequest="850"
+                             VerticalOptions="Fill"
+                             HorizontalOptions="Fill">
+
+            <!-- Item name -->
+            <Grid Margin="5, 20, 5,0"
+                  RowDefinitions="Auto, Auto">
+                <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
+                <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                    <Entry Text="{Binding ObservableItem.Title, Mode=TwoWay}" />
+                </Frame>
+            </Grid>
+
+            <!-- Category -->
+            <Grid RowDefinitions="1*">
+                <VerticalStackLayout Padding="5">
+                    <Label Text="Category" Style="{DynamicResource ItemProperty}" />
+                    <Frame Style="{DynamicResource EntryFrame}">
+                        <Grid ColumnDefinitions="Auto, *"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="Fill" ColumnSpacing="5">
+                            <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
+                            <Picker Grid.Column="1"
+                                    Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select category'}"
+                                    SelectedItem="{Binding CurrentCategory, Mode=TwoWay}"
+                                    ItemsSource="{Binding Categories}"
+                                    TextColor="{DynamicResource TextColor}"
+                                    TitleColor="{DynamicResource PickerTitleColor}"
+                                    MinimumWidthRequest="400" MaximumWidthRequest="850"
+                                    HorizontalOptions="Fill" />
+                        </Grid>
+                    </Frame>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Is important -->
+            <Grid RowDefinitions="1*"
+                  ColumnDefinitions=".5*, .5*">
+                <HorizontalStackLayout Grid.Column="0" Padding="5">
+                    <Label Text="Important: " Style="{DynamicResource ItemProperty}" />
+                    <Label x:Name="IsImportantProperty"
+                           Text="{Binding ObservableItem.IsImportant, Converter={StaticResource BoolToTextConverter}}"
+                           Style="{DynamicResource ItemProperty}" />
+                </HorizontalStackLayout>
+                <Switch IsToggled="{Binding ObservableItem.IsImportant, Mode=TwoWay}"
+                        Grid.Column="1"
+                        VerticalOptions="Center"
+                        Toggled="IsImportantSwitch_OnToggled"
+                        HorizontalOptions="{OnPlatform WinUI='Start', Default='Center'}" />
+            </Grid>
+
+            <!-- Quantity -->
+            <Grid x:Name="QuantityGrid" RowDefinitions="1*" ColumnDefinitions=".5*, .5*" IsVisible="False">
+                <Grid.Triggers>
+                    <DataTrigger TargetType="Grid" Binding="{Binding ListType}" Value="Shopping">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Grid.Triggers>
+                <HorizontalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
+                    <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
+                    <Label x:Name="QuantityProperty"
+                           Text="{Binding ObservableItem.Quantity}"
+                           Style="{DynamicResource ItemProperty}" />
+                </HorizontalStackLayout>
+                <Stepper Value="{Binding ObservableItem.Quantity}"
+                         Grid.Column="1"
+                         Minimum="1" Maximum="99" Increment="1"
+                         VerticalOptions="Center"
+                         ValueChanged="QuantityStepper_OnValueChanged"
+                         HorizontalOptions="{OnPlatform WinUI='Start', Default='Center'}" />
+            </Grid>
+
+            <!-- Added on -->
+            <HorizontalStackLayout Padding="0, 5, 0, 40" Margin="5" VerticalOptions="Center">
+                <Label Text="Added on: " Style="{DynamicResource ItemProperty}" />
+                <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemProperty}" />
+            </HorizontalStackLayout>
+
+            <!-- Save button -->
+            <Button Text="Save"
+                    Style="{DynamicResource GradientButton}"
+                    Command="{Binding SaveAndBackCommand}" />
+
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

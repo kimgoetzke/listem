@@ -1,5 +1,5 @@
 using Listem.API.Exceptions;
-using Listem.Contracts;
+using Listem.Shared.Contracts;
 
 namespace Listem.API.Domain.Categories;
 
@@ -8,8 +8,6 @@ internal class CategoryService(
     ILogger<CategoryService> logger
 ) : ICategoryService
 {
-    private const string DefaultCategoryName = ICategoryService.DefaultCategoryName;
-
     public async Task<List<CategoryResponse>> GetAllAsync()
     {
         var result = await categoryRepository.GetAllAsync();
@@ -99,11 +97,11 @@ internal class CategoryService(
     public async Task<CategoryResponse> GetDefaultCategory(string listId)
     {
         var categories = await categoryRepository.GetAllByListIdAsync(listId);
-        var result = categories.FirstOrDefault(c => c.Name == DefaultCategoryName);
+        var result = categories.FirstOrDefault(c => c.Name == Shared.Constants.DefaultCategoryName);
         if (result is null)
         {
             throw new ServerErrorException(
-                $"Default category '{DefaultCategoryName}' does not exist in list {listId} but it must always exist"
+                $"Default category '{Shared.Constants.DefaultCategoryName}' does not exist in list {listId} but it must always exist"
             );
         }
 

@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:Listem.Mobile.Views.Controls"
+             x:Class="Listem.Mobile.Views.Controls.StickyEntry">
+
+    <Grid VerticalOptions="End"
+          BackgroundColor="Transparent">
+        <Frame CornerRadius="10"
+               Padding="0"
+               HasShadow="True"
+               BorderColor="Transparent"
+               Shadow="{DynamicResource NeutralShadowM}"
+               BackgroundColor="{DynamicResource BackgroundColorAccent}">
+            <Grid ColumnSpacing="10"
+                  ColumnDefinitions="*,Auto,Auto"
+                  RowDefinitions="55">
+                <Entry Grid.Column="0"
+                       x:Name="StickyEntryField"
+                       x:DataType="controls:StickyEntry"
+                       BindingContext="{Binding .}"
+                       ReturnCommand="{Binding SubmitInputCommand}"
+                       Unfocused="StickyEntryField_Unfocused"
+                       TextChanged="StickyEntryField_OnTextChanged"
+                       Margin="20,0,0,0"
+                       HorizontalOptions="Fill"
+                       FontSize="{DynamicResource FontSizeL}"
+                       Placeholder=""
+                       VerticalOptions="Center" />
+                <ImageButton Grid.Column="1"
+                             AutomationId="StickyEntryCancel"
+                             x:DataType="controls:StickyEntry"
+                             BindingContext="{Binding .}"
+                             Command="{Binding CancelInputCommand}"
+                             CommandParameter="{Binding Source={x:Reference StickyEntryField}}"
+                             Source="x_primary.png"
+                             Aspect="AspectFit"
+                             HorizontalOptions="End"
+                             VerticalOptions="Center"
+                             Margin="20,0"
+                             WidthRequest="25"
+                             HeightRequest="25" />
+                <ImageButton Grid.Column="2"
+                             AutomationId="StickyEntrySubmit"
+                             x:Name="StickyEntrySubmit"
+                             x:DataType="controls:StickyEntry"
+                             BindingContext="{Binding .}"
+                             Command="{Binding SubmitInputCommand}"
+                             CommandParameter="{Binding Source={x:Reference StickyEntryField}}"
+                             Source="done_neutral.png"
+                             Aspect="AspectFit"
+                             HorizontalOptions="End"
+                             VerticalOptions="Center"
+                             Margin="0,0,20,0"
+                             WidthRequest="25"
+                             HeightRequest="25" />
+            </Grid>
+        </Frame>
+    </Grid>
+
+
+</ContentView>

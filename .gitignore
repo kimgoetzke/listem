@@ -17,11 +17,11 @@
 /UITests/bin/
 Listem.sln.DotSettings.user
 # MAUI app
-/Listem/obj/
-/Listem/bin/
-# Contracts
-/Listem.Contracts/obj/
-/Listem.Contracts/bin/
+/Listem.Mobile/obj/
+/Listem.Mobile/bin/
+# Shared
+/Listem.Shared/obj/
+/Listem.Shared/bin/
 # API
 /Listem.API/obj/
 /Listem.API/bin/
