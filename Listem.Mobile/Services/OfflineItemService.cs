@@ -6,13 +6,6 @@ namespace Listem.Mobile.Services;
 
 public class OfflineItemService(IDatabaseProvider db) : IOfflineItemService
 {
-    public async Task<List<ObservableItem>> GetAllAsync()
-    {
-        var connection = await db.GetConnection();
-        var items = await connection.Table<Item>().ToListAsync();
-        return ConvertToObservableItems(items);
-    }
-
     public async Task<List<ObservableItem>> GetAllByListIdAsync(string listId)
     {
         var connection = await db.GetConnection();
@@ -67,12 +60,12 @@ public class OfflineItemService(IDatabaseProvider db) : IOfflineItemService
         var items = await connection.Table<Item>().Where(i => i.ListId == listId).ToListAsync();
         foreach (
             var item in items.Where(item =>
-                item.CategoryName != ICategoryService.DefaultCategoryName
+                item.CategoryName != Shared.Constants.DefaultCategoryName
             )
         )
         {
             Logger.Log($"Updating item to use default category: {item.ToLoggableString()}");
-            item.CategoryName = ICategoryService.DefaultCategoryName;
+            item.CategoryName = Shared.Constants.DefaultCategoryName;
             await connection.UpdateAsync(item);
         }
 
@@ -85,7 +78,7 @@ public class OfflineItemService(IDatabaseProvider db) : IOfflineItemService
         var items = await connection.Table<Item>().Where(i => i.ListId == listId).ToListAsync();
         foreach (var item in items.Where(item => item.CategoryName == categoryName))
         {
-            item.CategoryName = ICategoryService.DefaultCategoryName;
+            item.CategoryName = Shared.Constants.DefaultCategoryName;
             await connection.UpdateAsync(item);
         }
     }

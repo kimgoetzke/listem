@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Listem.Mobile.Services;
+using Listem.Shared.Contracts;
 using Listem.Shared.Utilities;
 
 namespace Listem.Mobile.Models;
@@ -7,7 +7,7 @@ namespace Listem.Mobile.Models;
 public partial class ObservableItem(string listId) : ObservableObject
 {
     [ObservableProperty]
-    private string _id = IdProvider.NewId(nameof(Item));
+    private string? _id;
 
     [ObservableProperty]
     private string _listId = listId;
@@ -22,7 +22,7 @@ public partial class ObservableItem(string listId) : ObservableObject
     private bool _isImportant;
 
     [ObservableProperty]
-    private string _categoryName = ICategoryService.DefaultCategoryName;
+    private string _categoryName = Shared.Constants.DefaultCategoryName;
 
     [ObservableProperty]
     private DateTime _addedOn = DateTime.Now;
@@ -40,11 +40,35 @@ public partial class ObservableItem(string listId) : ObservableObject
         };
     }
 
+    public static ObservableItem From(ItemResponse item)
+    {
+        return new ObservableItem(item.ListId)
+        {
+            Id = item.Id,
+            Title = item.Title,
+            Quantity = item.Quantity,
+            IsImportant = item.IsImportant,
+            CategoryName = item.CategoryId,
+            AddedOn = item.AddedOn
+        };
+    }
+
+    public ItemRequest ToItemRequest()
+    {
+        return new ItemRequest
+        {
+            Name = Title,
+            Quantity = Quantity,
+            IsImportant = IsImportant,
+            CategoryId = CategoryName,
+        };
+    }
+
     public Item ToItem()
     {
         return new Item
         {
-            Id = Id,
+            Id = IdProvider.NewId(nameof(Item)),
             ListId = ListId,
             Title = Title,
             Quantity = Quantity,

@@ -9,7 +9,7 @@ namespace Listem.Mobile.Models;
 public partial class ObservableList : ObservableObject
 {
     [ObservableProperty]
-    private string _id = IdProvider.NewId(nameof(List));
+    private string? _id;
 
     [ObservableProperty]
     private string _name = string.Empty;
@@ -54,12 +54,17 @@ public partial class ObservableList : ObservableObject
     {
         return new List
         {
-            Id = Id,
+            Id = IdProvider.NewId(nameof(List)),
             Name = Name,
             ListType = ListType,
             AddedOn = AddedOn,
             UpdatedOn = UpdatedOn
         };
+    }
+
+    public ListRequest ToListRequest()
+    {
+        return new ListRequest { Name = Name, ListType = ListType };
     }
 
     public override string ToString()

@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Listem.Shared.Contracts;
 using Listem.Shared.Utilities;
 
 namespace Listem.Mobile.Models;
@@ -6,7 +7,7 @@ namespace Listem.Mobile.Models;
 public partial class ObservableCategory(string listId) : ObservableObject
 {
     [ObservableProperty]
-    private string _id = IdProvider.NewId(nameof(Category));
+    private string? _id;
 
     [ObservableProperty]
     private string _name = string.Empty;
@@ -19,11 +20,21 @@ public partial class ObservableCategory(string listId) : ObservableObject
         return new ObservableCategory(category.ListId) { Id = category.Id, Name = category.Name };
     }
 
+    public static ObservableCategory From(CategoryResponse category)
+    {
+        return new ObservableCategory(category.ListId) { Id = category.Id, Name = category.Name };
+    }
+
+    public CategoryRequest ToCategoryRequest()
+    {
+        return new CategoryRequest { Name = Name };
+    }
+
     public Category ToCategory()
     {
         return new Category
         {
-            Id = Id,
+            Id = IdProvider.NewId(nameof(Category)),
             Name = Name,
             ListId = ListId
         };

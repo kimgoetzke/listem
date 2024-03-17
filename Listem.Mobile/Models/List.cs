@@ -1,3 +1,4 @@
+using Listem.Shared.Contracts;
 using Listem.Shared.Enums;
 using SQLite;
 
@@ -11,6 +12,18 @@ public class List
     public ListType ListType { get; set; }
     public DateTime AddedOn { get; set; }
     public DateTime UpdatedOn { get; set; }
+
+    public static List FromListResponse(ListResponse listResponse)
+    {
+        return new List
+        {
+            Id = listResponse.Id,
+            Name = listResponse.Name,
+            ListType = listResponse.ListType,
+            AddedOn = listResponse.AddedOn,
+            UpdatedOn = listResponse.UpdatedOn
+        };
+    }
 
     public override string ToString()
     {

@@ -1,5 +1,4 @@
 ﻿using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.Messaging;
@@ -7,31 +6,22 @@ using Listem.Mobile.Events;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 using Listem.Shared.Contracts;
+using static Listem.Mobile.Utilities.HttpUtilities;
 
 namespace Listem.Mobile.Services;
 
 public class AuthService
 {
-    public User CurrentUser { get; private set; } = null!;
+    public User CurrentUser { get; private set; } = new();
 
     public bool IsOnline() => _connectivity.NetworkAccess == NetworkAccess.Internet;
 
     private readonly HttpClient _httpClient;
     private readonly IConnectivity _connectivity;
 
-    private static JsonSerializerOptions JsonOptions =>
-        new()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            PropertyNameCaseInsensitive = true,
-            WriteIndented = true
-        };
-
     // TODO: Implement sign in using refresh token
     public AuthService(IHttpClientFactory httpClientFactory, IConnectivity connectivity)
     {
-        // SignOut(); // TODO: Remove once testing is done
-        CurrentUser = new User();
         _connectivity = connectivity;
         _httpClient = httpClientFactory.CreateClient(Constants.HttpClientName);
         InitialiseComponent().SafeFireAndForget();
@@ -71,58 +61,54 @@ public class AuthService
         return JsonSerializer.Deserialize<User>(storedUser) ?? null;
     }
 
-    public async Task<AuthResult> SignUp(UserCredentials credentials)
+    public async Task<HttpRequestResult> SignUp(UserCredentials credentials)
     {
         try
         {
-            var content = CreateStringContent(credentials);
-            var response = await _httpClient.PostAsync("/register", content);
+            var response = await LoggedRequest(
+                () => _httpClient.PostAsync("/register", Content(credentials))
+            );
             if (!response.IsSuccessStatusCode)
             {
-                var msg = await HttpUtilities.ParseErrorResponse(response, "/register");
-                return new AuthResult(false, msg);
+                var msg = await ParseErrorResponse(response);
+                return new HttpRequestResult(false, msg);
             }
-            Logger.Log($"Responded '{response.StatusCode}' to POST /register: {response}");
             UpdateCurrentUser(credentials.Email);
-            return new AuthResult(true, "Successfully registered");
+            return new HttpRequestResult(true, "Successfully registered");
         }
         catch (HttpRequestException e)
         {
             Logger.Log($"Error: {e}");
             const string msg = "Error code RU1 - try again or notify the developer";
             Notifier.ShowToast(msg);
-            return new AuthResult(false, msg);
+            return new HttpRequestResult(false, msg);
         }
     }
 
-    public async Task<AuthResult> SignIn(UserCredentials credentials)
+    public async Task<HttpRequestResult> SignIn(UserCredentials credentials)
     {
         try
         {
-            var content = CreateStringContent(credentials);
-            var response = await _httpClient.PostAsync("/login", content);
+            var content = Content(credentials);
+            var response = await LoggedRequest(() => _httpClient.PostAsync("/login", content));
             if (!response.IsSuccessStatusCode)
             {
-                var msg = await HttpUtilities.ParseErrorResponse(response, "/login");
-                return new AuthResult(false, msg);
+                var message = await ParseErrorResponse(response);
+                if (message == "Unauthorized")
+                    message = "Invalid email and/or password - please try again";
+                return new HttpRequestResult(false, message);
             }
             var loginResponse = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
-            Logger.Log($"Responded '{response.StatusCode}' to POST /login: {loginResponse}");
             UpdateCurrentUser(credentials.Email, loginResponse!);
-            return new AuthResult(true, "Successfully signed in");
+            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(true));
+            return new HttpRequestResult(true, "Successfully signed in");
         }
         catch (HttpRequestException e)
         {
             Logger.Log($"Error: {e}");
             const string msg = "Error code LU2 - try again or notify the developer";
-            return new AuthResult(false, msg);
+            return new HttpRequestResult(false, msg);
         }
-    }
-
-    private static StringContent CreateStringContent(UserCredentials credentials)
-    {
-        var json = JsonSerializer.Serialize(credentials, JsonOptions);
-        return new StringContent(json, Encoding.UTF8, "application/json");
     }
 
     private void UpdateCurrentUser(string email, UserLoginResponse? loginResponse = null)
@@ -145,6 +131,7 @@ public class AuthService
     public void SignOut()
     {
         CurrentUser = new User();
+        WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
         SecureStorage.Default.RemoveAll();
     }
 }

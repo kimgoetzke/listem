@@ -43,17 +43,17 @@ public partial class ListViewModel : ObservableObject
         _clipboardService = IPlatformApplication.Current.Services.GetService<IClipboardService>()!;
         ObservableList = observableList;
         Items = new ObservableCollection<ObservableItem>(observableList.Items);
-        NewObservableItem = new ObservableItem(ObservableList.Id);
+        NewObservableItem = new ObservableItem(ObservableList.Id!);
         SortItems();
         LoadCategories().SafeFireAndForget();
     }
 
     private async Task LoadCategories()
     {
-        var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id);
+        var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id!);
         Categories = new ObservableCollection<ObservableCategory>(categories);
         CurrentCategory = Categories.FirstOrDefault(c =>
-            c.Name == ICategoryService.DefaultCategoryName
+            c.Name == Shared.Constants.DefaultCategoryName
         );
         OnPropertyChanged(nameof(Categories));
         OnPropertyChanged(nameof(CurrentCategory));
@@ -72,18 +72,18 @@ public partial class ListViewModel : ObservableObject
         // Pre-process item
         NewObservableItem.Title = StringProcessor.TrimAndCapitalise(NewObservableItem.Title);
         NewObservableItem.CategoryName =
-            CurrentCategory != null ? CurrentCategory.Name : ICategoryService.DefaultCategoryName;
+            CurrentCategory != null ? CurrentCategory.Name : Shared.Constants.DefaultCategoryName;
 
         // Add to list and database
         Logger.Log($"Adding item: {NewObservableItem.ToLoggableString()}");
-        var value = new ItemChangedDto(ObservableList.Id, NewObservableItem);
-        WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
         await _itemService.CreateOrUpdateAsync(NewObservableItem);
+        var value = new ItemChangedDto(ObservableList.Id!, NewObservableItem);
+        WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
         Items.Add(NewObservableItem);
         Notifier.ShowToast($"Added: {NewObservableItem.Title}");
 
         // Make sure the UI is reset/updated
-        NewObservableItem = new ObservableItem(ObservableList.Id);
+        NewObservableItem = new ObservableItem(ObservableList.Id!);
         SortItems();
         OnPropertyChanged(nameof(NewObservableItem));
     }
@@ -94,7 +94,7 @@ public partial class ListViewModel : ObservableObject
         await _itemService.DeleteAsync(i);
         ObservableList.Items.Remove(i);
         Items.Remove(i);
-        var value = new ItemChangedDto(ObservableList.Id, i);
+        var value = new ItemChangedDto(ObservableList.Id!, i);
         WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
         OnPropertyChanged(nameof(ObservableList));
     }
@@ -106,7 +106,7 @@ public partial class ListViewModel : ObservableObject
             return;
 
         Items.Clear();
-        await _itemService.DeleteAllByListIdAsync(ObservableList.Id);
+        await _itemService.DeleteAllByListIdAsync(ObservableList.Id!);
         Notifier.ShowToast("Removed all items from list");
     }
 
@@ -149,7 +149,7 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private void InsertFromClipboard()
     {
-        _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableList.Id);
+        _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableList.Id!);
     }
 
     public string ProcessedObservableItemListName

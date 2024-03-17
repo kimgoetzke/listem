@@ -1,6 +1,7 @@
 ﻿using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 using SQLite;
+using static Listem.Shared.Constants;
 using Models_Category = Listem.Mobile.Models.Category;
 
 namespace Listem.Mobile.Services;
@@ -43,7 +44,7 @@ public class OfflineListService(IDatabaseProvider db) : IOfflineListService
     {
         var existingDefaultCategory = await connection
             .Table<Models_Category>()
-            .Where(i => i.ListId == listId && i.Name == ICategoryService.DefaultCategoryName)
+            .Where(i => i.ListId == listId && i.Name == DefaultCategoryName)
             .FirstOrDefaultAsync();
 
         if (existingDefaultCategory != null)
@@ -52,13 +53,10 @@ public class OfflineListService(IDatabaseProvider db) : IOfflineListService
             return;
         }
 
-        var observableCategory = new ObservableCategory(listId)
-        {
-            Name = ICategoryService.DefaultCategoryName
-        };
+        var observableCategory = new ObservableCategory(listId) { Name = DefaultCategoryName };
         var category = observableCategory.ToCategory();
         await connection.InsertAsync(category).ConfigureAwait(false);
-        Logger.Log($"Added category '{ICategoryService.DefaultCategoryName}' to list {listId}");
+        Logger.Log($"Added category '{DefaultCategoryName}' to list {listId}");
     }
 
     public async Task DeleteAsync(ObservableList observableList)

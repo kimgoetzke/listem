@@ -1,30 +1,30 @@
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 using SQLite;
-using static Listem.Mobile.Services.ICategoryService;
+using static Listem.Shared.Constants;
 using Category = Listem.Mobile.Models.Category;
 
 namespace Listem.Mobile.Services;
 
 public class OfflineCategoryService(IDatabaseProvider db) : IOfflineCategoryService
 {
-    private ObservableCategory? _defaultStore;
+    private ObservableCategory? _defaultCategory;
 
     public async Task<ObservableCategory> GetDefaultCategory(string listId)
     {
-        if (_defaultStore == null)
+        if (_defaultCategory == null)
         {
             var connection = await db.GetConnection();
             var loaded = await connection
                 .Table<Category>()
                 .FirstAsync(l => l.Name == DefaultCategoryName && l.ListId == listId);
-            _defaultStore = ObservableCategory.From(loaded);
+            _defaultCategory = ObservableCategory.From(loaded);
         }
 
-        if (_defaultStore == null)
-            throw new NullReferenceException("There is no default category in the database");
+        if (_defaultCategory == null)
+            throw new NullReferenceException("This list does not have default category");
 
-        return _defaultStore;
+        return _defaultCategory;
     }
 
     public async Task<List<ObservableCategory>> GetAllAsync()

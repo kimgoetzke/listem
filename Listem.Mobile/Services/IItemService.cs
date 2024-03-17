@@ -4,7 +4,6 @@ namespace Listem.Mobile.Services;
 
 public interface IItemService
 {
-    Task<List<ObservableItem>> GetAllAsync();
     Task<List<ObservableItem>> GetAllByListIdAsync(string listId);
     Task CreateOrUpdateAsync(ObservableItem observableItem);
     Task DeleteAsync(ObservableItem observableItem);

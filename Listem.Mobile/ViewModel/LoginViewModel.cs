@@ -12,6 +12,12 @@ namespace Listem.Mobile.ViewModel;
 public partial class LoginViewModel : ObservableObject
 {
     [ObservableProperty]
+    private bool _isUserKnown;
+
+    [ObservableProperty]
+    private bool _isUserSignedIn;
+
+    [ObservableProperty]
     private string? _email;
 
     [ObservableProperty]
@@ -29,7 +35,11 @@ public partial class LoginViewModel : ObservableObject
         _authService =
             serviceProvider.GetService<AuthService>()
             ?? throw new NullReferenceException("AuthenticationService is null");
+        Initialise();
+    }
 
+    private async void Initialise()
+    {
         WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
             this,
             (_, m) =>
@@ -38,8 +48,24 @@ public partial class LoginViewModel : ObservableObject
                     $"Received message: Setting current user email to '{m.Value}' in LoginViewModel"
                 );
                 Email = m.Value;
+                IsUserKnown = true;
             }
         );
+
+        WeakReferenceMessenger.Default.Register<UserIsSignedInMessage>(
+            this,
+            (_, m) =>
+            {
+                Logger.Log(
+                    $"Received message: Current user sign in state set to '{m.Value}' in LoginViewModel"
+                );
+                IsUserSignedIn = m.Value;
+            }
+        );
+
+        var user = await _authService.FetchExistingUser();
+        IsUserKnown = user != null;
+        Email = user?.EmailAddress;
     }
 
     [RelayCommand]
@@ -85,6 +111,7 @@ public partial class LoginViewModel : ObservableObject
         if (result.Success)
         {
             await Shell.Current.Navigation.PopAsync();
+
             Password = null;
         }
     }
@@ -92,8 +119,32 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task GoToSignUp()
     {
-        var signUpPage = _serviceProvider.GetService<SignUpPage>();
-        await Shell.Current.Navigation.PushAsync(signUpPage);
+        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<SignUpPage>());
+    }
+
+    [RelayCommand]
+    private async Task GoToSignIn()
+    {
+        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<SignInPage>());
+    }
+
+    [RelayCommand]
+    private Task SignOut()
+    {
+        _authService.SignOut();
+        return Task.CompletedTask;
+    }
+
+    [RelayCommand]
+    private async Task LaunchInOfflineMode()
+    {
+        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+    }
+
+    [RelayCommand]
+    private async Task LaunchInOnlineMode()
+    {
+        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
     }
 
     // TODO: Replace with real validation and visible requirements and live feedback on page

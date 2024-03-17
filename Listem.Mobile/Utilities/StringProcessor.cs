@@ -50,6 +50,6 @@ public static partial class StringProcessor
     public static string ExtractCategoryName(string input)
     {
         var match = StoreRegex().Match(input);
-        return match.Success ? match.Groups[1].Value.Trim() : ICategoryService.DefaultCategoryName;
+        return match.Success ? match.Groups[1].Value.Trim() : Shared.Constants.DefaultCategoryName;
     }
 }

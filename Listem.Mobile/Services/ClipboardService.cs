@@ -21,12 +21,12 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
         if (IsClipboardEmpty(import))
             return;
 
-        var stores = await categoryService.GetAllAsync();
+        var observableCategories = await categoryService.GetAllByListIdAsync(listId);
         if (
             !WasAbleToConvertToItemList(
                 listId,
                 import!,
-                stores.ToList(),
+                observableCategories.ToList(),
                 out var itemCount,
                 out var categoryCount,
                 out var itemList,
@@ -63,7 +63,7 @@ public class ClipboardService(ICategoryService categoryService, IItemService ite
     )
     {
         Logger.Log("Extracted from clipboard: " + import.Replace(Environment.NewLine, ","));
-        var categoryName = ICategoryService.DefaultCategoryName;
+        var categoryName = Shared.Constants.DefaultCategoryName;
         itemCount = 0;
         categoryCount = 0;
         itemList = [];

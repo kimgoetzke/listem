@@ -89,6 +89,9 @@
         <MauiXaml Update="Views\SignUpPage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
+        <MauiXaml Update="Views\StartPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
     </ItemGroup>
 
     <ItemGroup>
@@ -123,6 +126,10 @@
         </Compile>
         <Compile Update="Views\SignUpPage.xaml.cs">
           <DependentUpon>SignUpPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\StartPage.xaml.cs">
+          <DependentUpon>StartPage.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>

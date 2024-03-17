@@ -94,7 +94,7 @@ public partial class MainViewModel : ObservableObject
         Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
 
-    public async Task LoadItemLists()
+    public async Task LoadLists()
     {
         Logger.Log("Loading lists from database");
         var lists = await _listService.GetAllAsync();
@@ -143,9 +143,7 @@ public partial class MainViewModel : ObservableObject
 
     private void SortLists()
     {
-        Lists = new ObservableCollection<ObservableList>(
-            Lists.OrderBy(l => l.UpdatedOn).Reverse()
-        );
+        Lists = new ObservableCollection<ObservableList>(Lists.OrderBy(l => l.UpdatedOn).Reverse());
         OnPropertyChanged(nameof(Lists));
     }
 
@@ -207,10 +205,11 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SignOut()
+    private async Task SignOut()
     {
         _authService.SignOut();
         IsUserSignedIn = false;
+        await Shell.Current.Navigation.PopToRootAsync();
     }
 
     [RelayCommand]

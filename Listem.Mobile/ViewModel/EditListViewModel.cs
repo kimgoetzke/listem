@@ -11,7 +11,7 @@ namespace Listem.Mobile.ViewModel;
 
 public partial class EditListViewModel : ObservableObject
 {
-    public static string DefaultCategoryName => ICategoryService.DefaultCategoryName;
+    public static string DefaultCategoryName => Shared.Constants.DefaultCategoryName;
 
     [ObservableProperty]
     private ObservableList _observableList;
@@ -42,13 +42,13 @@ public partial class EditListViewModel : ObservableObject
             Enum.GetValues(typeof(ListType)).Cast<ListType>()
         );
         Items = new ObservableCollection<ObservableItem>(observableList.Items);
-        NewObservableCategory = new ObservableCategory(observableList.Id);
+        NewObservableCategory = new ObservableCategory(observableList.Id!);
         LoadCategories().SafeFireAndForget();
     }
 
     private async Task LoadCategories()
     {
-        var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id);
+        var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id!);
         Categories = new ObservableCollection<ObservableCategory>(categories);
         OnPropertyChanged(nameof(Categories));
         Logger.Log(
@@ -79,21 +79,21 @@ public partial class EditListViewModel : ObservableObject
 
         // Update/reset UI
         Notifier.ShowToast($"Added: {NewObservableCategory.Name}");
-        NewObservableCategory = new ObservableCategory(ObservableList.Id);
+        NewObservableCategory = new ObservableCategory(ObservableList.Id!);
         OnPropertyChanged(nameof(NewObservableCategory));
     }
 
     [RelayCommand]
     private async Task RemoveCategory(ObservableCategory observableCategory)
     {
-        if (observableCategory.Name == ICategoryService.DefaultCategoryName)
+        if (observableCategory.Name == Shared.Constants.DefaultCategoryName)
         {
             Notifier.ShowToast("Cannot remove default category");
             return;
         }
 
         Categories.Remove(observableCategory);
-        await _itemService.UpdateAllToCategoryAsync(observableCategory.Name, ObservableList.Id);
+        await _itemService.UpdateAllToCategoryAsync(observableCategory.Name, ObservableList.Id!);
         await _categoryService.DeleteAsync(observableCategory);
         Notifier.ShowToast($"Removed: {observableCategory.Name}");
     }
@@ -105,8 +105,10 @@ public partial class EditListViewModel : ObservableObject
             return;
 
         Notifier.ShowToast("Reset categories");
-        await _itemService.UpdateAllToDefaultCategoryAsync(ObservableList.Id).ConfigureAwait(false);
-        await _categoryService.DeleteAllByListIdAsync(ObservableList.Id).ConfigureAwait(false);
+        await _itemService
+            .UpdateAllToDefaultCategoryAsync(ObservableList.Id!)
+            .ConfigureAwait(false);
+        await _categoryService.DeleteAllByListIdAsync(ObservableList.Id!).ConfigureAwait(false);
         await LoadCategories().ConfigureAwait(false);
     }
 
@@ -127,7 +129,7 @@ public partial class EditListViewModel : ObservableObject
             return;
 
         Items.Clear();
-        await _itemService.DeleteAllByListIdAsync(ObservableList.Id);
+        await _itemService.DeleteAllByListIdAsync(ObservableList.Id!);
         Notifier.ShowToast("Removed all items from list");
     }
 

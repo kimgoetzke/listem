@@ -8,10 +8,10 @@
     Title="Listem"
     Shell.FlyoutBehavior="Disabled">
 
-    <ShellContent ContentTemplate="{DataTemplate views:MainPage}"
+    <ShellContent ContentTemplate="{DataTemplate views:StartPage}"
                   IsVisible="True"
                   Title="List"
                   Icon="done_white.png"
-                  Route="MainPage" />
+                  Route="StartPage" />
 
 </Shell>

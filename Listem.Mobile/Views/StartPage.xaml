@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Mobile.Views.StartPage"
+             xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:DataType="viewmodel:LoginViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- The color has to be static for some reason. It will be white if any DynamicResource is used. -->
+    <ContentPage.Behaviors>
+        <toolkit:StatusBarBehavior
+            StatusBarColor="{StaticResource StatusBarColor}"
+            StatusBarStyle="DarkContent" />
+    </ContentPage.Behaviors>
+
+    <Grid RowDefinitions="Auto, *" Background="{DynamicResource BackgroundColor}">
+
+        <!-- Content -->
+        <VerticalStackLayout Grid.Row="1"
+                             Padding="20,0 ,20,150"
+                             BackgroundColor="{DynamicResource BackgroundColor}"
+                             MinimumWidthRequest="400" MaximumWidthRequest="850"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Fill">
+
+            <Label Text="Hello" Style="{DynamicResource Headline}"
+                   Padding="10, 10, 10, 0"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center" />
+            
+            <BoxView Margin="10" 
+                     Style="{DynamicResource ThinLineSeparator}"
+                     Background="{DynamicResource StandardGradient}" />
+
+            <Label Text="You have an account with:" Style="{DynamicResource BaseTextBlockStyle}"
+                   Padding="10"
+                   IsVisible="{Binding IsUserKnown}"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="True">
+                        <Setter Property="Text" Value="You are signed in as:" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+
+            <Label Text="{Binding Email}" Style="{DynamicResource BaseTextBlockStyle}"
+                   Padding="10, 0,10,10"
+                   IsVisible="{Binding IsUserKnown}"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center" />
+
+            <BoxView Margin="10" />
+
+            <!-- Content: Sign in button -->
+            <Button Style="{DynamicResource GradientButton}" Text="Sign up or sign in" WidthRequest="220"
+                    Command="{Binding GoToSignInCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="False">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="True">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserKnown}"
+                                 Value="True">
+                        <Setter Property="Text" Value="Sign in" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Style="{DynamicResource GradientButton}" Text="Continue without an account"
+                    WidthRequest="220"
+                    Command="{Binding LaunchInOfflineModeCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="False">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="True">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserKnown}"
+                                 Value="True">
+                        <Setter Property="Text" Value="Continue without signing in" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+
+            <Button Style="{DynamicResource GradientButton}" Text="Continue"
+                    WidthRequest="220"
+                    Command="{Binding LaunchInOnlineModeCommand}">
+                <Button.Triggers>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="False">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Button"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="True">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Button.Triggers>
+            </Button>
+            
+            <Label Text="Sign out"
+                   Padding="60, 20, 60, 0"
+                   Style="{DynamicResource Link}"
+                   FontSize="{DynamicResource FontSizeM}">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SignOutCommand}" NumberOfTapsRequired="1" />
+                </Label.GestureRecognizers>
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="False">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                    <DataTrigger TargetType="Label"
+                                 Binding="{Binding IsUserSignedIn}"
+                                 Value="True">
+                        <Setter Property="IsVisible" Value="True" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+
+            <Label Text="You can change your mind at any time and update the settings accordingly."
+                   FontSize="{DynamicResource FontSizeXS}"
+                   Padding="60, 30, 60, 5"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center" />
+
+            <Label
+                Text="You only need an account if you want to share lists with others or access your lists on another device."
+                Padding="60, 10"
+                FontSize="{DynamicResource FontSizeXS}"
+                HorizontalTextAlignment="Center" />
+
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

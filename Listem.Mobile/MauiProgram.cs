@@ -32,13 +32,17 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
-        builder.Services.AddSingleton<IListService, OfflineListService>();
-        builder.Services.AddSingleton<ICategoryService, OfflineCategoryService>();
-        builder.Services.AddSingleton<IItemService, OfflineItemService>();
+        builder.Services.AddSingleton<IListService, OnlineListService>();
+        builder.Services.AddSingleton<ICategoryService, OnlineCategoryService>();
+        builder.Services.AddSingleton<IItemService, OnlineItemService>();
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
         builder.Services.AddHttpClient(
             Constants.HttpClientName,
-            client => client.BaseAddress = new Uri(Constants.BaseUrlLocalhost)
+            client =>
+            {
+                client.BaseAddress = new Uri(Constants.BaseUrlLocalhost);
+                client.Timeout = TimeSpan.FromSeconds(30);
+            }
         );
         builder.Services.AddSingleton<IClipboardService, ClipboardService>();
         builder.Services.AddLogging();
@@ -62,6 +66,7 @@ public static class MauiProgram
 
     private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
+        builder.Services.AddSingleton<StartPage>();
         builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<SignInPage>();
         builder.Services.AddSingleton<SignUpPage>();

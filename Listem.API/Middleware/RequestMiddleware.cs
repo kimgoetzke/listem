@@ -1,4 +1,6 @@
-﻿namespace Listem.API.Middleware;
+﻿using System.Text;
+
+namespace Listem.API.Middleware;
 
 public class RequestMiddleware(RequestDelegate next, ILogger<RequestMiddleware> logger)
 {
@@ -18,6 +20,21 @@ public class RequestMiddleware(RequestDelegate next, ILogger<RequestMiddleware> 
             requestContext.UserId == "" ? "(null)" : requestContext.UserId,
             requestContext.UserEmail == "" ? "(null)" : requestContext.UserEmail
         );
+
+        if (
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development"
+            && context.Request.Method == HttpMethods.Post
+        )
+        {
+            context.Request.EnableBuffering();
+            using (var r = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
+            {
+                var bodyAsString = await r.ReadToEndAsync();
+                logger.LogInformation("Request Body: {Body}", bodyAsString);
+            }
+            context.Request.Body.Position = 0;
+        }
+
         try
         {
             await next(context);

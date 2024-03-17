@@ -12,6 +12,6 @@ public class ItemResponse : Entity
 
     public override string ToString()
     {
-        return $"[Item] '{Title}' {Id} in {ListId}, category: {CategoryId}, quantity: {Quantity}, important: {IsImportant}";
+        return $"[ItemResponse] '{Title}' {Id} in {ListId}, category: {CategoryId}, quantity: {Quantity}, important: {IsImportant}";
     }
 }
