@@ -1,4 +1,4 @@
-﻿namespace Listem.Models;
+﻿namespace Listem.Contracts;
 
 public enum ListType
 {

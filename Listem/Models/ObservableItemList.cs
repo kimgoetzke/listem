@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Listem.Contracts;
 
 namespace Listem.Models;
 
@@ -32,6 +33,30 @@ public partial class ObservableItemList : ObservableObject
             ListType = itemList.ListType,
             AddedOn = itemList.AddedOn,
             UpdatedOn = itemList.UpdatedOn
+        };
+    }
+
+    public static ObservableItemList From(ListResponse listResponse)
+    {
+        return new ObservableItemList
+        {
+            Id = listResponse.Id,
+            Name = listResponse.Name,
+            ListType = listResponse.ListType,
+            AddedOn = listResponse.AddedOn,
+            UpdatedOn = listResponse.UpdatedOn
+        };
+    }
+
+    public ItemList ToItemList()
+    {
+        return new ItemList
+        {
+            Id = Id,
+            Name = Name,
+            ListType = ListType,
+            AddedOn = AddedOn,
+            UpdatedOn = UpdatedOn
         };
     }
 

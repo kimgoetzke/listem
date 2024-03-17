@@ -39,6 +39,20 @@ public partial class ObservableItem(string listId) : ObservableObject
         };
     }
 
+    public Item ToItem()
+    {
+        return new Item
+        {
+            Id = Id,
+            ListId = ListId,
+            Title = Title,
+            Quantity = Quantity,
+            IsImportant = IsImportant,
+            CategoryName = CategoryName,
+            AddedOn = AddedOn
+        };
+    }
+
     public override string ToString()
     {
         return Title;

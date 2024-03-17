@@ -18,6 +18,16 @@ public partial class ObservableCategory(string listId) : ObservableObject
         return new ObservableCategory(category.ListId) { Id = category.Id, Name = category.Name };
     }
 
+    public Category ToCategory()
+    {
+        return new Category
+        {
+            Id = Id,
+            Name = Name,
+            ListId = ListId
+        };
+    }
+
     public override string ToString()
     {
         return Name;

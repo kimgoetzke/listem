@@ -12,9 +12,18 @@
 /dataSources/
 /dataSources.local.xml
 # Other ignored files
-/Listem/obj/
-/Listem/bin/
 /.idea/
 /UITests/obj/
 /UITests/bin/
 Listem.sln.DotSettings.user
+# MAUI app
+/Listem/obj/
+/Listem/bin/
+# Contracts
+/Listem.Contracts/obj/
+/Listem.Contracts/bin/
+# API
+/Listem.API/obj/
+/Listem.API/bin/
+/Listem.API/Migrations/
+Listem.API/Database/

@@ -59,6 +59,7 @@
         <PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0" />
         <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
@@ -80,6 +81,12 @@
           <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\Components\ListComponent.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Views\SignInPage.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
+        <MauiXaml Update="Views\SignUpPage.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
     </ItemGroup>
@@ -110,6 +117,18 @@
           <SubType>Code</SubType>
         </Compile>
         <Compile Remove="ViewModel\CategoryViewModel.cs" />
+        <Compile Update="Views\SignInPage.xaml.cs">
+          <DependentUpon>LoginPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\SignUpPage.xaml.cs">
+          <DependentUpon>SignUpPage.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Listem.Contracts\Listem.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

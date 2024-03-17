@@ -3,6 +3,7 @@ using AsyncAwaitBestPractices;
 using Listem.Models;
 using Listem.Utilities;
 using Listem.ViewModel;
+using ListType = Listem.Contracts.ListType;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif

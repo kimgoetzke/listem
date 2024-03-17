@@ -2,6 +2,9 @@ using System.Diagnostics;
 
 namespace Listem.Utilities;
 
+/**
+ * TODO: Remove this temporary class and use a proper logger.
+ */
 public static class Logger
 {
     private const string LoggerTag = "Listem";

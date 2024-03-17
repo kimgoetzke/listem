@@ -1,6 +1,8 @@
 ﻿using Listem.Models;
 using Listem.Utilities;
 using SQLite;
+using Category = Listem.Models.Category;
+using ItemList = Listem.Models.ItemList;
 
 namespace Listem.Services;
 
@@ -9,19 +11,19 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
     public async Task<List<ObservableItemList>> GetAllAsync()
     {
         var connection = await db.GetConnection();
-        var items = await connection.Table<ItemList>().ToListAsync();
-        return ConvertToObservableItemLists(items);
+        var lists = await connection.Table<ItemList>().ToListAsync();
+        return ConvertToObservableItemLists(lists);
     }
 
-    private static List<ObservableItemList> ConvertToObservableItemLists(List<ItemList> items)
+    private static List<ObservableItemList> ConvertToObservableItemLists(List<ItemList> lists)
     {
-        return items.Select(ObservableItemList.From).ToList();
+        return lists.Select(ObservableItemList.From).ToList();
     }
 
     public async Task CreateOrUpdateAsync(ObservableItemList observableItemList)
     {
         var connection = await db.GetConnection();
-        var list = ItemList.From(observableItemList);
+        var list = observableItemList.ToItemList();
         var existingList = await connection
             .Table<ItemList>()
             .Where(i => i.Id == observableItemList.Id)
@@ -55,7 +57,7 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
         {
             Name = ICategoryService.DefaultCategoryName
         };
-        var category = Category.From(observableCategory);
+        var category = observableCategory.ToCategory();
         await connection.InsertAsync(category).ConfigureAwait(false);
         Logger.Log($"Added category '{ICategoryService.DefaultCategoryName}' to list {listId}");
     }
@@ -65,7 +67,7 @@ public class ItemListService(IDatabaseProvider db) : IItemListService
         // TODO: Delete all categories and items associated with this list
         Logger.Log($"Removing list: '{observableItemList.Name}' {observableItemList.Id}");
         var connection = await db.GetConnection();
-        var list = ItemList.From(observableItemList);
+        var list = observableItemList.ToItemList();
         await connection.DeleteAsync(list);
     }
 

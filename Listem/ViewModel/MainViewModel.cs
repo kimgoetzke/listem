@@ -24,13 +24,23 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private ObservableTheme _currentTheme;
 
+    [ObservableProperty]
+    private string _currentUserEmail = "(Not signed in)";
+
+    [ObservableProperty]
+    private bool _isUserSignedIn;
+
+    private readonly IServiceProvider _serviceProvider;
+    private readonly AuthService _authService;
     private readonly IItemListService _itemListService;
     private readonly IItemService _itemService;
 
-    public MainViewModel(IItemListService itemListService, IItemService itemService)
+    public MainViewModel(IServiceProvider serviceProvider)
     {
-        _itemListService = itemListService;
-        _itemService = itemService;
+        _serviceProvider = serviceProvider;
+        _itemListService = serviceProvider.GetService<IItemListService>()!;
+        _itemService = serviceProvider.GetService<IItemService>()!;
+        _authService = serviceProvider.GetService<AuthService>()!;
         NewList = new ObservableItemList();
         Lists = [];
         Themes = ThemeHandler.GetAllThemesAsCollection();
@@ -55,6 +65,33 @@ public partial class MainViewModel : ObservableObject
                 Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
             }
         );
+
+        WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
+            this,
+            (_, m) =>
+            {
+                Logger.Log($"Received message: Setting current user email to '{m.Value}'");
+                CurrentUserEmail = m.Value;
+                IsUserSignedIn = true;
+            }
+        );
+    }
+
+    public async Task SetUserIfKnown()
+    {
+        if (!_authService.IsOnline())
+        {
+            Notifier.ShowToast("No internet connection - you're in offline mode");
+            IsUserSignedIn = false;
+            return;
+        }
+        var currentUser = await _authService.FetchExistingUser();
+        if (currentUser != null)
+        {
+            CurrentUserEmail = currentUser.EmailAddress!;
+            IsUserSignedIn = true;
+        }
+        Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
 
     public async Task LoadItemLists()
@@ -160,6 +197,20 @@ public partial class MainViewModel : ObservableObject
             "Now",
             "Later"
         );
+    }
+
+    [RelayCommand]
+    private async Task SignInOrSignUp()
+    {
+        var signInPage = _serviceProvider.GetService<SignInPage>()!;
+        await Shell.Current.Navigation.PushAsync(signInPage);
+    }
+
+    [RelayCommand]
+    private void SignOut()
+    {
+        _authService.SignOut();
+        IsUserSignedIn = false;
     }
 
     [RelayCommand]
