@@ -4,6 +4,10 @@ This repository contains an Android application and the relevant backend. The fi
 list Android app written in C# using .NET 8 MAUI, the CommunityToolkit, and SQLite. It also contains the backend for
 this app, also written in C# using .NET 8, Entity Framework Core, and ASP Core Authentication.
 
+> [!IMPORTANT]  
+> This project is a work in progress and actively being worked on. The backend hasn't been connected to the frontend
+> yet (except for signing up and signing in).
+
 The goal was to learn something about .NET MAUI and Android app development by building on
 my [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) from last week and make a look a
 little less nasty and also use some shared, custom controls. In addition, I wanted to experience web development with
@@ -80,8 +84,7 @@ To run the tests:
 
 ### How to configure the backend for development
 
-1. Run `dotnet restore` in the base directory to restore all dependencies, if you haven't already done so
-
+1. Run `dotnet restore` in the base directory to restore all dependencies, if you haven't already done so.
 2. The first time running the application, you'll need to create the database and run the migrations. This can be done
    by running the following command from the root of the repository:
 
@@ -89,7 +92,7 @@ To run the tests:
     cd Listem.API && dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists  && dotnet ef database update --context ListDbContext && dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories && dotnet ef database update --context CategoryDbContext && dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items && dotnet ef database update --context ItemDbContext && dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users && dotnet ef database update --context UserDbContext
     ```
 
-    Alternatively, if you want to run each command separately:
+   Alternatively, if you want to run each command separately:
 
     ```shell
     cd Listem.API
@@ -103,8 +106,11 @@ To run the tests:
     dotnet ef database update --context UserDbContext
     ```
 
-3. Optional: Create a new certificate if you are running the application for the first time in HTTPS mode:
+3. You can use the Postman collection in the `/assets` directory to test the API.
 
-    ```shell
-    dotnet dev-certs https --trust
-    ```
+Note for the future: You can create a new certificate if you are running the application for the first time in HTTPS
+mode:
+
+```shell
+dotnet dev-certs https --trust
+```

@@ -33,7 +33,7 @@ public static class MauiProgram
     {
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
-        builder.Services.AddSingleton<IItemListService, OnlineItemListService>();
+        builder.Services.AddSingleton<IItemListService, ItemListService>();
         builder.Services.AddSingleton<ICategoryService, CategoryService>();
         builder.Services.AddSingleton<IItemService, ItemService>();
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
