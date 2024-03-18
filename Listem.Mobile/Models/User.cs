@@ -7,16 +7,16 @@ public class User
     public const string ExpiresInName = "ExpiresIn";
     public const string EmailAddressName = "EmailAddress";
 
-    public bool HasRegistered => EmailAddress != null;
-    public bool IsAuthenticated { get; set; }
+    public bool IsRegistered => EmailAddress != null;
+    public bool IsSignedIn => IsTokenExpired == false;
     public string? EmailAddress { get; set; }
-    public string? AccessToken { get; set; }
-    public string? RefreshToken { get; set; }
-    public int TokenExpiresIn { get; set; }
-    public string? TokenType { get; set; }
+    public string? AccessToken { get; init; }
+    public string? RefreshToken { get; init; }
+    public DateTime TokenExpiresAt { get; init; } = DateTime.Now;
+    public bool IsTokenExpired => TokenExpiresAt <= DateTime.Now;
 
     public override string ToString()
     {
-        return $"[User] Email: {EmailAddress}, authenticated: {IsAuthenticated}, access token: {AccessToken?[..10]} (expires in {TokenExpiresIn} seconds), refresh token: {RefreshToken?[..10]}";
+        return $"[User] Email: {EmailAddress ?? "null"}, signed in: {IsSignedIn}, access token: {AccessToken?[..10] ?? "null"} (expired={IsTokenExpired}, {TokenExpiresAt}), refresh token: {RefreshToken?[..10] ?? "null"}";
     }
 }

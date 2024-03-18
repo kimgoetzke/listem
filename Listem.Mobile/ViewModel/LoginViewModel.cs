@@ -6,13 +6,16 @@ using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
 using Listem.Shared.Contracts;
+#if __ANDROID__
+using CommunityToolkit.Maui.Core.Platform;
+#endif
 
 namespace Listem.Mobile.ViewModel;
 
 public partial class LoginViewModel : ObservableObject
 {
     [ObservableProperty]
-    private bool _isUserKnown;
+    private bool _isUserRegistered;
 
     [ObservableProperty]
     private bool _isUserSignedIn;
@@ -48,7 +51,7 @@ public partial class LoginViewModel : ObservableObject
                     $"Received message: Setting current user email to '{m.Value}' in LoginViewModel"
                 );
                 Email = m.Value;
-                IsUserKnown = true;
+                IsUserRegistered = true;
             }
         );
 
@@ -63,9 +66,18 @@ public partial class LoginViewModel : ObservableObject
             }
         );
 
-        var user = await _authService.FetchExistingUser();
-        IsUserKnown = user != null;
-        Email = user?.EmailAddress;
+        var user = await _authService.GetCurrentUser();
+        IsUserRegistered = user.IsRegistered;
+        IsUserSignedIn = user.IsSignedIn;
+        Email = user.EmailAddress;
+    }
+
+    public void RedirectIfUserIsSignedIn()
+    {
+        if (IsUserSignedIn)
+        {
+            Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+        }
     }
 
     [RelayCommand]
@@ -75,7 +87,7 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SignUp()
+    private async Task SignUp(ITextInput view)
     {
         var isValidated = ValidateInputFields([Email, Password, PasswordConfirmed]);
         if (!isValidated)
@@ -93,6 +105,7 @@ public partial class LoginViewModel : ObservableObject
         Notifier.ShowToast(result.Message);
         if (result.Success)
         {
+            HideKeyboard(view);
             await Shell.Current.Navigation.PopAsync();
             Password = null;
             PasswordConfirmed = null;
@@ -100,7 +113,7 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SignIn()
+    private async Task SignIn(ITextInput view)
     {
         var isValidated = ValidateInputFields([Email, Password]);
         if (!isValidated)
@@ -110,9 +123,9 @@ public partial class LoginViewModel : ObservableObject
         Notifier.ShowToast(result.Message);
         if (result.Success)
         {
-            await Shell.Current.Navigation.PopAsync();
-
+            HideKeyboard(view);
             Password = null;
+            await Shell.Current.Navigation.PopAsync();
         }
     }
 
@@ -155,5 +168,14 @@ public partial class LoginViewModel : ObservableObject
 
         Notifier.ShowToast("You must enter both email and password");
         return false;
+    }
+
+    // ReSharper disable once UnusedParameter.Local
+    private static void HideKeyboard(ITextInput view)
+    {
+#if __ANDROID__
+        var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
+        Logger.Log("Keyboard hidden: " + isKeyboardHidden);
+#endif
     }
 }

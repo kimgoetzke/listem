@@ -54,9 +54,9 @@
                 <Button Style="{DynamicResource SimpleButton}"
                         HorizontalOptions="Start"
                         WidthRequest="175"
-                        Margin="25,10,0, 20"
+                        Margin="25,10,0,20"
                         Text="Sign up or sign in"
-                        Command="{Binding SignInOrSignUpCommand}">
+                        Clicked="SignUpOrSignInButton_OnClicked">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button"
                                      Binding="{Binding IsUserSignedIn}"
@@ -73,10 +73,10 @@
                 <Button Style="{DynamicResource SimpleButton}"
                         HorizontalOptions="Start"
                         WidthRequest="175"
-                        Margin="25,10,0, 20"
+                        Margin="25,10,0,20"
                         Text="Sign out"
                         IsVisible="{Binding IsUserSignedIn}"
-                        Command="{Binding SignOutCommand}" />
+                        Clicked="SignOutButton_OnClicked" />
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
                        HorizontalOptions="Start"

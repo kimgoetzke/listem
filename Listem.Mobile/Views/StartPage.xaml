@@ -36,7 +36,7 @@
 
             <Label Text="You have an account with:" Style="{DynamicResource BaseTextBlockStyle}"
                    Padding="10"
-                   IsVisible="{Binding IsUserKnown}"
+                   IsVisible="{Binding IsUserRegistered}"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center">
                 <Label.Triggers>
@@ -50,7 +50,7 @@
 
             <Label Text="{Binding Email}" Style="{DynamicResource BaseTextBlockStyle}"
                    Padding="10, 0,10,10"
-                   IsVisible="{Binding IsUserKnown}"
+                   IsVisible="{Binding IsUserRegistered}"
                    FontAttributes="Bold"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center" />
@@ -72,7 +72,7 @@
                         <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
-                                 Binding="{Binding IsUserKnown}"
+                                 Binding="{Binding IsUserRegistered}"
                                  Value="True">
                         <Setter Property="Text" Value="Sign in" />
                     </DataTrigger>
@@ -94,7 +94,7 @@
                         <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
-                                 Binding="{Binding IsUserKnown}"
+                                 Binding="{Binding IsUserRegistered}"
                                  Value="True">
                         <Setter Property="Text" Value="Continue without signing in" />
                     </DataTrigger>

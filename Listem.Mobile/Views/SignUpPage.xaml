@@ -78,6 +78,7 @@
                           HorizontalOptions="Fill" ColumnSpacing="5">
                         <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
                         <Entry Grid.Column="1" Text="{Binding PasswordConfirmed}"
+                               x:Name="PasswordConfirmedEntry"
                                Placeholder="Re-enter your password" IsPassword="True" />
                     </Grid>
                 </Frame>
@@ -85,7 +86,8 @@
 
             <!-- Content: Sign up button -->
             <Button Style="{DynamicResource GradientButton}" Text="Sign up" WidthRequest="130"
-                    Command="{Binding SignUpCommand}" />
+                    Command="{Binding SignUpCommand}"
+                    CommandParameter="{Binding Source={x:Reference PasswordConfirmedEntry}}" />
 
         </VerticalStackLayout>
     </Grid>

@@ -44,9 +44,9 @@ public static class HttpUtilities
     {
         return response.StatusCode switch
         {
-            HttpStatusCode.Unauthorized => "You are not authorised to make this request",
-            HttpStatusCode.Forbidden => "You are not allowed to make this request",
-            _ => "Sorry, something went wrong - please try again"
+            HttpStatusCode.Unauthorized => Constants.UnauthorisedMessage,
+            HttpStatusCode.Forbidden => Constants.ForbiddenMessage,
+            _ => Constants.DefaultMessage
         };
     }
 

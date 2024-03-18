@@ -54,7 +54,7 @@ public partial class MainPage
     private void MenuGrid_OnTapGridArea(object? sender, TappedEventArgs e)
     {
         var cancellationTokenSource = new CancellationTokenSource();
-        CloseMenu(cancellationTokenSource).SafeFireAndForget();
+        CloseSettings(cancellationTokenSource).SafeFireAndForget();
     }
 
     private async void MenuButton_OnTap(object sender, EventArgs e)
@@ -67,7 +67,7 @@ public partial class MainPage
             return;
         }
 
-        await CloseMenu(cancellationTokenSource);
+        await CloseSettings(cancellationTokenSource);
         _isMenuOpen = false;
     }
 
@@ -91,7 +91,7 @@ public partial class MainPage
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
     // ReSharper disable once UnusedParameter.Local
-    private async Task CloseMenu(CancellationTokenSource cancellationTokenSource)
+    private async Task CloseSettings(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__
         await MainPageContent.RotateYTo(0, AnimationDuration / 4);
@@ -107,4 +107,16 @@ public partial class MainPage
 #endif
     }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+    private void SignUpOrSignInButton_OnClicked(object? sender, EventArgs e)
+    {
+        CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
+        _viewModel.BackToStartPageCommand.Execute(null);
+    }
+
+    private void SignOutButton_OnClicked(object? sender, EventArgs e)
+    {
+        CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
+        _viewModel.BackToStartPageCommand.Execute(null);
+    }
 }

@@ -70,7 +70,9 @@ public partial class MainViewModel : ObservableObject
             this,
             (_, m) =>
             {
-                Logger.Log($"Received message: Setting current user email to '{m.Value}'");
+                Logger.Log(
+                    $"Received message: Setting current user email to '{m.Value}' in MainViewModel"
+                );
                 CurrentUserEmail = m.Value;
                 IsUserSignedIn = true;
             }
@@ -82,14 +84,12 @@ public partial class MainViewModel : ObservableObject
         if (!_authService.IsOnline())
         {
             Notifier.ShowToast("No internet connection - you're in offline mode");
-            IsUserSignedIn = false;
-            return;
         }
-        var currentUser = await _authService.FetchExistingUser();
-        if (currentUser != null)
+        var currentUser = await _authService.GetCurrentUser();
+        if (currentUser.EmailAddress is { } email)
         {
-            CurrentUserEmail = currentUser.EmailAddress!;
-            IsUserSignedIn = true;
+            CurrentUserEmail = email;
+            IsUserSignedIn = currentUser.IsSignedIn;
         }
         Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
@@ -198,14 +198,7 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task SignInOrSignUp()
-    {
-        var signInPage = _serviceProvider.GetService<SignInPage>()!;
-        await Shell.Current.Navigation.PushAsync(signInPage);
-    }
-
-    [RelayCommand]
-    private async Task SignOut()
+    private async Task BackToStartPage()
     {
         _authService.SignOut();
         IsUserSignedIn = false;

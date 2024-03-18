@@ -63,6 +63,7 @@
                           HorizontalOptions="Fill" ColumnSpacing="5">
                         <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
                         <Entry Grid.Column="1" Text="{Binding Password}"
+                               x:Name="PasswordEntry"
                                Placeholder="Enter your password" IsPassword="True" />
                     </Grid>
                 </Frame>
@@ -75,7 +76,8 @@
 
             <!-- Content: Sign in button -->
             <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
-                    Command="{Binding SignInCommand}" />
+                    Command="{Binding SignInCommand}"
+                    CommandParameter="{Binding Source={x:Reference PasswordEntry}}" />
 
         </VerticalStackLayout>
 
