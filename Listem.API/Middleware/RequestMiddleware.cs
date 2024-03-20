@@ -29,8 +29,8 @@ public class RequestMiddleware(RequestDelegate next, ILogger<RequestMiddleware> 
             context.Request.EnableBuffering();
             using (var r = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
             {
-                var bodyAsString = await r.ReadToEndAsync();
-                logger.LogInformation("Request Body: {Body}", bodyAsString);
+                var body = await r.ReadToEndAsync();
+                logger.LogInformation("Request body (logged in development only):\n{Body}", body);
             }
             context.Request.Body.Position = 0;
         }
