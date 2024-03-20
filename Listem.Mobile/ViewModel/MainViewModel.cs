@@ -25,19 +25,17 @@ public partial class MainViewModel : ObservableObject
     private ObservableTheme _currentTheme;
 
     [ObservableProperty]
-    private string _currentUserEmail = "(Not signed in)";
+    private string? _currentUserEmail;
 
     [ObservableProperty]
     private bool _isUserSignedIn;
 
-    private readonly IServiceProvider _serviceProvider;
     private readonly AuthService _authService;
     private readonly IListService _listService;
     private readonly IItemService _itemService;
 
     public MainViewModel(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider;
         _listService = serviceProvider.GetService<IListService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
         _authService = serviceProvider.GetService<AuthService>()!;
@@ -79,18 +77,15 @@ public partial class MainViewModel : ObservableObject
         );
     }
 
-    public async Task SetUserIfKnown()
+    public async Task InitialiseUser()
     {
         if (!_authService.IsOnline())
         {
             Notifier.ShowToast("No internet connection - you're in offline mode");
         }
         var currentUser = await _authService.GetCurrentUser();
-        if (currentUser.EmailAddress is { } email)
-        {
-            CurrentUserEmail = email;
-            IsUserSignedIn = currentUser.IsSignedIn;
-        }
+        CurrentUserEmail = currentUser.EmailAddress;
+        IsUserSignedIn = currentUser.IsSignedIn;
         Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
 

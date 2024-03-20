@@ -25,30 +25,47 @@
                              VerticalOptions="Center"
                              HorizontalOptions="Fill">
 
-            <Label Text="Hello" Style="{DynamicResource Headline}"
+            <!-- Content: Title -->
+            <Label Text="Hello 👋"
+                   Style="{DynamicResource Headline}"
                    Padding="10, 10, 10, 0"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center" />
-            
-            <BoxView Margin="10" 
+
+            <!-- Content: Line separator -->
+            <BoxView Margin="10"
                      Style="{DynamicResource ThinLineSeparator}"
                      Background="{DynamicResource StandardGradient}" />
 
-            <Label Text="You have an account with:" Style="{DynamicResource BaseTextBlockStyle}"
+            <BoxView Margin="10" />
+
+            <!-- Content: Account info text when unknown user -->
+            <Label Text="You don't seem to have an account, at least none that you've used on this device before."
+                   Padding="10"
+                   HorizontalTextAlignment="Center"
+                   HorizontalOptions="Center">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                                 Binding="{Binding IsUserRegistered}"
+                                 Value="True">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+
+            <!-- Content: Account info text when user known -->
+            <Label Text="You have an account with:"
                    Padding="10"
                    IsVisible="{Binding IsUserRegistered}"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center">
                 <Label.Triggers>
-                    <DataTrigger TargetType="Label"
-                                 Binding="{Binding IsUserSignedIn}"
-                                 Value="True">
+                    <DataTrigger TargetType="Label" Binding="{Binding IsUserSignedIn}" Value="True">
                         <Setter Property="Text" Value="You are signed in as:" />
                     </DataTrigger>
                 </Label.Triggers>
             </Label>
-
-            <Label Text="{Binding Email}" Style="{DynamicResource BaseTextBlockStyle}"
+            <Label Text="{Binding Email}"
                    Padding="10, 0,10,10"
                    IsVisible="{Binding IsUserRegistered}"
                    FontAttributes="Bold"
@@ -58,8 +75,8 @@
             <BoxView Margin="10" />
 
             <!-- Content: Sign in button -->
-            <Button Style="{DynamicResource GradientButton}" Text="Sign up or sign in" WidthRequest="220"
-                    Command="{Binding GoToSignInCommand}">
+            <Button Style="{DynamicResource GradientButton}" WidthRequest="220" Margin="0, 0, 0, 30"
+                    Text="Sign up or sign in" Command="{Binding GoToSignInCommand}">
                 <Button.Triggers>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding IsUserSignedIn}"
@@ -79,45 +96,29 @@
                 </Button.Triggers>
             </Button>
 
-            <Button Style="{DynamicResource GradientButton}" Text="Continue without an account"
-                    WidthRequest="220"
-                    Command="{Binding LaunchInOfflineModeCommand}">
+            <!-- Content: Continue button -->
+            <Button Style="{DynamicResource GradientButton}" WidthRequest="220"
+                    Text="Continue" Command="{Binding GoToMainPageCommand}">
                 <Button.Triggers>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding IsUserSignedIn}"
                                  Value="False">
-                        <Setter Property="IsVisible" Value="True" />
+                        <Setter Property="Text" Value="Continue without an account" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding IsUserSignedIn}"
                                  Value="True">
-                        <Setter Property="IsVisible" Value="False" />
+                        <Setter Property="Text" Value="Continue" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding IsUserRegistered}"
-                                 Value="True">
+                                 Value="False">
                         <Setter Property="Text" Value="Continue without signing in" />
                     </DataTrigger>
                 </Button.Triggers>
             </Button>
 
-            <Button Style="{DynamicResource GradientButton}" Text="Continue"
-                    WidthRequest="220"
-                    Command="{Binding LaunchInOnlineModeCommand}">
-                <Button.Triggers>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding IsUserSignedIn}"
-                                 Value="False">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding IsUserSignedIn}"
-                                 Value="True">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </Button.Triggers>
-            </Button>
-            
+            <!-- Content: Sign out link button -->
             <Label Text="Sign out"
                    Padding="60, 20, 60, 0"
                    Style="{DynamicResource Link}"

@@ -90,6 +90,7 @@ public partial class LoginViewModel : ObservableObject
     private async Task SignUp(ITextInput view)
     {
         var isValidated = ValidateInputFields([Email, Password, PasswordConfirmed]);
+
         if (!isValidated)
             return;
 
@@ -116,6 +117,7 @@ public partial class LoginViewModel : ObservableObject
     private async Task SignIn(ITextInput view)
     {
         var isValidated = ValidateInputFields([Email, Password]);
+
         if (!isValidated)
             return;
 
@@ -149,13 +151,7 @@ public partial class LoginViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task LaunchInOfflineMode()
-    {
-        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
-    }
-
-    [RelayCommand]
-    private async Task LaunchInOnlineMode()
+    private async Task GoToMainPage()
     {
         await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
     }

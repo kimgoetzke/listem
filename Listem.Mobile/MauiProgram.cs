@@ -47,7 +47,7 @@ public static class MauiProgram
             client =>
             {
                 client.BaseAddress = new Uri(Constants.BaseUrlLocalhost);
-                client.Timeout = TimeSpan.FromSeconds(30);
+                client.Timeout = TimeSpan.FromSeconds(7);
             }
         );
         builder.Services.AddSingleton<IClipboardService, ClipboardService>();
@@ -62,8 +62,8 @@ public static class MauiProgram
 
     private static MauiAppBuilder RegisterViewModels(this MauiAppBuilder builder)
     {
-        builder.Services.AddSingleton<MainViewModel>();
         builder.Services.AddSingleton<LoginViewModel>();
+        builder.Services.AddTransient<MainViewModel>();
         builder.Services.AddTransient<EditListViewModel>();
         builder.Services.AddTransient<ListViewModel>();
         builder.Services.AddTransient<DetailViewModel>();
@@ -73,9 +73,9 @@ public static class MauiProgram
     private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
     {
         builder.Services.AddSingleton<StartPage>();
-        builder.Services.AddSingleton<MainPage>();
         builder.Services.AddSingleton<SignInPage>();
         builder.Services.AddSingleton<SignUpPage>();
+        builder.Services.AddTransient<MainPage>();
         builder.Services.AddTransient<EditListPage>();
         builder.Services.AddTransient<DetailPage>();
         builder.Services.AddTransient<ListPage>();

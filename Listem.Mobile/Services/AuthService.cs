@@ -21,7 +21,7 @@ public class AuthService
     private readonly HttpClient _httpClient;
     private readonly IConnectivity _connectivity;
 
-    // TODO: Implement sign in using refresh token
+    // TODO: Use Polly or equivalent to handle retries and timeouts
     public AuthService(IHttpClientFactory httpClientFactory, IConnectivity connectivity)
     {
         _connectivity = connectivity;
@@ -32,7 +32,6 @@ public class AuthService
     private async Task InitialiseComponent()
     {
         var user = await GetCurrentUser();
-
         if (user.IsTokenExpired)
         {
             var result = await RefreshToken();
@@ -42,7 +41,6 @@ public class AuthService
         {
             WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(user.IsSignedIn));
         }
-
         Logger.Log($"Initialised auth service with user: {CurrentUser}");
     }
 
@@ -55,6 +53,7 @@ public class AuthService
                 "Seems like you're offline. You can continue to use the app but you cannot use sharing features or backup your list in the cloud.",
                 "OK"
             );
+            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
         }
     }
 
@@ -69,8 +68,11 @@ public class AuthService
 
     private static async Task<User?> FetchUserFromStorage()
     {
-        var storedUser = await SecureStorage.Default.GetAsync(Constants.User);
-        return storedUser != null ? JsonSerializer.Deserialize<User>(storedUser) : null;
+        if (await SecureStorage.Default.GetAsync(Constants.User) is not { } str)
+            return null;
+
+        var storedUser = JsonSerializer.Deserialize<StoredUser>(str);
+        return storedUser != null ? User.From(storedUser) : null;
     }
 
     public async Task<HttpRequestResult> SignUp(UserCredentials credentials)
@@ -94,6 +96,11 @@ public class AuthService
             Notifier.ShowToast(msg);
             return new HttpRequestResult(false, msg);
         }
+        catch (TaskCanceledException e)
+        {
+            Logger.Log($"Error: {e.Message}");
+            return new HttpRequestResult(false, Constants.TimeoutMessage);
+        }
     }
 
     public async Task<HttpRequestResult> SignIn(UserCredentials credentials)
@@ -113,7 +120,6 @@ public class AuthService
             }
             var loginResponse = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
             UpdateCurrentUser(credentials.Email, loginResponse);
-            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(true));
             return new HttpRequestResult(true, "Successfully signed in");
         }
         catch (HttpRequestException e)
@@ -121,6 +127,11 @@ public class AuthService
             Logger.Log($"Error: {e}");
             const string msg = "Error code LI2 - try again or notify the developer";
             return new HttpRequestResult(false, msg);
+        }
+        catch (TaskCanceledException e)
+        {
+            Logger.Log($"Error: {e.Message}");
+            return new HttpRequestResult(false, Constants.TimeoutMessage);
         }
     }
 
@@ -149,7 +160,6 @@ public class AuthService
 
             var loginResponse = await response.Content.ReadFromJsonAsync<UserLoginResponse>();
             UpdateCurrentUser(loginResponse: loginResponse);
-            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(true));
             return new HttpRequestResult(true, "Successfully refreshed session");
         }
         catch (HttpRequestException e)
@@ -160,39 +170,39 @@ public class AuthService
         }
         catch (TaskCanceledException e)
         {
-            Logger.Log($"Error: {e}");
-            const string msg = "Error code RT4 - try again or notify the developer";
-            return new HttpRequestResult(false, msg);
+            Logger.Log($"Error: {e.Message}");
+            return new HttpRequestResult(false, Constants.TimeoutMessage);
         }
     }
 
     private void UpdateCurrentUser(string? email = null, UserLoginResponse? loginResponse = null)
     {
-        CurrentUser = new User
-        {
-            EmailAddress = CurrentUser.EmailAddress,
-            AccessToken = loginResponse?.AccessToken,
-            RefreshToken = loginResponse?.RefreshToken,
-            TokenExpiresAt = DateTime.Now.AddSeconds(loginResponse?.ExpiresIn ?? -1),
-        };
-
         if (email != null)
         {
-            CurrentUser.EmailAddress = email;
+            CurrentUser = User.WithEmail(email);
             WeakReferenceMessenger.Default.Send(new UserEmailSetMessage(email));
+        }
+
+        if (loginResponse != null)
+        {
+            CurrentUser.SignIn(loginResponse);
+            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(true));
+        }
+
+        if (email == null && loginResponse == null)
+        {
+            CurrentUser.SignOut();
+            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
         }
 
         SecureStorage
             .Default.SetAsync(Constants.User, JsonSerializer.Serialize(CurrentUser))
             .ConfigureAwait(false);
-
         Logger.Log($"Updated current user to: {CurrentUser}");
     }
 
     public void SignOut()
     {
-        CurrentUser = new User();
-        WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
-        SecureStorage.Default.RemoveAll();
+        UpdateCurrentUser();
     }
 }
