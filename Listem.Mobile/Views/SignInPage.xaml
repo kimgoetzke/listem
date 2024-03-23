@@ -4,18 +4,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Listem.Mobile.Views.SignInPage"
              xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:DataType="viewmodel:LoginViewModel"
              Shell.NavBarIsVisible="False">
 
-    <!-- The color has to be static for some reason. It will be white if any DynamicResource is used. -->
-    <ContentPage.Behaviors>
-        <toolkit:StatusBarBehavior
-            StatusBarColor="{StaticResource StatusBarColor}"
-            StatusBarStyle="DarkContent" />
-    </ContentPage.Behaviors>
-
-    <Grid RowDefinitions="Auto, *" Background="{DynamicResource BackgroundColorAccent}">
+    <Grid RowDefinitions="Auto, *">
 
         <!-- Nav bar with title -->
         <Grid Grid.Row="0">
@@ -34,55 +26,60 @@
         </Grid>
 
         <!-- Content -->
-        <VerticalStackLayout Grid.Row="1"
-                             Padding="20,0 ,20,150"
-                             BackgroundColor="{DynamicResource BackgroundColorAccent}"
-                             MinimumWidthRequest="400" MaximumWidthRequest="850"
-                             VerticalOptions="Center"
-                             HorizontalOptions="Fill">
+        <Grid Grid.Row="1" BackgroundColor="{DynamicResource BackgroundColorAccent}">
+            <VerticalStackLayout Padding="20,0 ,20,150"
+                                 MinimumWidthRequest="400" MaximumWidthRequest="850"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Fill">
 
-            <!-- Content: Email field -->
-            <Grid Margin="5, 0" RowDefinitions="Auto, Auto">
-                <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Grid ColumnDefinitions="Auto, *"
-                          VerticalOptions="Fill"
-                          HorizontalOptions="Fill" ColumnSpacing="5">
-                        <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
-                        <Entry Grid.Column="1" Text="{Binding Email}"
-                               Placeholder="Enter your email address" />
-                    </Grid>
-                </Frame>
-            </Grid>
+                <!-- Content: Email field -->
+                <Grid Margin="5, 0" RowDefinitions="Auto, Auto">
+                    <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                        <Grid ColumnDefinitions="Auto, *"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="Fill" ColumnSpacing="5">
+                            <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                            <Entry Grid.Column="1" Text="{Binding UserEmail}"
+                                   Placeholder="Enter your email address" />
+                        </Grid>
+                    </Frame>
+                </Grid>
 
-            <!-- Content: Password field -->
-            <Grid Margin="5, 5, 5,0"
-                  RowDefinitions="Auto, Auto">
-                <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Grid ColumnDefinitions="Auto, *"
-                          VerticalOptions="Fill"
-                          HorizontalOptions="Fill" ColumnSpacing="5">
-                        <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
-                        <Entry Grid.Column="1" Text="{Binding Password}"
-                               x:Name="PasswordEntry"
-                               Placeholder="Enter your password" IsPassword="True" />
-                    </Grid>
-                </Frame>
-            </Grid>
+                <!-- Content: Password field -->
+                <Grid Margin="5, 5, 5,0"
+                      RowDefinitions="Auto, Auto">
+                    <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                        <Grid ColumnDefinitions="Auto, *"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="Fill" ColumnSpacing="5">
+                            <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                            <Entry Grid.Column="1" Text="{Binding Password}"
+                                   x:Name="PasswordEntry"
+                                   Placeholder="Enter your password" IsPassword="True" />
+                        </Grid>
+                    </Frame>
+                </Grid>
 
-            <!-- Content: Reset password link -->
-            <Label Text="Forgot password?"
-                   Padding="0,20"
-                   Style="{DynamicResource Link}" />
+                <!-- Content: Reset password link -->
+                <Label Text="Forgot password?"
+                       Padding="0,20"
+                       Style="{DynamicResource Link}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ForgotPasswordCommand}" NumberOfTapsRequired="1" />
+                    </Label.GestureRecognizers>
+                </Label>
 
-            <!-- Content: Sign in button -->
-            <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
-                    Command="{Binding SignInCommand}"
-                    CommandParameter="{Binding Source={x:Reference PasswordEntry}}" />
+                <!-- Content: Sign in button -->
+                <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
+                        Command="{Binding SignInCommand}"
+                        CommandParameter="{Binding Source={x:Reference PasswordEntry}}" />
 
-        </VerticalStackLayout>
+            </VerticalStackLayout>
+        </Grid>
 
         <!-- Content: Register link -->
-        <Grid Grid.Row="1" VerticalOptions="End" RowDefinitions="Auto, Auto">
+        <Grid Grid.Row="1" VerticalOptions="End" RowDefinitions="Auto, Auto"
+              BackgroundColor="{DynamicResource BackgroundColorAccent}">
             <VerticalStackLayout Grid.Row="0" Padding="60, 10">
                 <Label
                     Text="You only need an account if you want to share lists with others or access your lists on another device."
@@ -94,9 +91,7 @@
                 <Label Text="Don't have an account yet?  "
                        Style="{DynamicResource ItemProperty}"
                        HorizontalTextAlignment="Center" />
-                <Label Text="Sign up now!"
-                       Style="{DynamicResource Link}"
-                       FontSize="{DynamicResource FontSizeM}">
+                <Label Text="Sign up now!" Style="{DynamicResource Link}">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToSignUpCommand}" NumberOfTapsRequired="1" />
                     </Label.GestureRecognizers>

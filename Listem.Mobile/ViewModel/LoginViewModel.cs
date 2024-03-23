@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Listem.Mobile.Events;
+using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
@@ -21,7 +22,10 @@ public partial class LoginViewModel : ObservableObject
     private bool _isUserSignedIn;
 
     [ObservableProperty]
-    private string? _email;
+    private Status _userStatus;
+
+    [ObservableProperty]
+    private string? _userEmail;
 
     [ObservableProperty]
     private string? _password;
@@ -32,6 +36,7 @@ public partial class LoginViewModel : ObservableObject
     private readonly IServiceProvider _serviceProvider;
     private readonly AuthService _authService;
 
+    // TODO: Enable displaying a loading state on app load (i.e. while attempting to refresh token)
     public LoginViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
@@ -43,41 +48,36 @@ public partial class LoginViewModel : ObservableObject
 
     private async void Initialise()
     {
-        WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
+        WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
             this,
             (_, m) =>
             {
                 Logger.Log(
-                    $"Received message: Setting current user email to '{m.Value}' in LoginViewModel"
+                    $"[LoginViewModel] Received message: Current user status has changed to: {m.Value}"
                 );
-                Email = m.Value;
-                IsUserRegistered = true;
-            }
-        );
-
-        WeakReferenceMessenger.Default.Register<UserIsSignedInMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log(
-                    $"Received message: Current user sign in state set to '{m.Value}' in LoginViewModel"
-                );
-                IsUserSignedIn = m.Value;
+                UpdateUser(m.Value);
             }
         );
 
         var user = await _authService.GetCurrentUser();
+        UpdateUser(user);
+    }
+
+    private void UpdateUser(User user)
+    {
+        UserStatus = user.Status;
         IsUserRegistered = user.IsRegistered;
         IsUserSignedIn = user.IsSignedIn;
-        Email = user.EmailAddress;
+        UserEmail = user.EmailAddress;
     }
 
     public void RedirectIfUserIsSignedIn()
     {
-        if (IsUserSignedIn)
-        {
-            Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
-        }
+        if (!IsUserSignedIn)
+            return;
+
+        Logger.Log("User is signed in, redirecting now...");
+        Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
     }
 
     [RelayCommand]
@@ -89,9 +89,7 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task SignUp(ITextInput view)
     {
-        var isValidated = ValidateInputFields([Email, Password, PasswordConfirmed]);
-
-        if (!isValidated)
+        if (!IsInputValid([UserEmail, Password, PasswordConfirmed]))
             return;
 
         if (Password != PasswordConfirmed)
@@ -102,7 +100,7 @@ public partial class LoginViewModel : ObservableObject
             return;
         }
 
-        var result = await _authService.SignUp(new UserCredentials(Email!, Password!));
+        var result = await _authService.SignUp(new UserCredentials(UserEmail!, Password!));
         Notifier.ShowToast(result.Message);
         if (result.Success)
         {
@@ -116,12 +114,10 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task SignIn(ITextInput view)
     {
-        var isValidated = ValidateInputFields([Email, Password]);
-
-        if (!isValidated)
+        if (!IsInputValid([UserEmail, Password]))
             return;
 
-        var result = await _authService.SignIn(new UserCredentials(Email!, Password!));
+        var result = await _authService.SignIn(new UserCredentials(UserEmail!, Password!));
         Notifier.ShowToast(result.Message);
         if (result.Success)
         {
@@ -129,6 +125,13 @@ public partial class LoginViewModel : ObservableObject
             Password = null;
             await Shell.Current.Navigation.PopAsync();
         }
+    }
+
+    [RelayCommand]
+    private static Task ForgotPassword()
+    {
+        Notifier.ShowToast("Sorry, not implemented yet");
+        return Task.CompletedTask;
     }
 
     [RelayCommand]
@@ -156,8 +159,8 @@ public partial class LoginViewModel : ObservableObject
         await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
     }
 
-    // TODO: Replace with real validation and visible requirements and live feedback on page
-    private static bool ValidateInputFields(IEnumerable<string?> strings)
+    // TODO: Replace with real validation and add requirements and live feedback on page
+    private static bool IsInputValid(IEnumerable<string?> strings)
     {
         if (!strings.Any(string.IsNullOrEmpty))
             return true;

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using CommunityToolkit.Maui.Core;
-using Listem.Mobile.ViewModel;
+﻿using Listem.Mobile.ViewModel;
 
 namespace Listem.Mobile.Views;
 
@@ -10,16 +8,5 @@ public partial class SignInPage
     {
         InitializeComponent();
         BindingContext = serviceProvider.GetService<LoginViewModel>();
-    }
-
-    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-#if __ANDROID__ || __IOS__
-        var statusBarColor = (Color)Application.Current!.Resources["AccentBright"];
-        CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-        CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
-#endif
     }
 }

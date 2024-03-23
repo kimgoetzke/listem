@@ -39,7 +39,7 @@ public class AuthService
         }
         else
         {
-            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(user.IsSignedIn));
+            WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(CurrentUser));
         }
         Logger.Log($"Initialised auth service with user: {CurrentUser}");
     }
@@ -53,7 +53,7 @@ public class AuthService
                 "Seems like you're offline. You can continue to use the app but you cannot use sharing features or backup your list in the cloud.",
                 "OK"
             );
-            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
+            WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(CurrentUser));
         }
     }
 
@@ -149,12 +149,9 @@ public class AuthService
             var response = await LoggedRequest(() => _httpClient.PostAsync("/refresh", content));
             if (!response.IsSuccessStatusCode)
             {
-                var message = await ParseErrorResponse(response);
-
-                if (message == Constants.DefaultMessage)
-                    message = "Session is invalid - you need to sign in again";
-
-                WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
+                await ParseErrorResponse(response);
+                const string message = "Session is invalid - you need to sign in again";
+                WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(CurrentUser));
                 return new HttpRequestResult(false, message);
             }
 
@@ -180,21 +177,19 @@ public class AuthService
         if (email != null)
         {
             CurrentUser = User.WithEmail(email);
-            WeakReferenceMessenger.Default.Send(new UserEmailSetMessage(email));
         }
 
         if (loginResponse != null)
         {
             CurrentUser.SignIn(loginResponse);
-            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(true));
         }
 
         if (email == null && loginResponse == null)
         {
             CurrentUser.SignOut();
-            WeakReferenceMessenger.Default.Send(new UserIsSignedInMessage(false));
         }
 
+        WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(CurrentUser));
         SecureStorage
             .Default.SetAsync(Constants.User, JsonSerializer.Serialize(CurrentUser))
             .ConfigureAwait(false);

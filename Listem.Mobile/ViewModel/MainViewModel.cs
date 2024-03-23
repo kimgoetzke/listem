@@ -64,15 +64,15 @@ public partial class MainViewModel : ObservableObject
             }
         );
 
-        WeakReferenceMessenger.Default.Register<UserEmailSetMessage>(
+        WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
             this,
             (_, m) =>
             {
                 Logger.Log(
-                    $"Received message: Setting current user email to '{m.Value}' in MainViewModel"
+                    $"[MainViewModel] Received message: Current user status has changed to: {m.Value}"
                 );
-                CurrentUserEmail = m.Value;
-                IsUserSignedIn = true;
+                CurrentUserEmail = m.Value.EmailAddress;
+                IsUserSignedIn = m.Value.IsSignedIn;
             }
         );
     }

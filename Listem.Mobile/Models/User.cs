@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Listem.Shared.Contracts;
+﻿using Listem.Shared.Contracts;
 
 namespace Listem.Mobile.Models;
 
@@ -12,6 +11,18 @@ public class User
     public bool IsTokenExpired => TokenExpiresAt <= DateTime.Now;
     public bool IsRegistered => EmailAddress != null;
     public bool IsSignedIn => IsTokenExpired == false;
+    public Status Status
+    {
+        get
+        {
+            return IsSignedIn switch
+            {
+                true => Status.SignedIn,
+                false when IsRegistered => Status.NotSignedInButRegistered,
+                _ => Status.NotSignedInAndNotRegistered
+            };
+        }
+    }
 
     public static User From(StoredUser storedUser)
     {
@@ -50,6 +61,13 @@ public class User
     {
         return $"[User] Email: {EmailAddress ?? "null"}, signed in: {IsSignedIn}, access token: {AccessToken?[..10] ?? "null"} (valid={!IsTokenExpired}, {TokenExpiresAt}), refresh token: {RefreshToken?[..10] ?? "null"}";
     }
+}
+
+public enum Status
+{
+    NotSignedInAndNotRegistered,
+    NotSignedInButRegistered,
+    SignedIn
 }
 
 public class StoredUser
