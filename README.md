@@ -9,7 +9,7 @@ this app, also written in C# using .NET 8, Entity Framework Core, and ASP Core A
 > data sync when switching between online and offline modes. The app is also configured for localhost only.
 
 The goal was to learn something about .NET MAUI and Android app development by building on
-my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list), and make a
+my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) which I created the week before, and make a
 look a little less nasty and also use some shared, custom controls. In addition, I wanted to learn about web development
 with .NET and create a basic but fully-deployable service.
 
@@ -20,11 +20,12 @@ with .NET and create a basic but fully-deployable service.
 ### Overview
 
 - A super basic, minimalist to-do list app targeting Android
+- Users can register and log in to save their lists and categories in the cloud
+- Alternatively, the app can be used without account/connection, storing all data in a SQLite database on the device
 - Lists can be somewhat customised by adding categories or list types (e.g. changing to shopping list exposes a
   quantity control)
 - A list's content can be exported to the clipboard as text
 - List items can be imported from a comma-separated string from the clipboard and merged with the current list
-- All data is stored in a SQLite database on the device
 - Native confirmation prompts are used for destructive actions
 - Theming hasn't been implemented this time but can be enabled by configuring `DarkTheme.xaml` and exposing a control to
   change theme
