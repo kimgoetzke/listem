@@ -5,13 +5,13 @@ list Android app written in C# using .NET 8 MAUI, the CommunityToolkit, and SQLi
 this app, also written in C# using .NET 8, Entity Framework Core, and ASP Core Authentication.
 
 > [!IMPORTANT]  
-> This project is a work in progress and actively being worked on. The backend hasn't been connected to the frontend
-> yet (except for signing up and signing in).
+> This project is a work in progress and actively being worked on. While the backend has been connected, there is no
+> data sync when switching between online and offline modes. The app is also configured for localhost only.
 
 The goal was to learn something about .NET MAUI and Android app development by building on
-my [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) from last week and make a look a
-little less nasty and also use some shared, custom controls. In addition, I wanted to experience web development with
-.NET.
+my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list), and make a
+look a little less nasty and also use some shared, custom controls. In addition, I wanted to learn about web development
+with .NET and create a basic but fully-deployable service.
 
 ![Screenshots PNG](./assets/screenshots.png)
 

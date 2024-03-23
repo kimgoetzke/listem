@@ -10,6 +10,6 @@ internal class ItemDbContext(DbContextOptions<ItemDbContext> options) : DbContex
     {
         // TODO: Add indices and review data structure in the schema (e.g. dates as text)
         base.OnModelCreating(builder);
-        builder.HasDefaultSchema("lists");
+        builder.HasDefaultSchema("items");
     }
 }

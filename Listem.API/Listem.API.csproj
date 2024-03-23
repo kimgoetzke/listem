@@ -27,11 +27,10 @@
     <ItemGroup>
       <Folder Include="Database\" />
       <Folder Include="Migrations\" />
-      <Folder Include="Repositories\" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Listem.Contracts\Listem.Contracts.csproj" />
+      <ProjectReference Include="..\Listem.Shared\Listem.Shared.csproj" />
     </ItemGroup>
 
 </Project>

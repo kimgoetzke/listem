@@ -2,7 +2,7 @@
 using Listem.API.Domain.Items;
 using Listem.API.Domain.Lists;
 using Listem.API.Middleware;
-using Listem.Contracts;
+using Listem.Shared.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using static Listem.API.Utilities.EndpointUtilities;
 
@@ -39,7 +39,7 @@ public static class ListEndpoints
     )
     {
         var createdItemList = await listService.CreateAsync(req.UserId, list);
-        var defaultCategory = new CategoryRequest { Name = ICategoryService.DefaultCategoryName };
+        var defaultCategory = new CategoryRequest { Name = Shared.Constants.DefaultCategoryName };
         await categoryService.CreateAsync(req.UserId, createdItemList!.Id, defaultCategory);
         return Results.Created($"api/lists/{createdItemList.Id}", createdItemList);
     }

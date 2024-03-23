@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Listem.Mobile.Models"
+             xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
+             xmlns:converters="clr-namespace:Listem.Mobile.Converters"
+             x:Class="Listem.Mobile.Views.Controls.ListControl"
+             x:DataType="viewmodel:ListViewModel">
+
+    <ContentView.Resources>
+        <ResourceDictionary>
+            <converters:QuantityGreaterThanOneConverter x:Key="QuantityGreaterThanOneConverter" />
+        </ResourceDictionary>
+    </ContentView.Resources>
+
+    <CollectionView
+        ItemsSource="{Binding Items}"
+        SelectionMode="None"
+        VerticalOptions="Fill">
+        <CollectionView.Header>
+            <BoxView HeightRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Header>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="{x:Type models:ObservableItem}">
+                <SwipeView>
+
+                    <!-- List of added items: Swipe from left to right to complete task -->
+                    <SwipeView.LeftItems>
+                        <SwipeItems Mode="Execute">
+                            <SwipeItemView
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=RemoveItemCommand}"
+                                CommandParameter="{Binding .}"
+                                BackgroundColor="{DynamicResource Green}"
+                                WidthRequest="400">
+                                <Grid HorizontalOptions="Fill" Background="{DynamicResource Green}">
+                                    <Grid HorizontalOptions="Start">
+                                        <Image Source="done_white.png"
+                                               Aspect="AspectFit"
+                                               WidthRequest="25"
+                                               HeightRequest="25"
+                                               Margin="30, 5, 5 ,5"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Grid>
+                            </SwipeItemView>
+                        </SwipeItems>
+                    </SwipeView.LeftItems>
+
+                    <!-- List of added items: Swipe from right to left to reveal prioritisation button -->
+                    <SwipeView.RightItems>
+                        <SwipeItems SwipeBehaviorOnInvoked="Close">
+                            <SwipeItemView
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
+                                CommandParameter="{Binding .}">
+                                <Frame BackgroundColor="{DynamicResource Secondary}"
+                                       BorderColor="Transparent"
+                                       Padding="0"
+                                       VerticalOptions="Center"
+                                       HeightRequest="100"
+                                       WidthRequest="100">
+                                    <Image Source="important_white.png"
+                                           Aspect="AspectFit"
+                                           WidthRequest="25"
+                                           HeightRequest="25"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Frame>
+                            </SwipeItemView>
+                        </SwipeItems>
+                    </SwipeView.RightItems>
+
+                    <!-- List of added items: Contents of list -->
+                    <Grid Padding="0" RowDefinitions="Auto, Auto" VerticalOptions="Fill">
+                        <Frame HeightRequest="50"
+                               Margin="20, 5"
+                               Padding="0"
+                               VerticalOptions="Fill"
+                               BorderColor="Transparent"
+                               BackgroundColor="{DynamicResource BackgroundColorAccent}">
+
+                            <!-- Contents of list: Settings -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TapItemCommand}"
+                                    CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <!-- Contents of list: Content -->
+                            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Fill">
+                                <StackLayout Orientation="Horizontal" Grid.Column="0"
+                                             VerticalOptions="Center"
+                                             Padding="5, 0">
+                                    <CheckBox x:Name="DoneBox"
+                                              IsChecked="False" Scale="1"
+                                              CheckedChanged="CheckBox_OnCheckChanged"
+                                              BindingContext="{Binding .}" />
+                                    <Label Text="{Binding Title}"
+                                           AutomationId="{Binding Id}"
+                                           HeightRequest="50"
+                                           HorizontalOptions="Start"
+                                           VerticalTextAlignment="Center">
+                                        <Label.TextDecorations>
+                                            <OnPlatform x:TypeArguments="TextDecorations">
+                                                <On Platform="iOS, Android">None</On>
+                                            </OnPlatform>
+                                        </Label.TextDecorations>
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding Source={x:Reference DoneBox}, Path=IsChecked}"
+                                                         Value="True">
+                                                <Setter Property="TextDecorations" Value="Strikethrough" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Label x:Name="QuantityLabel"
+                                           HeightRequest="50"
+                                           HorizontalOptions="Start"
+                                           VerticalTextAlignment="Center">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding Quantity, Converter={StaticResource QuantityGreaterThanOneConverter}}"
+                                                         Value="True">
+                                                <Setter Property="Text"
+                                                        Value="{Binding Quantity, StringFormat=' ({0})'}" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Image x:Name="PriorityIcon"
+                                           Source="important_primary.png"
+                                           Scale="0.5"
+                                           IsVisible="False"
+                                           HeightRequest="50"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Start">
+                                        <Image.Triggers>
+                                            <DataTrigger TargetType="Image"
+                                                         Binding="{Binding IsImportant}"
+                                                         Value="True">
+                                                <Setter Property="IsVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Image.Triggers>
+                                    </Image>
+                                </StackLayout>
+                                <BoxView Grid.Column="0" Grid.ColumnSpan="2"
+                                         Style="{DynamicResource LeftTransparentToRightWhite}"
+                                         Background="{DynamicResource LeftTransparentToRightWhiteBrush2}" />
+                                <Frame Grid.Column="1" HeightRequest="20" VerticalOptions="Center"
+                                       HorizontalOptions="End"
+                                       Margin="10,10" Padding="0"
+                                       BorderColor="Transparent"
+                                       CornerRadius="4"
+                                       HasShadow="True"
+                                       Shadow="{DynamicResource NeutralShadowM}"
+                                       BackgroundColor="{DynamicResource Tertiary}">
+                                    <Label Text="{Binding CategoryName}"
+                                           FontSize="{DynamicResource FontSizeS}"
+                                           TextColor="{DynamicResource Neutral}"
+                                           Margin="0"
+                                           Padding="3, 0"
+                                           HorizontalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalOptions="Center"
+                                           VerticalTextAlignment="Center">
+                                    </Label>
+                                    <Frame.Triggers>
+                                        <DataTrigger TargetType="Frame"
+                                                     Binding="{Binding CategoryName}"
+                                                     Value="{StaticResource DefaultCategoryName}">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </Frame.Triggers>
+                                </Frame>
+                            </Grid>
+
+                        </Frame>
+                    </Grid>
+
+                </SwipeView>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+        <CollectionView.EmptyView>
+            <ContentView>
+                <Grid Padding="30">
+                    <StackLayout HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+
+                        <Label Text=":)"
+                               FontSize="48"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalOptions="Fill"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Nothing here yet"
+                               Margin="10"
+                               FontSize="{DynamicResource FontSizeL}"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalOptions="Fill"
+                               HorizontalTextAlignment="Center" />
+                        <Label Text="Add items to populate your list"
+                               FontSize="{DynamicResource FontSizeM}"
+                               HorizontalOptions="Fill"
+                               TextColor="{DynamicResource LightTextColor}"
+                               HorizontalTextAlignment="Center" />
+
+                    </StackLayout>
+                </Grid>
+            </ContentView>
+        </CollectionView.EmptyView>
+        <CollectionView.Footer>
+            <BoxView HeightRequest="100" BackgroundColor="{DynamicResource BackgroundColor}" />
+        </CollectionView.Footer>
+    </CollectionView>
+</ContentView>

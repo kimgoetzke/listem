@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem", "Listem\Listem.csproj", "{C4F6B29B-D0EE-49B3-BD18-66A700D117A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.Mobile", "Listem.Mobile\Listem.Mobile.csproj", "{C4F6B29B-D0EE-49B3-BD18-66A700D117A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITests", "UITests\UITests.csproj", "{A68F80BB-8144-46FD-889B-6C376D928570}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.Mobile.UITests", "Listem.Mobile.UITests\Listem.Mobile.UITests.csproj", "{A68F80BB-8144-46FD-889B-6C376D928570}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.API", "Listem.API\Listem.API.csproj", "{CDF703EE-C292-4415-94D7-E4BEC9DAA171}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.Contracts", "Listem.Contracts\Listem.Contracts.csproj", "{9839334C-24A0-4DAB-B787-88B5A3D0C21F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listem.Shared", "Listem.Shared\Listem.Shared.csproj", "{9839334C-24A0-4DAB-B787-88B5A3D0C21F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

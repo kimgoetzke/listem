@@ -1,0 +1,17 @@
+using Listem.Mobile.Models;
+
+namespace Listem.Mobile.Services;
+
+public interface IItemService
+{
+    Task<List<ObservableItem>> GetAllByListIdAsync(string listId);
+    Task CreateOrUpdateAsync(ObservableItem observableItem);
+    Task DeleteAsync(ObservableItem observableItem);
+    Task DeleteAllByListIdAsync(string listId);
+    Task UpdateAllToDefaultCategoryAsync(string listId);
+    Task UpdateAllToCategoryAsync(string categoryName, string listId);
+}
+
+public interface IApiItemService : IItemService;
+
+public interface ILocalItemService : IItemService;

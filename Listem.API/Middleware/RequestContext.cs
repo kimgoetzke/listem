@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Listem.API.Utilities;
+using Listem.Shared.Utilities;
 
 namespace Listem.API.Middleware;
 

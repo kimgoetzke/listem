@@ -1,4 +1,4 @@
-﻿using Listem.Contracts;
+﻿using Listem.Shared.Contracts;
 
 namespace Listem.API.Domain.Items;
 

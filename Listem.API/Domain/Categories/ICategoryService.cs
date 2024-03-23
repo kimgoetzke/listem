@@ -1,10 +1,9 @@
-﻿using Listem.Contracts;
+﻿using Listem.Shared.Contracts;
 
 namespace Listem.API.Domain.Categories;
 
 public interface ICategoryService
 {
-    const string DefaultCategoryName = "None";
     Task<List<CategoryResponse>> GetAllAsync();
     Task<List<CategoryResponse>> GetAllByListIdAsync(string listId);
     Task<CategoryResponse> GetDefaultCategory(string listId);

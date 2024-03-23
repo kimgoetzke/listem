@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Mobile.Views.MainPage"
+             xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
+             xmlns:controls="clr-namespace:Listem.Mobile.Views.Controls"
+             xmlns:models="clr-namespace:Listem.Mobile.Models"
+             x:DataType="viewmodel:MainViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+
+        <!-- Main menu -->
+        <Grid>
+            <Grid.Background>
+                <LinearGradientBrush StartPoint="1,0" EndPoint="1,1">
+                    <GradientStop Color="{DynamicResource SettingsMenuGradientStop1}" Offset="0.1" />
+                    <GradientStop Color="{DynamicResource SettingsMenuGradientStop2}" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Tapped="MenuGrid_OnTapGridArea" />
+            </Grid.GestureRecognizers>
+
+            <VerticalStackLayout Padding="0" WidthRequest="200" HorizontalOptions="Start">
+                <Label Text="Settings" Style="{DynamicResource Headline}" Margin="0, 20, 0, 0" />
+                <BoxView Style="{DynamicResource ThinLineSeparator}" Margin="25,0,0, 20" />
+
+                <!-- Account -->
+                <Label Style="{DynamicResource SubHeadline}"
+                       FontFamily="MulishRegular"
+                       Text="Account"
+                       HorizontalOptions="Start"
+                       Padding="25,30,20,10" />
+                <Label FontFamily="MulishRegular"
+                       FontSize="{DynamicResource FontSizeXS}"
+                       IsVisible="{Binding IsUserSignedIn}"
+                       Text="Logged in as:"
+                       Padding="25,10,20,0" />
+                <Label FontFamily="MulishRegular"
+                       FontSize="{DynamicResource FontSizeXS}"
+                       IsVisible="{Binding IsUserSignedIn}"
+                       Text="{Binding CurrentUserEmail}"
+                       Padding="25,0,20,10" />
+                <Button Style="{DynamicResource SimpleButton}"
+                        HorizontalOptions="Start"
+                        WidthRequest="175"
+                        Margin="25,10,0,20"
+                        Text="Sign up or sign in"
+                        Clicked="SignUpOrSignInButton_OnClicked">
+                    <Button.Triggers>
+                        <DataTrigger TargetType="Button"
+                                     Binding="{Binding IsUserSignedIn}"
+                                     Value="False">
+                            <Setter Property="IsVisible" Value="True" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Button"
+                                     Binding="{Binding IsUserSignedIn}"
+                                     Value="True">
+                            <Setter Property="IsVisible" Value="False" />
+                        </DataTrigger>
+                    </Button.Triggers>
+                </Button>
+                <Button Style="{DynamicResource SimpleButton}"
+                        HorizontalOptions="Start"
+                        WidthRequest="175"
+                        Margin="25,10,0,20"
+                        Text="Sign out"
+                        IsVisible="{Binding IsUserSignedIn}"
+                        Clicked="SignOutButton_OnClicked" />
+                <Label Style="{DynamicResource SubHeadline}"
+                       FontFamily="MulishRegular"
+                       HorizontalOptions="Start"
+                       Text="Theme"
+                       Padding="25,30,20,10" />
+
+                <!-- Themes -->
+                <CollectionView x:Name="ThemeCollectionView"
+                                SelectedItem="{Binding CurrentTheme}"
+                                ItemsSource="{Binding Themes}"
+                                VerticalScrollBarVisibility="Never"
+                                SelectionMode="Single"
+                                SelectionChangedCommand="{Binding SetThemeCommand}"
+                                SelectionChangedCommandParameter="{Binding Path=SelectedItem, Source={RelativeSource Self}}"
+                                BackgroundColor="Transparent"
+                                Margin="25,0,5,0"
+                                HorizontalOptions="Start">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:ObservableTheme">
+                            <Border x:Name="BorderElement"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="30"
+                                    Margin="3"
+                                    WidthRequest="65"
+                                    StrokeThickness="1.5"
+                                    StrokeShape="RoundRectangle 8,8,8,8">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Primary}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource SwitchOnColor}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource Tertiary}" />
+                                                <Setter Property="Stroke" Value="{DynamicResource Tertiary}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Grid>
+                                    <Label TextColor="{DynamicResource ButtonTextColor}"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           Text="{Binding Name}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Content -->
+        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent"
+               HasShadow="True" Shadow="{DynamicResource DarkShadowL}">
+            <Grid RowDefinitions="Auto, .4*, *, Auto"
+                  BackgroundColor="{DynamicResource BackgroundColor}"
+                  VerticalOptions="Fill"
+                  IgnoreSafeArea="True">
+
+                <!-- Content: Menu button -->
+                <ImageButton x:Name="MenuButton"
+                             Clicked="MenuButton_OnTap"
+                             Source="menu_neutral.png"
+                             Aspect="AspectFit"
+                             HorizontalOptions="Start"
+                             BorderWidth="0"
+                             WidthRequest="34"
+                             HeightRequest="34"
+                             Margin="25, 40, 15 ,5"
+                             VerticalOptions="Center" />
+
+                <!-- Content: Title -->
+                <Grid Grid.Row="1">
+                    <Label Text="" Style="{StaticResource Headline}" VerticalOptions="Start" />
+                </Grid>
+
+                <!-- Content: Collection view with list of lists -->
+                <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding}" />
+
+                <!-- Content: Add button -->
+                <Grid Grid.Row="3">
+                    <ImageButton x:Name="AddListButton"
+                                 Clicked="AddListButton_OnClicked"
+                                 Source="plus_white.png"
+                                 Style="{StaticResource FancyImageButton}"
+                                 Aspect="AspectFit"
+                                 HorizontalOptions="End"
+                                 VerticalOptions="Center"
+                                 Padding="20"
+                                 HeightRequest="50"
+                                 WidthRequest="50"
+                                 Margin="20, 20, 30, 30">
+                    </ImageButton>
+                </Grid>
+
+                <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" PlaceholderText="Enter list name..." />
+            </Grid>
+        </Frame>
+    </Grid>
+
+</ContentPage>
