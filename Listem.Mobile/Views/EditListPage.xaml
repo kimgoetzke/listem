@@ -11,13 +11,16 @@
 
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0">
-            <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent" BackgroundColor="{DynamicResource BackgroundColorAccent}" />
+            <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
+                   BackgroundColor="{DynamicResource BackgroundColorAccent}" />
             <Grid Margin="0, 15, 0,0">
-                <BoxView VerticalOptions="End" HeightRequest="25" BackgroundColor="{DynamicResource BackgroundColorAccent}"></BoxView>
+                <BoxView VerticalOptions="End" HeightRequest="25"
+                         BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                </BoxView>
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
                              Command="{Binding BackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
-                <Label Text="Edit list" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
+                <Label Text="List settings" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
                        VerticalOptions="Center" />
             </Grid>
         </Grid>
@@ -37,7 +40,7 @@
                            Unfocused="OnEntryUnfocused" />
                 </Frame>
             </Grid>
-            
+
             <!-- List type -->
             <Grid Margin="5, 10, 5,0"
                   RowDefinitions="Auto, Auto">
@@ -125,7 +128,7 @@
                                            HorizontalOptions="Fill"
                                            BorderColor="Transparent"
                                            BackgroundColor="{DynamicResource White}">
-                                        
+
                                         <Frame.Triggers>
                                             <DataTrigger TargetType="Frame"
                                                          Binding="{Binding Name}"
