@@ -28,14 +28,8 @@ public partial class ObservableList : ObservableObject
 
     public static ObservableList From(List list)
     {
-        return new ObservableList
-        {
-            Id = list.Id,
-            Name = list.Name,
-            ListType = list.ListType,
-            AddedOn = list.AddedOn,
-            UpdatedOn = list.UpdatedOn
-        };
+        var type = Enum.TryParse(list.ListType, out ListType t) ? t : ListType.Standard;
+        return new ObservableList { Name = list.Name, ListType = type, };
     }
 
     public static ObservableList From(ListResponse listResponse)
@@ -54,9 +48,8 @@ public partial class ObservableList : ObservableObject
     {
         return new List
         {
-            Id = IdProvider.NewId(nameof(List)),
             Name = Name,
-            ListType = ListType,
+            ListType = ListType.ToString(),
             AddedOn = AddedOn,
             UpdatedOn = UpdatedOn
         };

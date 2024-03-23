@@ -30,7 +30,6 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isUserSignedIn;
 
-    private readonly AuthService _authService;
     private readonly IListService _listService;
     private readonly IItemService _itemService;
 
@@ -38,7 +37,6 @@ public partial class MainViewModel : ObservableObject
     {
         _listService = serviceProvider.GetService<IListService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
-        _authService = serviceProvider.GetService<AuthService>()!;
         NewList = new ObservableList();
         Lists = [];
         Themes = ThemeHandler.GetAllThemesAsCollection();
@@ -77,16 +75,11 @@ public partial class MainViewModel : ObservableObject
         );
     }
 
-    public async Task InitialiseUser()
+    public void InitialiseUser()
     {
-        if (!_authService.IsOnline())
-        {
-            Notifier.ShowToast("No internet connection - you're in offline mode");
-        }
-        var currentUser = await _authService.GetCurrentUser();
+        var currentUser = RealmService.User;
         CurrentUserEmail = currentUser.EmailAddress;
         IsUserSignedIn = currentUser.IsSignedIn;
-        Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
     }
 
     public async Task LoadLists()
@@ -195,7 +188,7 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task BackToStartPage()
     {
-        _authService.SignOut();
+        await RealmService.SignOutAsync();
         IsUserSignedIn = false;
         await Shell.Current.Navigation.PopToRootAsync();
     }

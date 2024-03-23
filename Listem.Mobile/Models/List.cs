@@ -1,29 +1,33 @@
-using Listem.Shared.Contracts;
-using Listem.Shared.Enums;
-using SQLite;
+using Listem.Mobile.Services;
+using MongoDB.Bson;
+using Realms;
 
 namespace Listem.Mobile.Models;
 
-public class List
+public partial class List : IRealmObject
 {
     [PrimaryKey]
-    public string Id { get; init; } = null!;
-    public string Name { get; set; } = null!;
-    public ListType ListType { get; set; }
-    public DateTime AddedOn { get; set; }
-    public DateTime UpdatedOn { get; set; }
+    [MapTo("_id")]
+    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
 
-    public static List FromListResponse(ListResponse listResponse)
-    {
-        return new List
-        {
-            Id = listResponse.Id,
-            Name = listResponse.Name,
-            ListType = listResponse.ListType,
-            AddedOn = listResponse.AddedOn,
-            UpdatedOn = listResponse.UpdatedOn
-        };
-    }
+    [MapTo("owner_id")]
+    // [Required]
+    public string OwnerId { get; set; }
+
+    [MapTo("name")]
+    // [Required]
+    public string Name { get; set; } = null!;
+
+    [MapTo("list_type")]
+    // [Required]
+    public string ListType { get; set; }
+
+    [MapTo("added_on")]
+    public DateTimeOffset AddedOn { get; set; }
+
+    [MapTo("updated_on")]
+    public DateTimeOffset UpdatedOn { get; set; }
+    public bool IsMine => OwnerId == RealmService.User.Id;
 
     public override string ToString()
     {

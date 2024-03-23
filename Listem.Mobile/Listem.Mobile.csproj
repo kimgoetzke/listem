@@ -53,6 +53,9 @@
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+        
+        <!-- MongoDB Atlas-->
+        <MauiAsset Include="atlasConfig.json" />
     </ItemGroup>
 
     <ItemGroup>
@@ -63,6 +66,7 @@
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+        <PackageReference Include="Realm" Version="11.7.0" />
         <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
         <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.7" />
     </ItemGroup>

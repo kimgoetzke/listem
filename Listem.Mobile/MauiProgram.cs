@@ -30,17 +30,9 @@ public static class MauiProgram
 
     private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
     {
-        builder.Services.AddSingleton<AuthService>();
-        builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
-        builder.Services.AddSingleton<IListService, ListServiceResolver>();
-        builder.Services.AddSingleton<IApiListService, ApiListService>();
-        builder.Services.AddSingleton<ILocalListService, LocalListService>();
-        builder.Services.AddSingleton<ICategoryService, CategoryServiceResolver>();
-        builder.Services.AddSingleton<IApiCategoryService, ApiCategoryService>();
-        builder.Services.AddSingleton<ILocalCategoryService, LocalCategoryService>();
-        builder.Services.AddSingleton<IItemService, ItemServiceResolver>();
-        builder.Services.AddSingleton<IApiItemService, ApiItemService>();
-        builder.Services.AddSingleton<ILocalItemService, LocalItemService>();
+        builder.Services.AddSingleton<IListService, ListService>();
+        builder.Services.AddSingleton<ICategoryService, CategoryService>();
+        builder.Services.AddSingleton<IItemService, ItemService>();
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
         builder.Services.AddHttpClient(
             Constants.HttpClientName,
