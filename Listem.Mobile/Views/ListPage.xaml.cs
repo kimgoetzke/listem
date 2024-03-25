@@ -60,10 +60,9 @@ public partial class ListPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-
+        Logger.Log($"Removing item selected item(s), if applicable");
         foreach (var item in _viewModel.ItemsToDelete)
         {
-            Logger.Log($"Removing item: {item.Name} from list");
             _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
         }
 #if __ANDROID__ || __IOS__
@@ -187,7 +186,6 @@ public partial class ListPage
         };
         categoryPicker.SetBinding(Picker.ItemsSourceProperty, "Categories");
         categoryPicker.SetBinding(Picker.SelectedItemProperty, "CurrentCategory");
-        Logger.Log($"[ListPage] Current category: {_viewModel.CurrentCategory.ToLoggableString()}");
         categoryPicker.SelectedIndexChanged += (sender, _) =>
         {
             if (sender is not Picker picker)
@@ -197,7 +195,6 @@ public partial class ListPage
                 return;
 
             _viewModel.CurrentCategory = category;
-            Logger.Log("Current category updated to: " + _viewModel.CurrentCategory.Name);
         };
         return categoryPicker;
     }
