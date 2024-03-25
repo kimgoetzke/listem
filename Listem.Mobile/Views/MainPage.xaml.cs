@@ -2,6 +2,7 @@
 using AsyncAwaitBestPractices;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
+using Microsoft.Extensions.Logging;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif
@@ -13,10 +14,12 @@ public partial class MainPage
     private readonly MainViewModel _viewModel;
     private const uint AnimationDuration = 400u;
     private bool _isMenuOpen;
+    private readonly ILogger<MainPage> _logger;
 
-    public MainPage(MainViewModel viewModel)
+    public MainPage(MainViewModel viewModel, IServiceProvider serviceProvider)
     {
         InitializeComponent();
+        _logger = serviceProvider.GetService<ILogger<MainPage>>()!;
         _viewModel = viewModel;
         _viewModel.InitialiseUser();
         BindingContext = _viewModel;
@@ -35,7 +38,7 @@ public partial class MainPage
         if (!Settings.FirstRun)
             return;
 
-        Logger.Log("First time running this application");
+        _logger.LogInformation("First time running this application");
         Settings.FirstRun = false;
     }
 

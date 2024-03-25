@@ -15,8 +15,8 @@ public static class Logger
 #if __ANDROID__
         Android.Util.Log.Info(LoggerTag, $"{Prefix} {message}");
 #elif DEBUG
-        Console.WriteLine($"{Prefix} {message}");
-        Trace.WriteLine($"{Prefix} {message}");
+        Console.WriteLine($"{Prefix} [DEPRECATED] {message}");
+        Trace.WriteLine($"{Prefix} [DEPRECATED] {message}");
 #endif
     }
 }

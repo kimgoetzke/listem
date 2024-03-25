@@ -2,13 +2,14 @@
 
 using CommunityToolkit.Maui.Core.Platform;
 using CommunityToolkit.Mvvm.Input;
-using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace Listem.Mobile.Views.Controls;
 
 public partial class StickyEntry
 {
     public event EventHandler<string> Submitted;
+    private readonly ILogger<StickyEntry> _logger;
 
     public StickyEntry()
     {
@@ -16,6 +17,7 @@ public partial class StickyEntry
         BindingContext = this;
         Submitted += (_, _) => { };
         SetVisibility(false);
+        _logger = IPlatformApplication.Current!.Services.GetService<ILogger<StickyEntry>>()!;
     }
 
     [RelayCommand]
@@ -24,7 +26,7 @@ public partial class StickyEntry
         if (StickyEntryField.Text.Length == 0)
             return;
 
-        Logger.Log($"[StickyEntry] Submitting input '{StickyEntryField.Text}'");
+        _logger.LogInformation("Submitting input '{Input}'", StickyEntryField.Text);
         Submitted(this, StickyEntryField.Text);
         StickyEntryField.Text = string.Empty;
         HideKeyboard(view);
@@ -34,7 +36,7 @@ public partial class StickyEntry
     [RelayCommand]
     private void CancelInput(ITextInput view)
     {
-        Logger.Log($"Cancelling input");
+        _logger.LogInformation("Cancelling input");
         StickyEntryField.Text = string.Empty;
         HideKeyboard(view);
         SetVisibility(false);
@@ -53,20 +55,18 @@ public partial class StickyEntry
     }
 
     // ReSharper disable once UnusedParameter.Local
-    private static void HideKeyboard(ITextInput view)
+    private void HideKeyboard(ITextInput view)
     {
 #if __ANDROID__
         var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
-        Logger.Log("Keyboard hidden: " + isKeyboardHidden);
+        _logger.LogInformation("Keyboard hidden: {State}", isKeyboardHidden);
 #endif
     }
 
     private void StickyEntryField_Unfocused(object? sender, FocusEventArgs e)
     {
         if (sender is ITextInput textInput)
-        {
             HideKeyboard(textInput);
-        }
 
         SetVisibility(false);
     }

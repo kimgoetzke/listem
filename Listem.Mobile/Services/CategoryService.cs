@@ -1,10 +1,10 @@
 using Listem.Mobile.Models;
-using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 using Realms;
 
 namespace Listem.Mobile.Services;
 
-public class CategoryService : ICategoryService
+public class CategoryService(ILogger<CategoryService> logger) : ICategoryService
 {
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
@@ -12,11 +12,14 @@ public class CategoryService : ICategoryService
     {
         if (list.Categories.Contains(category))
         {
-            Logger.Log($"Cannot add category '{category.Name}' - it already exists");
+            logger.LogInformation(
+                "Cannot add category '{Name}' - it already exists",
+                category.Name
+            );
             return;
         }
         await _realm.WriteAsync(() => list.Categories.Add(category));
-        Logger.Log($"Added: {category.ToLoggableString()}");
+        logger.LogInformation("Added: {Category}", category.ToLoggableString());
     }
 
     public async Task CreateAllAsync(IList<Category> categories, List list)
@@ -27,7 +30,10 @@ public class CategoryService : ICategoryService
             {
                 if (list.Categories.Contains(category))
                 {
-                    Logger.Log($"Cannot add category '{category.Name}' - it already exists");
+                    logger.LogInformation(
+                        "Cannot add category '{Name}' - it already exists",
+                        category.Name
+                    );
                     continue;
                 }
                 list.Categories.Add(category);
@@ -37,13 +43,13 @@ public class CategoryService : ICategoryService
 
     public async Task DeleteAsync(Category category)
     {
-        Logger.Log($"Removing: {category.ToLoggableString()}");
+        logger.LogInformation("Removing: {Category}", category.ToLoggableString());
         await _realm.WriteAsync(() => _realm.Remove(category));
     }
 
     public async Task ResetAsync(List list)
     {
-        Logger.Log($"Resetting categories for list {list.Name}");
+        logger.LogInformation("Resetting categories for list {Name}", list.Name);
         await _realm.WriteAsync(() =>
         {
             var toRemove = list

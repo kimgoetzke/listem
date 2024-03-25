@@ -1,11 +1,10 @@
 using Listem.Mobile.Models;
-using Listem.Mobile.Utilities;
-using MongoDB.Bson;
+using Microsoft.Extensions.Logging;
 using Realms;
 
 namespace Listem.Mobile.Services;
 
-public class ItemService : IItemService
+public class ItemService(ILogger<CategoryService> logger) : IItemService
 {
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
@@ -15,7 +14,7 @@ public class ItemService : IItemService
         {
             item.IsDraft = false;
             _realm.Add(item);
-            Logger.Log($"Added: {item.ToLoggableString()}");
+            logger.LogInformation("Added: {Item}", item.ToLoggableString());
         });
     }
 
@@ -33,7 +32,10 @@ public class ItemService : IItemService
         {
             if (_realm.Find<Item>(item.Id) == null)
             {
-                Logger.Log($"Not updated because it doesn't exist: {item.ToLoggableString()}");
+                logger.LogInformation(
+                    "Not updated because it doesn't exist: {Item}",
+                    item.ToLoggableString()
+                );
                 return;
             }
             if (name != null)
@@ -65,17 +67,14 @@ public class ItemService : IItemService
                 item.IsImportant = (bool)isImportant;
             }
             item.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
-            Logger.Log($"Updated: {item.ToLoggableString()}");
+            logger.LogInformation("Updated: {Item}", item.ToLoggableString());
         });
     }
 
     public async Task DeleteAsync(Item item)
     {
-        Logger.Log($"Removing item: {item.Name} {item.Id}");
-        await _realm.WriteAsync(() =>
-        {
-            _realm.Remove(item);
-        });
+        logger.LogInformation("Removing: {Item}", item.ToLoggableString());
+        await _realm.WriteAsync(() => _realm.Remove(item));
     }
 
     public async Task DeleteAllInListAsync(List list)
@@ -84,7 +83,7 @@ public class ItemService : IItemService
         {
             _realm.RemoveRange(list.Items);
         });
-        Logger.Log($"Removed all items in list '{list.Name}' {list.Id}");
+        logger.LogInformation("Removed all items in list '{Name}' {Id}", list.Name, list.Id);
     }
 
     public async Task ResetAllToDefaultCategoryAsync(List list)
@@ -101,8 +100,11 @@ public class ItemService : IItemService
                 count++;
             }
         });
-        Logger.Log(
-            $"Updated all items ({count}) in list '{list.Name}' {list.Id} to use default category"
+        logger.LogInformation(
+            "Updated all {Count} item(s) in list '{Name}' {Id} to use default category",
+            count,
+            list.Name,
+            list.Id
         );
     }
 
@@ -124,8 +126,12 @@ public class ItemService : IItemService
                 count++;
             }
         });
-        Logger.Log(
-            $"Updated {count} item(s) with category '{category.Name}' in list '{list.Name}' {list.Id} to use default category"
+        logger.LogInformation(
+            "Updated {Count} item(s) with category '{Category}' in list '{Name}' {Id} to use default category",
+            count,
+            category.Name,
+            list.Name,
+            list.Id
         );
     }
 }

@@ -1,6 +1,7 @@
 using System.Text;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace Listem.Mobile.Services;
 
@@ -8,6 +9,9 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
 {
     private readonly ICategoryService _categoryService = sp.GetService<ICategoryService>()!;
     private readonly IItemService _itemService = sp.GetService<IItemService>()!;
+    private readonly ILogger<ClipboardService> _logger = sp.GetService<
+        ILogger<ClipboardService>
+    >()!;
 
     public async void InsertFromClipboardAsync(
         IList<Item> items,
@@ -50,7 +54,7 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         return true;
     }
 
-    private static bool WasAbleToExtractCandidates(
+    private bool WasAbleToExtractCandidates(
         List list,
         string import,
         List<Category> existingCategories,
@@ -60,7 +64,10 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         out List<Category> categoryCandidates
     )
     {
-        Logger.Log("Extracted from clipboard: " + import.Replace(Environment.NewLine, ","));
+        _logger.LogInformation(
+            "Extracted from clipboard: {Elements}",
+            import.Replace(Environment.NewLine, ",")
+        );
         var category = existingCategories.Find(c => c.Name == Constants.DefaultCategoryName)!;
         itemCount = 0;
         categoryCount = 0;
@@ -171,7 +178,10 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
     {
         var text = BuildStringFromList(items.ToList(), categories.ToList());
         Clipboard.SetTextAsync(text);
-        Logger.Log("Copied to clipboard: " + text.Replace(Environment.NewLine, ", "));
+        _logger.LogInformation(
+            "Copied to clipboard: {Elements}",
+            text.Replace(Environment.NewLine, ", ")
+        );
         Notifier.ShowToast("Copied list to clipboard");
     }
 

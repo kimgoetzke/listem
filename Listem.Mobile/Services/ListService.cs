@@ -1,10 +1,10 @@
 ﻿using Listem.Mobile.Models;
-using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 using Realms;
 
 namespace Listem.Mobile.Services;
 
-public class ListService : IListService
+public class ListService(ILogger<CategoryService> logger) : IListService
 {
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
@@ -15,7 +15,7 @@ public class ListService : IListService
             list.IsDraft = false;
             list.Categories.Add(new Category { Name = Constants.DefaultCategoryName });
             _realm.Add(list);
-            Logger.Log($"Added: {list.ToLoggableString()}");
+            logger.LogInformation("Added: {List}", list.ToLoggableString());
         });
     }
 
@@ -27,21 +27,18 @@ public class ListService : IListService
         string? listType = null
     )
     {
+        if (_realm.Find<List>(list.Id) == null)
+        {
+            logger.LogInformation(
+                "Not updated because it doesn't exist: {List}",
+                list.ToLoggableString()
+            );
+            return;
+        }
         await _realm.WriteAsync(() =>
         {
-            if (_realm.Find<List>(list.Id) == null)
-            {
-                Logger.Log($"List has an id but couldn't be found: {list.ToLoggableString()}");
-                return;
-            }
-            if (name != null)
-            {
-                list.Name = name;
-            }
-            if (ownedBy != null)
-            {
-                list.OwnedBy = ownedBy;
-            }
+            list.Name = name ?? list.Name;
+            list.OwnedBy = ownedBy ?? list.OwnedBy;
             if (sharedWith != null)
             {
                 list.SharedWith.Clear();
@@ -50,18 +47,16 @@ public class ListService : IListService
                     list.SharedWith.Add(s);
                 }
             }
-            if (listType != null)
-            {
-                list.ListType = listType;
-            }
+            list.ListType = listType ?? list.ListType;
             list.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
-            Logger.Log($"Updated: {list.ToLoggableString()}");
+
+            logger.LogInformation("Updated: {List}", list.ToLoggableString());
         });
     }
 
     public async Task DeleteAsync(List list)
     {
-        Logger.Log($"Removing list: '{list.Name}' {list.Id}");
+        logger.LogInformation("Removing: {List}", list.ToLoggableString());
         await _realm.WriteAsync(() => _realm.Remove(list));
     }
 }

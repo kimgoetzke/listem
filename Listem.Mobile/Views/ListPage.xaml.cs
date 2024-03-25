@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
 using Listem.Mobile.Models;
-using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
+using Microsoft.Extensions.Logging;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif
@@ -13,16 +13,19 @@ namespace Listem.Mobile.Views;
 public partial class ListPage
 {
     private const uint AnimationDuration = 400u;
-    private readonly ListViewModel _viewModel;
     private Entry EntryField { get; set; } = null!;
     private Frame EntryFieldFrame { get; set; } = null!;
     private Picker CategoryPicker { get; set; } = null!;
     private Frame CategoryPickerFrame { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
 
+    private readonly ListViewModel _viewModel;
+    private readonly ILogger<ListPage> _logger;
+
     public ListPage(List list, IServiceProvider serviceProvider)
     {
         InitializeComponent();
+        _logger = serviceProvider.GetService<ILogger<ListPage>>()!;
         _viewModel = new ListViewModel(list, serviceProvider);
         BindingContext = _viewModel;
         InitialiseMenuToAddItems();
@@ -60,7 +63,7 @@ public partial class ListPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        Logger.Log($"Removing item selected item(s), if applicable");
+        _logger.LogInformation("Removing item selected item(s), if applicable");
         foreach (var item in _viewModel.ItemsToDelete)
         {
             _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
