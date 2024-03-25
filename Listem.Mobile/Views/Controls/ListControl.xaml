@@ -115,6 +115,7 @@
                                     </Label>
                                     <Label x:Name="QuantityLabel"
                                            HeightRequest="50"
+                                           IsVisible="False"
                                            HorizontalOptions="Start"
                                            VerticalTextAlignment="Center">
                                         <Label.Triggers>
@@ -123,6 +124,11 @@
                                                          Value="True">
                                                 <Setter Property="Text"
                                                         Value="{Binding Quantity, StringFormat=' ({0})'}" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding List.ListType}"
+                                                         Value="Shopping">
+                                                <Setter Property="IsVisible" Value="True" />
                                             </DataTrigger>
                                         </Label.Triggers>
                                     </Label>
