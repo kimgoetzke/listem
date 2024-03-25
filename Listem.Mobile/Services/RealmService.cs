@@ -136,6 +136,9 @@ public static class RealmService
         }
     }
 
+    // It does not appear to be possible to filter items by referring to the linked List object, see
+    // https://www.mongodb.com/docs/realm/sdk/dotnet/sync/flexible-sync/#flexible-sync-rql-requirements-and-limitations.
+    // This is why we duplicate the OwnedBy and SharedWith fields in the Item object. :-(
     private static (string queryName, IQueryable<Item> query) QueryForItems(Realm realm)
     {
         var query = realm

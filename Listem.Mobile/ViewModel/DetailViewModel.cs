@@ -8,7 +8,7 @@ using ListType = Listem.Mobile.Models.ListType;
 namespace Listem.Mobile.ViewModel;
 
 [QueryProperty(nameof(Item), nameof(Item))]
-public partial class DetailViewModel : ObservableObject
+public partial class DetailViewModel : BaseViewModel
 {
     [ObservableProperty]
     private IList<Category> _categories = [];

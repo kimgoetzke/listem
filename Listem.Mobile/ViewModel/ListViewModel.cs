@@ -9,7 +9,7 @@ using StringProcessor = Listem.Mobile.Utilities.StringProcessor;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class ListViewModel : ObservableObject
+public partial class ListViewModel : BaseViewModel
 {
     [ObservableProperty]
     private List _currentList;
@@ -41,6 +41,7 @@ public partial class ListViewModel : ObservableObject
 
     public ListViewModel(List list, IServiceProvider serviceProvider)
     {
+        IsBusy = true;
         _itemService = serviceProvider.GetService<IItemService>()!;
         _clipboardService = serviceProvider.GetService<IClipboardService>()!;
         CurrentList = list;
@@ -48,6 +49,7 @@ public partial class ListViewModel : ObservableObject
         Categories = CurrentList.Categories;
         CurrentCategory = Categories.First(c => c.Name == Constants.DefaultCategoryName);
         GetSortedItems();
+        IsBusy = false;
     }
 
     [RelayCommand]
@@ -78,7 +80,9 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveItem(Item item)
     {
+        IsBusy = true;
         await _itemService.DeleteAsync(item);
+        IsBusy = false;
     }
 
     [RelayCommand]
@@ -116,7 +120,6 @@ public partial class ListViewModel : ObservableObject
         );
     }
 
-    // TODO: Test this because it'll probably break when using Realm
     public string ProcessedObservableItemListName
     {
         get

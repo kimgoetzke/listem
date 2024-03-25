@@ -11,7 +11,7 @@ using Realms;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : BaseViewModel
 {
     [ObservableProperty]
     private IQueryable<List> _lists = null!;
@@ -35,6 +35,7 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel(IServiceProvider serviceProvider)
     {
+        IsBusy = true;
         _serviceProvider = serviceProvider;
         _listService = serviceProvider.GetService<IListService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
@@ -53,6 +54,7 @@ public partial class MainViewModel : ObservableObject
                 IsUserSignedIn = m.Value.IsSignedIn;
             }
         );
+        IsBusy = false;
     }
 
     // TODO: Implement sorting and filtering
@@ -94,8 +96,10 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
+        IsBusy = true;
         await _itemService.DeleteAllInListAsync(list);
         await _listService.DeleteAsync(list);
+        IsBusy = false;
     }
 
     private static async Task<bool> IsDeletionConfirmedByUser(string listName)
@@ -132,8 +136,10 @@ public partial class MainViewModel : ObservableObject
     [RelayCommand]
     private async Task TapList(List list)
     {
+        IsBusy = true;
         Logger.Log($"Opening list: {list.ToLoggableString()}");
         await Shell.Current.Navigation.PushAsync(new ListPage(list, _serviceProvider));
+        IsBusy = false;
     }
 
     [RelayCommand]

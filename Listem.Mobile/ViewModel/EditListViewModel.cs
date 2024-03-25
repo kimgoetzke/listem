@@ -8,7 +8,7 @@ using ListType = Listem.Mobile.Models.ListType;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class EditListViewModel : ObservableObject
+public partial class EditListViewModel : BaseViewModel
 {
     public static string DefaultCategoryName => Constants.DefaultCategoryName;
 
