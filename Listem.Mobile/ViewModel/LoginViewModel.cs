@@ -7,6 +7,7 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Microsoft.Extensions.Logging;
 using User = Listem.Mobile.Models.User;
 #if __ANDROID__
 using CommunityToolkit.Maui.Core.Platform;
@@ -35,11 +36,13 @@ public partial class LoginViewModel : BaseViewModel
     private string? _passwordConfirmed;
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<LoginViewModel> _logger;
 
     // TODO: Enable displaying a loading state on app load (i.e. while attempting to refresh token)
     public LoginViewModel(IServiceProvider serviceProvider)
     {
         _serviceProvider = serviceProvider;
+        _logger = serviceProvider.GetService<ILogger<LoginViewModel>>()!;
         Initialise();
     }
 
@@ -50,8 +53,9 @@ public partial class LoginViewModel : BaseViewModel
             this,
             (_, m) =>
             {
-                Logger.Log(
-                    $"[LoginViewModel] Received message: Current user status has changed to: {m.Value}"
+                _logger.LogInformation(
+                    "Received message: Current user status has changed to: {User}",
+                    m.Value
                 );
                 UpdateUser(m.Value);
             }
@@ -74,7 +78,7 @@ public partial class LoginViewModel : BaseViewModel
         if (!IsUserSignedIn)
             return;
 
-        Logger.Log("User is signed in, redirecting now...");
+        _logger.LogInformation("User is signed in, redirecting now...");
         Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
     }
 
@@ -110,7 +114,7 @@ public partial class LoginViewModel : BaseViewModel
         catch (Exception ex)
         {
             IsBusy = false;
-            Logger.Log("Sign up failed: " + ex);
+            _logger.LogInformation("Sign in failed: {Exception}", ex);
             await Notifier.ShowAlertAsync("Sign up failed", ex.Message, "OK");
         }
     }
@@ -134,7 +138,7 @@ public partial class LoginViewModel : BaseViewModel
         catch (Exception ex)
         {
             IsBusy = false;
-            Logger.Log("Sign in failed: " + ex);
+            _logger.LogInformation("Sign in failed: {Exception}", ex);
             await Notifier.ShowAlertAsync("Sign in failed", ex.Message, "OK");
         }
     }
@@ -181,11 +185,11 @@ public partial class LoginViewModel : BaseViewModel
     }
 
     // ReSharper disable once UnusedParameter.Local
-    private static void HideKeyboard(ITextInput view)
+    private void HideKeyboard(ITextInput view)
     {
 #if __ANDROID__
         var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
-        Logger.Log("Keyboard hidden: " + isKeyboardHidden);
+        _logger.LogInformation("Keyboard hidden: {State}", isKeyboardHidden);
 #endif
     }
 }

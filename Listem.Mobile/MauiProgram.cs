@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using Listem.Mobile.Services;
+using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
 using Listem.Mobile.Views;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace Listem.Mobile;
 
@@ -10,6 +12,18 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u4}] [XXX] {Message:lj}{NewLine}{Exception}"
+            )
+            .MinimumLevel.Information()
+            .WriteTo.Debug(
+                outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u4}] [XXX] {Message:lj}{NewLine}{Exception}"
+            )
+            .MinimumLevel.Information()
+            .WriteTo.Sink<AndroidLogSink>()
+            .CreateLogger();
+
         return MauiApp
             .CreateBuilder()
             .UseMauiApp<App>()
@@ -35,10 +49,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<IItemService, ItemService>();
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
         builder.Services.AddSingleton<IClipboardService, ClipboardService>();
-        builder.Services.AddLogging();
 
 #if DEBUG
-        builder.Logging.AddDebug();
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSerilog(Log.Logger);
 #endif
 
         return builder;

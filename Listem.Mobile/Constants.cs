@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public const string LoggerTag = "Listem";
+    public const string LoggerPrefix = "[XXX]";
     public const string User = "CurrentUser";
     public const string DefaultCategoryName = "None";
 

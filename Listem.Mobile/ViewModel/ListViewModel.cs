@@ -35,9 +35,9 @@ public partial class ListViewModel : BaseViewModel
     [ObservableProperty]
     private Category _currentCategory;
 
+    private readonly Realm _realm = RealmService.GetMainThreadRealm();
     private readonly IItemService _itemService;
     private readonly IClipboardService _clipboardService;
-    private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
     public ListViewModel(List list, IServiceProvider serviceProvider)
     {

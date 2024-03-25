@@ -7,6 +7,7 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Microsoft.Extensions.Logging;
 using Realms;
 
 namespace Listem.Mobile.ViewModel;
@@ -31,6 +32,7 @@ public partial class MainViewModel : BaseViewModel
     private readonly IServiceProvider _serviceProvider;
     private readonly IListService _listService;
     private readonly IItemService _itemService;
+    private readonly ILogger _logger;
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
     public MainViewModel(IServiceProvider serviceProvider)
@@ -39,6 +41,7 @@ public partial class MainViewModel : BaseViewModel
         _serviceProvider = serviceProvider;
         _listService = serviceProvider.GetService<IListService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
+        _logger = serviceProvider.GetService<ILogger<MainViewModel>>()!;
         GetSortedLists();
         Themes = ThemeHandler.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
@@ -47,8 +50,9 @@ public partial class MainViewModel : BaseViewModel
             this,
             (_, m) =>
             {
-                Logger.Log(
-                    $"[MainViewModel] Received message: Current user status has changed to: {m.Value}"
+                _logger.LogInformation(
+                    "[MainViewModel] Received message: Current user status has changed to: {User}",
+                    m.Value
                 );
                 CurrentUserEmail = m.Value.EmailAddress;
                 IsUserSignedIn = m.Value.IsSignedIn;
@@ -92,7 +96,7 @@ public partial class MainViewModel : BaseViewModel
     {
         if (!await IsDeletionConfirmedByUser(list.Name))
         {
-            Logger.Log($"Cancelled action to delete: {list.ToLoggableString()}");
+            _logger.LogInformation("Cancelled action to delete: {List}", list.ToLoggableString());
             return;
         }
 
@@ -118,7 +122,7 @@ public partial class MainViewModel : BaseViewModel
         if (theme == null)
             return Task.CompletedTask;
 
-        Logger.Log($"Changing theme to: {theme}");
+        _logger.LogInformation("Changing theme to: {Theme}", theme);
         ThemeHandler.SetTheme(theme.Name);
         CurrentTheme = theme;
         OnPropertyChanged(nameof(CurrentTheme));
@@ -137,7 +141,7 @@ public partial class MainViewModel : BaseViewModel
     private async Task TapList(List list)
     {
         IsBusy = true;
-        Logger.Log($"Opening list: {list.ToLoggableString()}");
+        _logger.LogInformation("Opening list: {List}", list.ToLoggableString());
         await Shell.Current.Navigation.PushAsync(new ListPage(list, _serviceProvider));
         IsBusy = false;
     }
@@ -145,7 +149,7 @@ public partial class MainViewModel : BaseViewModel
     [RelayCommand]
     private async Task EditList(List list)
     {
-        Logger.Log($"Editing list: {list.ToLoggableString()}");
+        _logger.LogInformation("Editing list: {List}", list.ToLoggableString());
         await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
     }
 }
