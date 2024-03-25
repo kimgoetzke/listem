@@ -80,16 +80,52 @@ public class ItemService : IItemService
 
     public async Task DeleteAllInListAsync(List list)
     {
-        Logger.Log($"Removed all items in list '{list.Name}' (not implemented yet)");
+        await _realm.WriteAsync(() =>
+        {
+            _realm.RemoveRange(list.Items);
+        });
+        Logger.Log($"Removed all items in list '{list.Name}' {list.Id}");
     }
 
-    public async Task UpdateAllToDefaultCategoryAsync(ObjectId listId)
+    public async Task ResetAllToDefaultCategoryAsync(List list)
     {
-        Logger.Log($"Updated all items to use default category (not implemented yet)");
+        var count = 0;
+        await _realm.WriteAsync(() =>
+        {
+            var defaultCategory = list.Categories.First(c =>
+                c.Name == Constants.DefaultCategoryName
+            );
+            foreach (var item in list.Items)
+            {
+                item.Category = new Category { Name = defaultCategory.Name };
+                count++;
+            }
+        });
+        Logger.Log(
+            $"Updated all items ({count}) in list '{list.Name}' {list.Id} to use default category"
+        );
     }
 
-    public async Task UpdateAllToCategoryAsync(string categoryName, ObjectId listId)
+    public async Task ResetSelectedToDefaultCategoryAsync(List list, Category category)
     {
-        Logger.Log($"Updated all items to use category {categoryName} (not implemented yet)");
+        var count = 0;
+        await _realm.WriteAsync(() =>
+        {
+            var defaultCategory = list.Categories.First(c =>
+                c.Name == Constants.DefaultCategoryName
+            );
+            var relevantItems = _realm
+                .All<Item>()
+                .Where(item => item.List == list)
+                .Filter($"Category.Name == $0", category.Name);
+            foreach (var item in relevantItems)
+            {
+                item.Category = new Category { Name = defaultCategory.Name };
+                count++;
+            }
+        });
+        Logger.Log(
+            $"Updated {count} item(s) with category '{category.Name}' in list '{list.Name}' {list.Id} to use default category"
+        );
     }
 }

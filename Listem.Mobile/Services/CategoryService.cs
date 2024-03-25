@@ -12,11 +12,11 @@ public class CategoryService : ICategoryService
     {
         if (list.Categories.Contains(category))
         {
-            Logger.Log($"Cannot add '{category.Name}' - it already exists");
+            Logger.Log($"Cannot add category '{category.Name}' - it already exists");
             return;
         }
         await _realm.WriteAsync(() => list.Categories.Add(category));
-        Logger.Log($"Added or updated category: {category.ToLoggableString()}");
+        Logger.Log($"Added: {category.ToLoggableString()}");
     }
 
     public async Task CreateAllAsync(IList<Category> categories, List list)
@@ -27,7 +27,7 @@ public class CategoryService : ICategoryService
             {
                 if (list.Categories.Contains(category))
                 {
-                    Logger.Log($"Cannot add '{category.Name}' - it already exists");
+                    Logger.Log($"Cannot add category '{category.Name}' - it already exists");
                     continue;
                 }
                 list.Categories.Add(category);
@@ -37,18 +37,18 @@ public class CategoryService : ICategoryService
 
     public async Task DeleteAsync(Category category)
     {
-        Logger.Log($"Removing category: {category.ToLoggableString()}");
+        Logger.Log($"Removing: {category.ToLoggableString()}");
         await _realm.WriteAsync(() => _realm.Remove(category));
     }
 
     public async Task ResetAsync(List list)
     {
-        Logger.Log($"Reset all categories for list {list.Name}");
+        Logger.Log($"Resetting categories for list {list.Name}");
         await _realm.WriteAsync(() =>
         {
             var toRemove = list
-                .Categories.Where(category => category.Name != Constants.DefaultCategoryName)
-                .ToList();
+                .Categories.AsQueryable()
+                .Where(category => category.Name != Constants.DefaultCategoryName);
             foreach (var category in toRemove)
             {
                 list.Categories.Remove(category);

@@ -70,7 +70,7 @@ public partial class EditListViewModel : BaseViewModel
         }
 
         var message = $"Removed: {category.Name}";
-        await _itemService.UpdateAllToCategoryAsync(category.Name, List.Id);
+        await _itemService.ResetSelectedToDefaultCategoryAsync(List, category);
         await _categoryService.DeleteAsync(category);
         Notifier.ShowToast(message);
     }
@@ -81,9 +81,9 @@ public partial class EditListViewModel : BaseViewModel
         if (!await IsResetCategoriesRequestConfirmed())
             return;
 
+        await _itemService.ResetAllToDefaultCategoryAsync(List);
+        await _categoryService.ResetAsync(List);
         Notifier.ShowToast("Reset categories");
-        await _itemService.UpdateAllToDefaultCategoryAsync(List.Id).ConfigureAwait(false);
-        await _categoryService.ResetAsync(List).ConfigureAwait(false);
     }
 
     private static Task<bool> IsResetCategoriesRequestConfirmed()

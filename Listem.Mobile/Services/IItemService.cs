@@ -17,6 +17,6 @@ public interface IItemService
     );
     Task DeleteAsync(Item item);
     Task DeleteAllInListAsync(List list);
-    Task UpdateAllToDefaultCategoryAsync(ObjectId listId);
-    Task UpdateAllToCategoryAsync(string categoryName, ObjectId listId);
+    Task ResetAllToDefaultCategoryAsync(List list);
+    Task ResetSelectedToDefaultCategoryAsync(List list, Category category);
 }
