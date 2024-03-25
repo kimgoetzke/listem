@@ -7,7 +7,6 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
-using Listem.Shared.Enums;
 using Realms;
 
 namespace Listem.Mobile.ViewModel;

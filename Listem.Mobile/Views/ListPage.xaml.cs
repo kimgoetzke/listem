@@ -3,7 +3,6 @@ using AsyncAwaitBestPractices;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
-using Listem.Shared.Enums;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif

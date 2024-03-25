@@ -1,19 +1,23 @@
+using System.Diagnostics.CodeAnalysis;
+using Listem.Mobile.Services;
 using MongoDB.Bson;
 using Realms;
-// ReSharper disable PropertyCanBeMadeInitOnly.Global
-// ReSharper disable UnassignedGetOnlyAutoProperty
-// ReSharper disable RedundantExtendsListEntry
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace Listem.Mobile.Models;
 
+[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
+[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
+[SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
+[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+[SuppressMessage("ReSharper", "ReplaceAutoPropertyWithComputedProperty")]
 public partial class Item : IRealmObject
 {
     [PrimaryKey]
     [MapTo("_id")]
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
     public string Name { get; set; }
-    public string OwnedBy { get; set; } = null!;
+    public string OwnedBy { get; set; } = RealmService.User.Id!;
     public ISet<string> SharedWith { get; } = null!;
     public List? List { get; set; }
     public Category? Category { get; set; }

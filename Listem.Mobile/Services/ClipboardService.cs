@@ -128,7 +128,7 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         {
             Name = processedTitle,
             List = list,
-            Category = category,
+            Category = new Category { Name = category.Name },
             Quantity = quantity,
             IsImportant = isImportant
         };

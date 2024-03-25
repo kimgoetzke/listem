@@ -1,4 +1,4 @@
-﻿namespace Listem.Shared.Enums;
+﻿namespace Listem.Mobile.Models;
 
 public enum ListType
 {

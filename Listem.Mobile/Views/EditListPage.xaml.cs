@@ -1,6 +1,5 @@
 ﻿using Listem.Mobile.Models;
 using Listem.Mobile.ViewModel;
-using Listem.Shared.Enums;
 
 namespace Listem.Mobile.Views;
 

@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
-using ListType = Listem.Shared.Enums.ListType;
+using ListType = Listem.Mobile.Models.ListType;
 
 namespace Listem.Mobile.ViewModel;
 

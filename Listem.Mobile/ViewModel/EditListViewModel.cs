@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
-using ListType = Listem.Shared.Enums.ListType;
+using ListType = Listem.Mobile.Models.ListType;
 
 namespace Listem.Mobile.ViewModel;
 
@@ -63,7 +63,7 @@ public partial class EditListViewModel : ObservableObject
     [RelayCommand]
     private async Task RemoveCategory(Category category)
     {
-        if (category.Name == Shared.Constants.DefaultCategoryName)
+        if (category.Name == Constants.DefaultCategoryName)
         {
             Notifier.ShowToast("Cannot remove default category");
             return;

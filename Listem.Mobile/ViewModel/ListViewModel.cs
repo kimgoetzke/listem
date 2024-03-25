@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
@@ -47,7 +46,7 @@ public partial class ListViewModel : ObservableObject
         CurrentList = list;
         ItemsToDelete = [];
         Categories = CurrentList.Categories;
-        CurrentCategory = Categories.First(c => c.Name == Shared.Constants.DefaultCategoryName);
+        CurrentCategory = Categories.First(c => c.Name == Constants.DefaultCategoryName);
         GetSortedItems();
     }
 
@@ -60,7 +59,6 @@ public partial class ListViewModel : ObservableObject
         var newItem = new Item
         {
             Name = StringProcessor.TrimAndCapitalise(NewItemName),
-            OwnedBy = RealmService.User.Id!,
             List = CurrentList,
             Category = new Category { Name = CurrentCategory.Name },
             Quantity = NewItemQuantity,
