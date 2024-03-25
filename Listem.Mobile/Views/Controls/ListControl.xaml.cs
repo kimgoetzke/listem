@@ -15,7 +15,7 @@ public partial class ListControl
         if (sender is not CheckBox checkBox)
             return;
 
-        if (checkBox.BindingContext is not ObservableItem item)
+        if (checkBox.BindingContext is not Item item)
             return;
 
         var viewModel = BindingContext as ListViewModel;

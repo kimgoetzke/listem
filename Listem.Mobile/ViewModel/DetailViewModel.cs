@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using AsyncAwaitBestPractices;
+﻿using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
@@ -8,42 +7,35 @@ using ListType = Listem.Shared.Enums.ListType;
 
 namespace Listem.Mobile.ViewModel;
 
-[QueryProperty(nameof(ObservableItem), nameof(ObservableItem))]
+[QueryProperty(nameof(Item), nameof(Item))]
 public partial class DetailViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ObservableCategory> _categories = [];
+    private IList<Category> _categories = [];
 
     [ObservableProperty]
-    private ObservableCategory _currentCategory;
+    private Category _currentCategory;
 
     [ObservableProperty]
-    private ObservableItem _observableItem;
+    private Item _item;
 
-    private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
     public ListType ListType { get; }
 
-    public DetailViewModel(
-        ObservableItem observableItem,
-        ObservableList observableList,
-        ICategoryService categoryService,
-        IItemService itemService
-    )
+    public DetailViewModel(Item item, List list, IServiceProvider serviceProvider)
     {
-        ObservableItem = observableItem;
-        ListType = observableList.ListType;
-        CurrentCategory = new ObservableCategory(observableItem.ListId);
-        _categoryService = categoryService;
-        _itemService = itemService;
-        SetCategories();
+        Item = item;
+        ListType = Enum.TryParse(list.ListType, out ListType type) ? type : ListType.Standard;
+        CurrentCategory = new Category();
+        Categories = list.Categories;
+        _itemService = serviceProvider.GetService<IItemService>()!;
     }
 
     [RelayCommand]
     private async Task SaveAndBack()
     {
-        ObservableItem.CategoryName = CurrentCategory.Name;
-        await _itemService.CreateOrUpdateAsync(ObservableItem);
+        Item.Category = CurrentCategory;
+        await _itemService.CreateOrUpdateAsync(Item);
         Back().SafeFireAndForget();
     }
 
@@ -51,19 +43,5 @@ public partial class DetailViewModel : ObservableObject
     private static async Task Back()
     {
         await Shell.Current.Navigation.PopModalAsync();
-    }
-
-    private async void SetCategories()
-    {
-        var loaded = await _categoryService.GetAllByListIdAsync(ObservableItem.ListId);
-        Categories.Clear();
-        foreach (var category in loaded)
-        {
-            Categories.Add(category);
-            if (category.Name == ObservableItem.CategoryName)
-            {
-                CurrentCategory = category;
-            }
-        }
     }
 }

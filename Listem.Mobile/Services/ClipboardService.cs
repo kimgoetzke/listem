@@ -1,7 +1,4 @@
-using System.Collections.ObjectModel;
 using System.Text;
-using CommunityToolkit.Mvvm.Messaging;
-using Listem.Mobile.Events;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 
@@ -13,9 +10,9 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
     private readonly IItemService _itemService = sp.GetService<IItemService>()!;
 
     public async void InsertFromClipboardAsync(
-        ObservableCollection<ObservableItem> observableItems,
-        ObservableCollection<ObservableCategory> categories,
-        string listId
+        IList<Item> items,
+        IList<Category> categories,
+        List list
     )
     {
         var import = await Clipboard.GetTextAsync();
@@ -23,16 +20,15 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         if (IsClipboardEmpty(import))
             return;
 
-        var observableCategories = await _categoryService.GetAllByListIdAsync(listId);
         if (
-            !WasAbleToConvertToItemList(
-                listId,
+            !WasAbleToExtractCandidates(
+                list,
                 import!,
-                observableCategories.ToList(),
+                categories.ToList(),
                 out var itemCount,
                 out var categoryCount,
-                out var itemList,
-                out var categoryList
+                out var itemCandidates,
+                out var categoryCandidates
             )
         )
             return;
@@ -40,8 +36,8 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         if (!await IsImportConfirmedByUser(itemCount, categoryCount))
             return;
 
-        await CreateMissingStores(categories, categoryList);
-        await ImportItemList(observableItems, itemList);
+        await _categoryService.CreateAllAsync(categoryCandidates, list);
+        await CreateCandidateItems(itemCandidates);
         Notifier.ShowToast($"Imported {itemCount} items from clipboard");
     }
 
@@ -54,22 +50,22 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         return true;
     }
 
-    private static bool WasAbleToConvertToItemList(
-        string listId,
+    private static bool WasAbleToExtractCandidates(
+        List list,
         string import,
-        List<ObservableCategory> categories,
+        List<Category> existingCategories,
         out int itemCount,
         out int categoryCount,
-        out List<ObservableItem> itemList,
-        out List<ObservableCategory> categoryList
+        out List<Item> itemList,
+        out List<Category> categoryCandidates
     )
     {
         Logger.Log("Extracted from clipboard: " + import.Replace(Environment.NewLine, ","));
-        var categoryName = Shared.Constants.DefaultCategoryName;
+        var category = existingCategories.Find(c => c.Name == Constants.DefaultCategoryName)!;
         itemCount = 0;
         categoryCount = 0;
         itemList = [];
-        categoryList = [];
+        categoryCandidates = [];
         foreach (var substring in import.Replace(Environment.NewLine, ",").Split(","))
         {
             if (string.IsNullOrWhiteSpace(substring))
@@ -77,17 +73,20 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
 
             if (StringProcessor.IsCategoryName(substring))
             {
-                categoryName = AddCategory(
-                    listId,
-                    categories,
-                    ref categoryCount,
-                    categoryList,
-                    substring
-                );
+                if (
+                    AddValidCategoryCandidate(
+                        existingCategories,
+                        ref categoryCount,
+                        categoryCandidates,
+                        substring
+                    ) is
+                    { } newCategory
+                )
+                    category = newCategory;
                 continue;
             }
 
-            AddItem(ref itemCount, itemList, substring, categoryName, listId);
+            AddItemCandidate(ref itemCount, itemList, substring, category, list);
         }
 
         if (itemCount != 0)
@@ -97,44 +96,44 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
         return false;
     }
 
-    private static void AddItem(
+    private static Category? AddValidCategoryCandidate(
+        List<Category> existingCategories,
+        ref int categoryCount,
+        List<Category> categoryCandidates,
+        string str
+    )
+    {
+        var name = StringProcessor.ExtractCategoryName(str);
+
+        if (existingCategories.Find(c => c.Name == name) != null)
+            return null;
+
+        var processedName = new Category { Name = name };
+        categoryCount++;
+        categoryCandidates.Add(processedName);
+        return processedName;
+    }
+
+    private static void AddItemCandidate(
         ref int itemCount,
-        List<ObservableItem> itemList,
+        List<Item> itemCandidates,
         string substring,
-        string categoryName,
-        string listId
+        Category category,
+        List list
     )
     {
         var (title, quantity, isImportant) = StringProcessor.ExtractItem(substring);
         var processedTitle = StringProcessor.TrimAndCapitalise(title);
-        var item = new ObservableItem(listId)
+        var item = new Item
         {
-            Title = processedTitle,
-            CategoryName = categoryName,
+            Name = processedTitle,
+            List = list,
+            Category = category,
             Quantity = quantity,
             IsImportant = isImportant
         };
-        itemList.Add(item);
+        itemCandidates.Add(item);
         itemCount++;
-    }
-
-    private static string AddCategory(
-        string listId,
-        List<ObservableCategory> categories,
-        ref int categoryCount,
-        List<ObservableCategory> categoryList,
-        string s
-    )
-    {
-        var extractedName = StringProcessor.ExtractCategoryName(s);
-        var matchingStore = categories.Find(c => c.Name == extractedName);
-
-        if (matchingStore != null)
-            return extractedName;
-
-        categoryList.Add(new ObservableCategory(listId) { Name = extractedName });
-        categoryCount++;
-        return extractedName;
     }
 
     private static async Task<bool> IsImportConfirmedByUser(int itemCount, int categoryCount)
@@ -160,52 +159,28 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
             : $"Extracted {itemCount} item(s) from your clipboard. Would you like to add the item(s) to your list?";
     }
 
-    private async Task CreateMissingStores(
-        ObservableCollection<ObservableCategory> stores,
-        List<ObservableCategory> toCreate
-    )
+    private async Task CreateCandidateItems(List<Item> toCreate)
     {
-        foreach (var store in toCreate)
-        {
-            await _categoryService.CreateOrUpdateAsync(store);
-            stores.Add(store);
-        }
-    }
-
-    private async Task ImportItemList(
-        ObservableCollection<ObservableItem> items,
-        List<ObservableItem> toImport
-    )
-    {
-        foreach (var item in toImport)
+        foreach (var item in toCreate)
         {
             await _itemService.CreateOrUpdateAsync(item);
-            var value = new ItemChangedDto(item.ListId, item);
-            WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
-            items.Add(item);
         }
     }
 
-    public void CopyToClipboard(
-        ObservableCollection<ObservableItem> items,
-        ObservableCollection<ObservableCategory> categories
-    )
+    public void CopyToClipboard(IList<Item> items, IList<Category> categories)
     {
-        var text = BuildStringFromList(items, categories);
+        var text = BuildStringFromList(items.ToList(), categories.ToList());
         Clipboard.SetTextAsync(text);
         Logger.Log("Copied to clipboard: " + text.Replace(Environment.NewLine, ", "));
         Notifier.ShowToast("Copied list to clipboard");
     }
 
-    private static string BuildStringFromList(
-        ObservableCollection<ObservableItem> items,
-        ObservableCollection<ObservableCategory> categories
-    )
+    private static string BuildStringFromList(List<Item> items, List<Category> categories)
     {
         var builder = new StringBuilder();
         foreach (var category in categories)
         {
-            var itemsFromStore = items.Where(item => item.CategoryName == category.Name).ToList();
+            var itemsFromStore = items.Where(item => item.Category!.Name == category.Name).ToList();
             if (itemsFromStore.Count == 0)
                 continue;
             builder.AppendLine($"[{category.Name}]:");

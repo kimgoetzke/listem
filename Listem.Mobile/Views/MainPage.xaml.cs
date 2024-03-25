@@ -21,9 +21,8 @@ public partial class MainPage
     {
         InitializeComponent();
         _viewModel = viewModel;
-        BindingContext = _viewModel;
         _viewModel.InitialiseUser();
-        _viewModel.LoadLists().SafeFireAndForget();
+        BindingContext = _viewModel;
 
         StickyEntry.Submitted += (_, text) =>
         {

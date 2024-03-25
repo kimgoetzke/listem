@@ -26,15 +26,15 @@
                    Text="{Binding ProcessedObservableItemListName}"
                    VerticalTextAlignment="Center"
                    Style="{DynamicResource SubHeadline}" />
-            <ImageButton Grid.Column="2" 
+            <ImageButton Grid.Column="2"
                          Margin="20,0"
                          VerticalOptions="End"
-                         Source="import_primary.png" 
+                         Source="import_primary.png"
                          Command="{Binding InsertFromClipboardCommand}"
                          Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
-            <ImageButton Grid.Column="3" 
+            <ImageButton Grid.Column="3"
                          VerticalOptions="End"
-                         Source="export_primary.png" 
+                         Source="export_primary.png"
                          Command="{Binding CopyToClipboardCommand}"
                          Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
         </Grid>

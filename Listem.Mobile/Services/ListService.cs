@@ -1,28 +1,44 @@
 ﻿using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
+using Realms;
 
 namespace Listem.Mobile.Services;
 
-public class ListService : ILocalListService
+public class ListService : IListService
 {
-    public async Task<List<ObservableList>> GetAllAsync()
+    private readonly Realm _realm = RealmService.GetMainThreadRealm();
+
+    public async Task CreateOrUpdateAsync(List list)
     {
-        Logger.Log("Getting all lists");
-        return [];
+        await _realm.WriteAsync(() =>
+        {
+            if (list.IsDraft)
+            {
+                var defaultCategory = new Category { Name = Constants.DefaultCategoryName };
+                list.Categories.Add(defaultCategory);
+                list.IsDraft = false;
+                _realm.Add(list);
+                Logger.Log($"Added list: {list.ToLoggableString()}");
+            }
+            else
+            {
+                var existingList = _realm.Find<List>(list.Id);
+                if (existingList == null)
+                {
+                    Logger.Log($"List has an id but couldn't be found: {list.ToLoggableString()}");
+                    return;
+                }
+                existingList.Name = list.Name;
+                existingList.ListType = list.ListType;
+                existingList.UpdatedOn = list.UpdatedOn;
+                Logger.Log($"Updated list: {list.ToLoggableString()}");
+            }
+        });
     }
 
-    public async Task CreateOrUpdateAsync(ObservableList observableList)
+    public async Task DeleteAsync(List list)
     {
-        Logger.Log($"Added list: {observableList.ToLoggableString()}");
-    }
-
-    public async Task DeleteAsync(ObservableList observableList)
-    {
-        Logger.Log($"Removing list: '{observableList.Name}' {observableList.Id}");
-    }
-
-    public async Task DeleteAllAsync()
-    {
-        Logger.Log($"Removed all lists");
+        Logger.Log($"Removing list: '{list.Name}' {list.Id}");
+        await _realm.WriteAsync(() => _realm.Remove(list));
     }
 }

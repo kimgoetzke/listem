@@ -22,7 +22,7 @@
             <BoxView HeightRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Header>
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:ObservableItem}">
+            <DataTemplate x:DataType="{x:Type models:Item}">
                 <SwipeView>
 
                     <!-- List of added items: Swipe from left to right to complete task -->
@@ -95,7 +95,7 @@
                                               IsChecked="False" Scale="1"
                                               CheckedChanged="CheckBox_OnCheckChanged"
                                               BindingContext="{Binding .}" />
-                                    <Label Text="{Binding Title}"
+                                    <Label Text="{Binding Name}"
                                            AutomationId="{Binding Id}"
                                            HeightRequest="50"
                                            HorizontalOptions="Start"
@@ -153,7 +153,7 @@
                                        HasShadow="True"
                                        Shadow="{DynamicResource NeutralShadowM}"
                                        BackgroundColor="{DynamicResource Tertiary}">
-                                    <Label Text="{Binding CategoryName}"
+                                    <Label Text="{Binding Category.Name}"
                                            FontSize="{DynamicResource FontSizeS}"
                                            TextColor="{DynamicResource Neutral}"
                                            Margin="0"
@@ -165,7 +165,7 @@
                                     </Label>
                                     <Frame.Triggers>
                                         <DataTrigger TargetType="Frame"
-                                                     Binding="{Binding CategoryName}"
+                                                     Binding="{Binding Category.Name}"
                                                      Value="{StaticResource DefaultCategoryName}">
                                             <Setter Property="IsVisible" Value="False" />
                                         </DataTrigger>

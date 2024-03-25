@@ -1,6 +1,12 @@
 using Listem.Mobile.Services;
 using MongoDB.Bson;
 using Realms;
+// ReSharper disable UnassignedGetOnlyAutoProperty
+// ReSharper disable ReplaceAutoPropertyWithComputedProperty
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable RedundantExtendsListEntry
+// ReSharper disable MemberCanBePrivate.Global
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace Listem.Mobile.Models;
 
@@ -9,25 +15,31 @@ public partial class List : IRealmObject
     [PrimaryKey]
     [MapTo("_id")]
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
-
-    [MapTo("owner_id")]
-    // [Required]
-    public string OwnerId { get; set; }
-
-    [MapTo("name")]
-    // [Required]
     public string Name { get; set; } = null!;
-
-    [MapTo("list_type")]
-    // [Required]
-    public string ListType { get; set; }
-
-    [MapTo("added_on")]
-    public DateTimeOffset AddedOn { get; set; }
-
-    [MapTo("updated_on")]
+    public string OwnedBy { get; set; } = null!;
+    public ISet<string> SharedWith { get; } = null!;
+    public string ListType { get; set; } = null!;
     public DateTimeOffset UpdatedOn { get; set; }
-    public bool IsMine => OwnerId == RealmService.User.Id;
+    public IList<Category> Categories { get; } = null!;
+    public bool IsDraft { get; set; } = true;
+
+    [Backlink(nameof(Item.List))]
+    public IQueryable<Item> Items { get; }
+
+    public bool IsMine => OwnedBy == RealmService.User.Id;
+
+    public bool IsSharedWithMe
+    {
+        get
+        {
+            if (RealmService.User.Id == null)
+                return false;
+
+            return SharedWith.Contains(RealmService.User.Id) && IsMine;
+        }
+    }
+
+    public bool IsAccessibleToMe => IsSharedWithMe || IsMine;
 
     public override string ToString()
     {
@@ -36,6 +48,6 @@ public partial class List : IRealmObject
 
     public string ToLoggableString()
     {
-        return $"[List] '{Name}' {Id}, type: '{ListType.ToString()}', last updated: {UpdatedOn}";
+        return $"[RealmList] '{Name}' {Id}, type: '{ListType}', last updated: {UpdatedOn}";
     }
 }

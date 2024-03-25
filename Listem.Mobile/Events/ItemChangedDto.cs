@@ -1,9 +1,10 @@
 ﻿using Listem.Mobile.Models;
+using MongoDB.Bson;
 
 namespace Listem.Mobile.Events;
 
-public class ItemChangedDto(string listId, ObservableItem item)
+public class ItemChangedDto(ObjectId listId, Item item)
 {
-    public string ListId { get; set; } = listId;
-    public ObservableItem Item { get; set; } = item;
+    public ObjectId ListId { get; set; } = listId;
+    public Item Item { get; set; } = item;
 }

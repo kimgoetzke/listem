@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.Messaging;
 using Listem.Mobile.Events;
 using Listem.Mobile.Models;
@@ -26,12 +28,12 @@ public static class RealmService
 
     private static async Task InitialiseSyncApp()
     {
-        var c = await JsonProcessor.ThrowIfNull(
-            () => JsonProcessor.FromFile<RealmAppConfig>("atlasConfig.json")
+        var config = await JsonProcessor.NotNull(
+            () => JsonProcessor.FromFile<AtlasConfig>("atlasConfig.json")
         );
-        var appConfiguration = new AppConfiguration(c.AppId) { BaseUri = new Uri(c.BaseUrl) };
+        var appConfig = new AppConfiguration(config.AppId) { BaseUri = new Uri(config.BaseUrl) };
 
-        _app = Realms.Sync.App.Create(appConfiguration);
+        _app = Realms.Sync.App.Create(appConfig);
         _serviceInitialised = true;
     }
 
@@ -46,20 +48,25 @@ public static class RealmService
         {
             WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
         }
-        Logger.Log(
-            $"Initialised realm service with:\n- Realm: {_app.CurrentUser}\n- Listem: {User}"
-        );
+        Logger.Log($"Initialised realm with: (see below)\n- RU: {_app.CurrentUser}\n- LU: {User}");
     }
 
     public static Realm GetMainThreadRealm()
     {
-        return _mainThreadRealm ??= GetRealm();
+        var realm = _mainThreadRealm ??= GetRealm();
+        if (realm.Subscriptions.Count == 0)
+        {
+            SetSubscription(realm, SubscriptionType.Mine).SafeFireAndForget();
+        }
+        return realm;
     }
 
     private static async Task RefreshToken()
     {
+        Logger.Log("Refreshing token for current user...");
         await _app.CurrentUser!.RefreshCustomDataAsync();
         User.Update(_app.CurrentUser);
+        JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
     }
 
@@ -67,6 +74,7 @@ public static class RealmService
     {
         await _app.EmailPasswordAuth.RegisterUserAsync(email, password);
         User.SignUp(_app.CurrentUser!);
+        JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
     }
 
@@ -74,9 +82,10 @@ public static class RealmService
     {
         await _app.LogInAsync(Credentials.EmailPassword(email, password));
         User.SignIn(_app.CurrentUser!);
+        JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
         using var realm = GetRealm();
-        // await realm.Subscriptions.WaitForSynchronizationAsync();
+        await realm.Subscriptions.WaitForSynchronizationAsync();
     }
 
     public static async Task SignOutAsync()
@@ -85,6 +94,7 @@ public static class RealmService
             await _app.CurrentUser.LogOutAsync();
 
         User.SignOut();
+        JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
         _mainThreadRealm?.Dispose();
         _mainThreadRealm = null;
@@ -92,7 +102,7 @@ public static class RealmService
 
     public static async Task SetSubscription(Realm realm, SubscriptionType subType)
     {
-        if (GetCurrentSubscriptionType(realm) == subType)
+        if (subType == CurrentSubscriptionType(realm))
             return;
 
         realm.Subscriptions.Update(() =>
@@ -108,14 +118,14 @@ public static class RealmService
         }
     }
 
-    public static SubscriptionType GetCurrentSubscriptionType(Realm realm)
+    private static SubscriptionType? CurrentSubscriptionType(Realm realm)
     {
-        var activeSubscription = realm.Subscriptions.FirstOrDefault()!;
-        return activeSubscription.Name switch
+        return realm.Subscriptions.FirstOrDefault()?.Name switch
         {
-            "all" => SubscriptionType.All,
+            "accessible" => SubscriptionType.AccessibleToMe,
+            "shared" => SubscriptionType.SharedWithMe,
             "mine" => SubscriptionType.Mine,
-            _ => throw new InvalidOperationException("Unknown subscription type")
+            _ => null
         };
     }
 
@@ -129,27 +139,35 @@ public static class RealmService
         switch (subType)
         {
             case SubscriptionType.Mine:
-                query = realm.All<List>().Where(i => i.OwnerId == User.Id);
+                query = realm.All<List>().Where(i => i.OwnedBy == User.Id);
                 queryName = "mine";
                 break;
-            case SubscriptionType.All:
-                query = realm.All<List>();
-                queryName = "all";
+            case SubscriptionType.AccessibleToMe:
+                query = realm
+                    .All<List>()
+                    .Where(l => l.OwnedBy == User.Id || l.SharedWith.Contains(User.Id!));
+                queryName = "accessible";
                 break;
-            case SubscriptionType.Shared:
+            case SubscriptionType.SharedWithMe:
+                query = realm.All<List>().Where(l => l.SharedWith.Contains(User.Id!));
+                queryName = "shared";
+                break;
             default:
                 throw new ArgumentException("Unknown subscription type");
         }
         return (query, queryName);
     }
 
-    public static Realm GetRealm()
+    private static Realm GetRealm()
     {
         var config = new FlexibleSyncConfiguration(_app.CurrentUser!)
         {
-            PopulateInitialSubscriptions = (realm) =>
+            PopulateInitialSubscriptions = realm =>
             {
-                var (query, queryName) = GetQueryForSubscriptionType(realm, SubscriptionType.Mine);
+                var (query, queryName) = GetQueryForSubscriptionType(
+                    realm,
+                    SubscriptionType.AccessibleToMe
+                );
                 realm.Subscriptions.Add(query, new SubscriptionOptions { Name = queryName });
             }
         };
@@ -157,15 +175,9 @@ public static class RealmService
         return Realm.GetInstance(config);
     }
 
-    public enum SubscriptionType
-    {
-        Mine,
-        Shared,
-        All
-    }
-
-    // ReSharper disable once ClassNeverInstantiated.Local
-    private record RealmAppConfig
+    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
+    private record AtlasConfig
     {
         public string AppId { get; init; } = null!;
         public string BaseUrl { get; init; } = null!;

@@ -34,14 +34,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<ICategoryService, CategoryService>();
         builder.Services.AddSingleton<IItemService, ItemService>();
         builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
-        builder.Services.AddHttpClient(
-            Constants.HttpClientName,
-            client =>
-            {
-                client.BaseAddress = new Uri(Constants.BaseUrlLocalhost);
-                client.Timeout = TimeSpan.FromSeconds(7);
-            }
-        );
         builder.Services.AddSingleton<IClipboardService, ClipboardService>();
         builder.Services.AddLogging();
 

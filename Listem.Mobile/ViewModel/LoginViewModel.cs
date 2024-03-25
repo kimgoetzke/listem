@@ -45,6 +45,7 @@ public partial class LoginViewModel : BaseViewModel
 
     private async void Initialise()
     {
+        IsBusy = true;
         WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
             this,
             (_, m) =>
@@ -57,6 +58,7 @@ public partial class LoginViewModel : BaseViewModel
         );
 
         await RealmService.Init();
+        IsBusy = false;
     }
 
     private void UpdateUser(User user)

@@ -8,10 +8,10 @@ public partial class EditListPage
 {
     private readonly EditListViewModel _viewModel;
 
-    public EditListPage(ObservableList observableList)
+    public EditListPage(List observableList, IServiceProvider serviceProvider)
     {
         InitializeComponent();
-        _viewModel = new EditListViewModel(observableList);
+        _viewModel = new EditListViewModel(observableList, serviceProvider);
         BindingContext = _viewModel;
 
         StickyEntry.Submitted += (_, text) =>
@@ -23,7 +23,7 @@ public partial class EditListPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ListTypePicker.SelectedIndex = (int)_viewModel.ObservableList.ListType;
+        ListTypePicker.SelectedItem = _viewModel.List.ListType;
         StickyEntry.SetVisibility(false);
     }
 
@@ -32,23 +32,7 @@ public partial class EditListPage
         AddCategoryButton.Focus();
     }
 
-    private void ImageButton_OnPressed(object? sender, EventArgs e)
-    {
-        if (sender is not ImageButton button)
-            return;
-
-        button.Source = "bin_secondary.png";
-    }
-
-    private void ImageButton_OnReleased(object? sender, EventArgs e)
-    {
-        if (sender is not ImageButton button)
-            return;
-
-        button.Source = "bin_neutral.png";
-    }
-
-    private void AddListButton_OnClicked(object? sender, EventArgs e)
+    private void AddCategoryButton_OnClicked(object? sender, EventArgs e)
     {
         if (!_viewModel.AddCategoryCommand.CanExecute(null))
             return;
@@ -64,6 +48,6 @@ public partial class EditListPage
         if (picker.SelectedItem is not ListType listType)
             return;
 
-        _viewModel.ObservableList.ListType = listType;
+        _viewModel.List.ListType = listType.ToString();
     }
 }

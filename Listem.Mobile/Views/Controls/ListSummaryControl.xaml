@@ -19,7 +19,7 @@
 
         <!-- Content: Box -->
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:ObservableList}">
+            <DataTemplate x:DataType="{x:Type models:List}">
                 <FlexLayout>
 
                     <!-- Box -->
@@ -74,7 +74,7 @@
 
                                 <!-- Items inside the list: Content -->
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate x:DataType="{x:Type models:ObservableItem}">
+                                    <DataTemplate x:DataType="{x:Type models:Item}">
                                         <HorizontalStackLayout HorizontalOptions="Start" Padding="0" Margin="0">
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer
@@ -82,7 +82,7 @@
                                                     CommandParameter="{Binding .}" />
                                             </HorizontalStackLayout.GestureRecognizers>
                                             <CheckBox Scale="0.8" IsEnabled="False" />
-                                            <Label Text="{Binding Title}"
+                                            <Label Text="{Binding Name}"
                                                    VerticalOptions="Center"
                                                    TextColor="{DynamicResource TextColor}" />
                                         </HorizontalStackLayout>

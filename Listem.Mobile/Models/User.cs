@@ -65,9 +65,19 @@ public class User
 
     public override string ToString()
     {
-        var accessTokenPayload = AccessToken?.Split(".")[1];
-        var refreshTokenPayload = RefreshToken?.Split(".")[1];
-        return $"[User] Email: {EmailAddress ?? "null"}, signed in: {IsSignedIn}, access token: {accessTokenPayload ?? "null"} (valid={!IsTokenExpired}, until={TokenExpiresAt}), refresh token: {refreshTokenPayload ?? "null"}";
+        var at = ExtractPayload(AccessToken);
+        var rt = ExtractPayload(RefreshToken);
+        return $"[User] Email: {EmailAddress ?? "null"}, status: {Status}, valid token: {!IsTokenExpired}, valid until: {TokenExpiresAt}), access token: {at ?? "null"}, refresh token: {rt ?? "null"}";
+    }
+
+    // Extracts the payload from a JWT token so that header and signature aren't logged.
+    private static string? ExtractPayload(string? token)
+    {
+        if (token is null)
+            return null;
+
+        var parts = token.Split(".");
+        return parts.Length != 3 ? token : parts[1];
     }
 }
 

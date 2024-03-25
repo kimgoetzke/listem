@@ -4,12 +4,6 @@ namespace Listem.Mobile.Services;
 
 public interface IListService
 {
-    Task<List<ObservableList>> GetAllAsync();
-    Task CreateOrUpdateAsync(ObservableList observableList);
-    Task DeleteAsync(ObservableList observableList);
-    Task DeleteAllAsync();
+    Task CreateOrUpdateAsync(List list);
+    Task DeleteAsync(List list);
 }
-
-public interface IApiListService : IListService;
-
-public interface ILocalListService : IListService;

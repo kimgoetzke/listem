@@ -36,7 +36,7 @@
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding ObservableList.Name, Mode=TwoWay}"
+                    <Entry Text="{Binding List.Name, Mode=TwoWay}"
                            Unfocused="OnEntryUnfocused" />
                 </Frame>
             </Grid>
@@ -82,7 +82,7 @@
                         Margin="0"
                         Style="{DynamicResource SimpleButton}"
                         VerticalOptions="Start"
-                        Clicked="AddListButton_OnClicked" />
+                        Clicked="AddCategoryButton_OnClicked" />
             </Grid>
 
             <!-- Categories list -->
@@ -95,7 +95,7 @@
 
                     <!-- Category list: Category template -->
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="{x:Type models:ObservableCategory}">
+                        <DataTemplate x:DataType="{x:Type models:Category}">
                             <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
                                 <SwipeView.RightItems>
                                     <SwipeItems SwipeBehaviorOnInvoked="Close">
@@ -143,29 +143,6 @@
                                                    FontSize="{DynamicResource FontSizeM}"
                                                    VerticalTextAlignment="Center"
                                                    HorizontalTextAlignment="Center" />
-                                            <ImageButton x:Name="BinImageButton"
-                                                         Source="bin_neutral.png"
-                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RemoveCategoryCommand}"
-                                                         CommandParameter="{Binding .}"
-                                                         Aspect="AspectFit"
-                                                         HorizontalOptions="End"
-                                                         VerticalOptions="Center"
-                                                         Padding="3"
-                                                         BorderWidth="1"
-                                                         Pressed="ImageButton_OnPressed"
-                                                         Released="ImageButton_OnReleased"
-                                                         IsVisible="{OnPlatform WinUI=True, Default=False}"
-                                                         WidthRequest="34"
-                                                         HeightRequest="34"
-                                                         Margin="5, 5, 25 ,5">
-                                                <ImageButton.Triggers>
-                                                    <DataTrigger TargetType="ImageButton"
-                                                                 Binding="{Binding Name}"
-                                                                 Value="{x:Static viewModel:EditListViewModel.DefaultCategoryName}">
-                                                        <Setter Property="IsVisible" Value="False" />
-                                                    </DataTrigger>
-                                                </ImageButton.Triggers>
-                                            </ImageButton>
                                         </VerticalStackLayout>
 
                                     </Frame>

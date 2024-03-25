@@ -7,16 +7,18 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Listem.Shared.Enums;
+using Realms;
 
 namespace Listem.Mobile.ViewModel;
 
 public partial class MainViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<ObservableList> _lists = [];
+    private IQueryable<List> _lists;
 
     [ObservableProperty]
-    private ObservableList _newList;
+    private List _newList;
 
     [ObservableProperty]
     private ObservableCollection<ObservableTheme> _themes = [];
@@ -30,37 +32,20 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     private bool _isUserSignedIn;
 
+    private readonly IServiceProvider _serviceProvider;
     private readonly IListService _listService;
     private readonly IItemService _itemService;
+    private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
     public MainViewModel(IServiceProvider serviceProvider)
     {
+        _serviceProvider = serviceProvider;
         _listService = serviceProvider.GetService<IListService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
-        NewList = new ObservableList();
-        Lists = [];
+        NewList = new List();
+        Lists = _realm.All<List>();
         Themes = ThemeHandler.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
-
-        WeakReferenceMessenger.Default.Register<ItemRemovedFromListMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log(
-                    $"Received message: Removing '{m.Value.Item.Title}' from {m.Value.ListId}"
-                );
-                Lists.First(l => l.Id == m.Value.ListId).Items.Remove(m.Value.Item);
-            }
-        );
-
-        WeakReferenceMessenger.Default.Register<ItemAddedToListMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log($"Received message: Adding '{m.Value.Item.Title}' to {m.Value.ListId}");
-                Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
-            }
-        );
 
         WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
             this,
@@ -82,73 +67,37 @@ public partial class MainViewModel : ObservableObject
         IsUserSignedIn = currentUser.IsSignedIn;
     }
 
-    public async Task LoadLists()
-    {
-        Logger.Log("Loading lists from database");
-        var lists = await _listService.GetAllAsync();
-        foreach (var list in lists)
-        {
-            var items = await _itemService.GetAllByListIdAsync(list.Id!);
-            foreach (var item in items)
-            {
-                list.Items.Add(item);
-            }
-
-            Lists.Add(list);
-        }
-        SortLists();
-    }
-
     [RelayCommand]
     private async Task AddList(string name)
     {
         if (name.Length == 0)
             return;
 
-        NewList = new ObservableList
-        {
-            Name = name,
-            AddedOn = DateTime.Now,
-            UpdatedOn = DateTime.Now
-        };
-
-        NewList.Name = StringProcessor.TrimAndCapitalise(NewList.Name);
-        await AddNewList(NewList);
-
-        NewList = new ObservableList();
-        OnPropertyChanged(nameof(NewList));
-        OnPropertyChanged(nameof(Lists));
-    }
-
-    private async Task AddNewList(ObservableList newList)
-    {
-        await _listService.CreateOrUpdateAsync(newList);
-        Lists.Add(newList);
-        Notifier.ShowToast($"Added: {newList.Name}");
-        Logger.Log($"Added list: {newList.ToLoggableString()}");
+        NewList.Name = StringProcessor.TrimAndCapitalise(name);
+        NewList.OwnedBy = RealmService.User.Id!;
+        NewList.ListType = ListType.Standard.ToString();
+        NewList.UpdatedOn = DateTime.Now.ToUniversalTime();
+        await _listService.CreateOrUpdateAsync(NewList);
+        Notifier.ShowToast($"Added: {NewList.Name}");
         SortLists();
     }
 
     private void SortLists()
     {
-        Lists = new ObservableCollection<ObservableList>(Lists.OrderBy(l => l.UpdatedOn).Reverse());
         OnPropertyChanged(nameof(Lists));
     }
 
     [RelayCommand]
-    private async Task RemoveList(ObservableList list)
+    private async Task RemoveList(List list)
     {
-        var isConfirmed = await IsDeletionConfirmedByUser(list.Name);
-
-        if (!isConfirmed)
+        if (!await IsDeletionConfirmedByUser(list.Name))
         {
             Logger.Log($"Cancelled action to delete: {list.ToLoggableString()}");
             return;
         }
 
-        Logger.Log($"Removing list: {list.ToLoggableString()}");
+        await _itemService.DeleteAllByListIdAsync(list.Id);
         await _listService.DeleteAsync(list);
-        Lists.Remove(list);
     }
 
     private static async Task<bool> IsDeletionConfirmedByUser(string listName)
@@ -194,16 +143,16 @@ public partial class MainViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static async Task TapList(ObservableList list)
+    private async Task TapList(List list)
     {
         Logger.Log($"Opening list: {list.ToLoggableString()}");
-        await Shell.Current.Navigation.PushAsync(new ListPage(list));
+        await Shell.Current.Navigation.PushAsync(new ListPage(list, _serviceProvider));
     }
 
     [RelayCommand]
-    private static async Task EditList(ObservableList list)
+    private async Task EditList(List list)
     {
         Logger.Log($"Editing list: {list.ToLoggableString()}");
-        await Shell.Current.Navigation.PushModalAsync(new EditListPage(list));
+        await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
     }
 }

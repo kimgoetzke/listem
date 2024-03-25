@@ -24,7 +24,7 @@ public partial class StickyEntry
         if (StickyEntryField.Text.Length == 0)
             return;
 
-        Logger.Log($"Submitting input '{StickyEntryField.Text}'");
+        Logger.Log($"[StickyEntry] Submitting input '{StickyEntryField.Text}'");
         Submitted(this, StickyEntryField.Text);
         StickyEntryField.Text = string.Empty;
         HideKeyboard(view);

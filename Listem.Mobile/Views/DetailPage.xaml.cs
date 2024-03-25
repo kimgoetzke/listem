@@ -1,27 +1,23 @@
 ﻿using System.Globalization;
 using Listem.Mobile.Models;
-using Listem.Mobile.Services;
 using Listem.Mobile.ViewModel;
 
 namespace Listem.Mobile.Views;
 
 public partial class DetailPage
 {
-    public DetailPage(ObservableItem observableItem, ObservableList observableList)
+    public DetailPage(Item item, List list)
     {
         InitializeComponent();
-        var storeService = IPlatformApplication.Current?.Services.GetService<ICategoryService>();
-        var itemService = IPlatformApplication.Current?.Services.GetService<IItemService>();
 
-        if (itemService is null || storeService is null)
-            throw new NullReferenceException("ItemService or StoreService is null");
-
-        BindingContext = new DetailViewModel(
-            observableItem,
-            observableList,
-            storeService,
-            itemService
-        );
+        if (
+            IPlatformApplication.Current?.Services.GetService<IServiceProvider>() is
+            { } serviceProvider
+        )
+        {
+            BindingContext = new DetailViewModel(item, list, serviceProvider);
+        }
+        throw new NullReferenceException("ServiceProvider is null");
     }
 
     private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)

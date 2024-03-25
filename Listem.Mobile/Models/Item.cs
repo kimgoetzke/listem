@@ -1,25 +1,31 @@
-using SQLite;
+using MongoDB.Bson;
+using Realms;
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable UnassignedGetOnlyAutoProperty
+// ReSharper disable RedundantExtendsListEntry
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace Listem.Mobile.Models;
 
-public class Item
+public partial class Item : IRealmObject
 {
     [PrimaryKey]
-    public string Id { get; init; } = null!;
-    public string ListId { get; init; } = null!;
-    public string Title { get; init; } = null!;
-    public int Quantity { get; init; }
-    public bool IsImportant { get; init; }
-    public DateTime AddedOn { get; init; }
-    public string CategoryName { get; set; } = null!;
+    [MapTo("_id")]
+    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+    public List? List { get; set; }
+    public Category? Category { get; set; }
+    public string Name { get; set; }
+    public int Quantity { get; set; }
+    public bool IsImportant { get; set; }
+    public DateTimeOffset UpdatedOn { get; set; }
 
     public override string ToString()
     {
-        return Title;
+        return Name;
     }
 
     public string ToLoggableString()
     {
-        return $"[Item] {Title} {Id} in {ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant})";
+        return $"[RealmItem] {Name} {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
     }
 }

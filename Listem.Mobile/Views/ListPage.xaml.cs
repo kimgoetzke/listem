@@ -21,10 +21,10 @@ public partial class ListPage
     private Frame CategoryPickerFrame { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
 
-    public ListPage(ObservableList observableList)
+    public ListPage(List observableList, IServiceProvider serviceProvider)
     {
         InitializeComponent();
-        _viewModel = new ListViewModel(observableList);
+        _viewModel = new ListViewModel(observableList, serviceProvider);
         BindingContext = _viewModel;
         InitialiseMenuToAddItems();
     }
@@ -64,7 +64,7 @@ public partial class ListPage
 
         foreach (var item in _viewModel.ItemsToDelete)
         {
-            Logger.Log($"Removing item: {item.Title} from list");
+            Logger.Log($"Removing item: {item.Name} from list");
             _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
         }
 
@@ -96,7 +96,7 @@ public partial class ListPage
         menuGrid.Add(EntryFieldFrame, 0);
         menuGrid.Add(CategoryPickerFrame, 1);
 
-        if (_viewModel.ObservableList.ListType == ListType.Shopping)
+        if (_viewModel.List.ListType == ListType.Shopping.ToString())
         {
             var quantityGrid = GetQuantityGrid();
             menuGrid.Add(quantityGrid, 3);
@@ -135,7 +135,7 @@ public partial class ListPage
         menuGrid.Add(AddButton, 2);
         menuGrid.Add(CategoryPickerFrame, 0, 1);
 
-        if (_viewModel.ObservableList.ListType == ListType.Shopping)
+        if (_viewModel.List.ListType == ListType.Shopping.ToString())
         {
             var quantityGrid = GetQuantityGrid();
             menuGrid.Add(quantityGrid, 1, 1);
@@ -167,10 +167,8 @@ public partial class ListPage
             Command = new Command(() =>
             {
                 AddButton.IsEnabled = false;
-                _viewModel.NewObservableItem.Title = EntryField.Text;
-                _viewModel
-                    .AddItemCommand.ExecuteAsync(_viewModel.NewObservableItem)
-                    .SafeFireAndForget();
+                _viewModel.NewItem.Name = EntryField.Text;
+                _viewModel.AddItemCommand.ExecuteAsync(_viewModel.NewItem).SafeFireAndForget();
                 EntryField.Focus();
                 AddButton.IsEnabled = true;
             }),
@@ -200,7 +198,7 @@ public partial class ListPage
             if (sender is not Picker picker)
                 return;
 
-            if (picker.SelectedItem is not ObservableCategory category)
+            if (picker.SelectedItem is not Category category)
                 return;
 
             _viewModel.CurrentCategory = category;
@@ -271,7 +269,7 @@ public partial class ListPage
             Placeholder = "Enter item name",
             AutomationId = "ListPageEntryField",
             FontFamily = "MulishLight",
-            Text = _viewModel.NewObservableItem.Title,
+            Text = _viewModel.NewItem.Name,
             Margin = new Thickness(0),
             FontSize = (double)Application.Current!.Resources["FontSizeM"],
             ReturnCommand = _viewModel.AddItemCommand
@@ -280,7 +278,7 @@ public partial class ListPage
         entryField.Unfocused += (_, _) => AddButton.Focus();
         entryField.Completed += (_, _) =>
         {
-            _viewModel.NewObservableItem.Title = entryField.Text;
+            _viewModel.NewItem.Name = entryField.Text;
             entryField.Focus();
         };
         return entryField;
@@ -291,7 +289,7 @@ public partial class ListPage
         var quantityGrid = new Grid { Margin = new Thickness(5) };
         var quantityLabel = new Label
         {
-            Text = $"Quantity: {_viewModel.NewObservableItem.Quantity}",
+            Text = $"Quantity: {_viewModel.NewItem.Quantity}",
             FontSize = (double)Application.Current!.Resources["FontSizeS"],
             FontFamily = "MulishSemiBold",
             VerticalTextAlignment = TextAlignment.Start,

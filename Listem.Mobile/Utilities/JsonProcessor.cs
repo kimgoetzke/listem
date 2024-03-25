@@ -7,7 +7,7 @@ public static class JsonProcessor
     private static JsonSerializerOptions JsonOptions =>
         new() { PropertyNameCaseInsensitive = true, };
 
-    public static async Task<T> ThrowIfNull<T>(Func<Task<T?>> request)
+    public static async Task<T> NotNull<T>(Func<Task<T?>> request)
     {
         try
         {
@@ -50,8 +50,12 @@ public static class JsonProcessor
     public static async Task<T?> FromSecureStorage<T>(string key)
         where T : class
     {
-        return await SecureStorage.Default.GetAsync(Constants.User) is not { } str
-            ? null
-            : FromString<T>(str);
+        return await SecureStorage.Default.GetAsync(key) is not { } str ? null : FromString<T>(str);
+    }
+
+    public static async Task ToSecureStorage<T>(string key, T value)
+    {
+        var json = JsonSerializer.Serialize(value, JsonOptions);
+        await SecureStorage.Default.SetAsync(key, json);
     }
 }

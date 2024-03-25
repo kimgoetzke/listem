@@ -19,6 +19,7 @@ Listem.sln.DotSettings.user
 # MAUI app
 /Listem.Mobile/obj/
 /Listem.Mobile/atlasConfig.json
+/Listem.Mobile/FodyWeavers.xsd
 /Listem.Mobile/bin/
 # Shared
 /Listem.Shared/obj/

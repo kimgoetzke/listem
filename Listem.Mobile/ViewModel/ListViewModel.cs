@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using AsyncAwaitBestPractices;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Listem.Mobile.Events;
@@ -8,6 +6,7 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Realms;
 using StringProcessor = Listem.Mobile.Utilities.StringProcessor;
 
 namespace Listem.Mobile.ViewModel;
@@ -15,88 +14,66 @@ namespace Listem.Mobile.ViewModel;
 public partial class ListViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableList _observableList;
+    private List _list;
 
     [ObservableProperty]
-    private ObservableItem _newObservableItem;
+    private Item _newItem;
 
     [ObservableProperty]
-    private ObservableCollection<ObservableItem> _items = [];
+    private IQueryable<Item> _items;
 
     [ObservableProperty]
-    private ObservableCollection<ObservableItem> _itemsToDelete = [];
+    private List<Item> _itemsToDelete;
 
     [ObservableProperty]
-    private ObservableCollection<ObservableCategory> _categories = [];
+    private IList<Category> _categories;
 
     [ObservableProperty]
-    private ObservableCategory? _currentCategory;
+    private Category? _currentCategory;
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
     private readonly IClipboardService _clipboardService;
+    private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
-    public ListViewModel(ObservableList observableList)
+    public ListViewModel(List list, IServiceProvider serviceProvider)
     {
-        _categoryService = IPlatformApplication.Current!.Services.GetService<ICategoryService>()!;
-        _itemService = IPlatformApplication.Current.Services.GetService<IItemService>()!;
-        _clipboardService = IPlatformApplication.Current.Services.GetService<IClipboardService>()!;
-        ObservableList = observableList;
-        Items = new ObservableCollection<ObservableItem>(observableList.Items);
-        NewObservableItem = new ObservableItem(ObservableList.Id!);
+        _categoryService = serviceProvider.GetService<ICategoryService>()!;
+        _itemService = serviceProvider.GetService<IItemService>()!;
+        _clipboardService = serviceProvider.GetService<IClipboardService>()!;
+        List = list;
+        ItemsToDelete = [];
+        Categories = List.Categories;
+        CurrentCategory = Categories.First(c => c.Name == Shared.Constants.DefaultCategoryName);
+        Items = _realm.All<Item>().Where(i => i.List!.Id == list.Id);
+        NewItem = new Item { List = list };
         SortItems();
-        LoadCategories().SafeFireAndForget();
-    }
-
-    private async Task LoadCategories()
-    {
-        var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id!);
-        Categories = new ObservableCollection<ObservableCategory>(categories);
-        CurrentCategory = Categories.FirstOrDefault(c =>
-            c.Name == Shared.Constants.DefaultCategoryName
-        );
-        OnPropertyChanged(nameof(Categories));
-        OnPropertyChanged(nameof(CurrentCategory));
-        Logger.Log(
-            $"Loaded {Categories.Count} categories for list {ObservableList.Id} from the database"
-        );
     }
 
     [RelayCommand]
     private async Task AddItem()
     {
-        // Don't add empty items
-        if (string.IsNullOrWhiteSpace(NewObservableItem.Title))
+        if (string.IsNullOrWhiteSpace(NewItem.Name))
             return;
 
-        // Pre-process item
-        NewObservableItem.Title = StringProcessor.TrimAndCapitalise(NewObservableItem.Title);
-        NewObservableItem.CategoryName =
-            CurrentCategory != null ? CurrentCategory.Name : Shared.Constants.DefaultCategoryName;
-
-        // Add to list and database
-        Logger.Log($"Adding item: {NewObservableItem.ToLoggableString()}");
-        await _itemService.CreateOrUpdateAsync(NewObservableItem);
-        var value = new ItemChangedDto(ObservableList.Id!, NewObservableItem);
+        NewItem.Name = StringProcessor.TrimAndCapitalise(NewItem.Name);
+        NewItem.UpdatedOn = DateTime.Now.ToUniversalTime();
+        await _itemService.CreateOrUpdateAsync(NewItem);
+        var value = new ItemChangedDto(List.Id, NewItem);
         WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
-        Items.Add(NewObservableItem);
-        Notifier.ShowToast($"Added: {NewObservableItem.Title}");
+        Notifier.ShowToast($"Added: {NewItem.Name}");
 
-        // Make sure the UI is reset/updated
-        NewObservableItem = new ObservableItem(ObservableList.Id!);
+        NewItem = new Item() { List = List, Category = CurrentCategory };
         SortItems();
-        OnPropertyChanged(nameof(NewObservableItem));
     }
 
     [RelayCommand]
-    private async Task RemoveItem(ObservableItem i)
+    private async Task RemoveItem(Item i)
     {
         await _itemService.DeleteAsync(i);
-        ObservableList.Items.Remove(i);
-        Items.Remove(i);
-        var value = new ItemChangedDto(ObservableList.Id!, i);
+        var value = new ItemChangedDto(List.Id, i);
         WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
-        OnPropertyChanged(nameof(ObservableList));
+        OnPropertyChanged(nameof(List));
     }
 
     [RelayCommand]
@@ -105,8 +82,7 @@ public partial class ListViewModel : ObservableObject
         if (!await IsRequestConfirmedByUser())
             return;
 
-        Items.Clear();
-        await _itemService.DeleteAllByListIdAsync(ObservableList.Id!);
+        await _itemService.DeleteAllByListIdAsync(List.Id);
         Notifier.ShowToast("Removed all items from list");
     }
 
@@ -121,7 +97,7 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task TogglePriority(ObservableItem i)
+    private async Task TogglePriority(Item i)
     {
         i.IsImportant = !i.IsImportant;
         await _itemService.CreateOrUpdateAsync(i);
@@ -129,47 +105,44 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static async Task GoBack(ObservableItem i)
+    private static async Task GoBack(Item i)
     {
         await Shell.Current.Navigation.PopAsync();
     }
 
     [RelayCommand]
-    private async Task TapItem(ObservableItem i)
+    private async Task TapItem(Item i)
     {
-        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i, ObservableList));
+        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i, List));
     }
 
     [RelayCommand]
     private void CopyToClipboard()
     {
-        _clipboardService.CopyToClipboard(Items, Categories);
+        _clipboardService.CopyToClipboard(Items.ToList(), Categories.ToList());
     }
 
     [RelayCommand]
     private void InsertFromClipboard()
     {
-        _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableList.Id!);
+        _clipboardService.InsertFromClipboardAsync(Items.ToList(), Categories.ToList(), List);
     }
 
     public string ProcessedObservableItemListName
     {
         get
         {
-            if (ObservableList.Name.Length > 15)
+            if (List.Name.Length > 15)
             {
-                return ObservableList.Name[..15].Trim() + "...";
+                return List.Name[..15].Trim() + "...";
             }
 
-            return ObservableList.Name;
+            return List.Name;
         }
     }
 
     private void SortItems()
     {
-        Items = new ObservableCollection<ObservableItem>(
-            Items.OrderBy(i => i.CategoryName).ThenByDescending(i => i.AddedOn)
-        );
         OnPropertyChanged(nameof(Items));
     }
 }
