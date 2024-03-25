@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Linq.Expressions;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
@@ -47,8 +48,6 @@ public partial class ListViewModel : ObservableObject
         ItemsToDelete = [];
         Categories = CurrentList.Categories;
         CurrentCategory = Categories.First(c => c.Name == Shared.Constants.DefaultCategoryName);
-
-        Logger.Log($"[ListViewModel] Current category: {CurrentCategory.ToLoggableString()}");
         GetSortedItems();
     }
 
@@ -70,8 +69,6 @@ public partial class ListViewModel : ObservableObject
         };
 
         await _itemService.CreateAsync(newItem);
-        // var value = new ItemChangedDto(List.Id, NewItem);
-        // WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
         Notifier.ShowToast($"Added: {newItem.Name}");
 
         NewItemName = string.Empty;
@@ -84,9 +81,6 @@ public partial class ListViewModel : ObservableObject
     private async Task RemoveItem(Item item)
     {
         await _itemService.DeleteAsync(item);
-        // var value = new ItemChangedDto(List.Id, i);
-        // WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
-        // OnPropertyChanged(nameof(List));
     }
 
     [RelayCommand]
@@ -103,9 +97,9 @@ public partial class ListViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task TapItem(Item item)
+    private static async Task TapItem(Item item)
     {
-        await Shell.Current.Navigation.PushModalAsync(new DetailPage(item, CurrentList));
+        await Shell.Current.Navigation.PushModalAsync(new DetailPage(item));
     }
 
     [RelayCommand]
@@ -138,9 +132,15 @@ public partial class ListViewModel : ObservableObject
         }
     }
 
-    // TODO: Implement sorting and filtering
-    private void GetSortedItems()
+    // TODO: Implement custom sorting and filtering using locally stored preferences
+    // Note that listing default category items first or last may be difficult, see:
+    // https://www.mongodb.com/community/forums/t/c-linq-condition-inside-orderby/149393
+    public void GetSortedItems()
     {
-        Items = _realm.All<Item>().Where(i => i.List == CurrentList);
+        Items = _realm
+            .All<Item>()
+            .Where(i => i.List == CurrentList)
+            .OrderBy(i => i.Category!.Name)
+            .ThenByDescending(i => i.UpdatedOn);
     }
 }

@@ -3,7 +3,7 @@ using AsyncAwaitBestPractices;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
-using ListType = Listem.Shared.Enums.ListType;
+using Listem.Shared.Enums;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif
@@ -49,12 +49,12 @@ public partial class ListPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-
 #if __ANDROID__ || __IOS__
         var statusBarColor = (Color)Application.Current!.Resources["BackgroundColorAccent"];
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
 #endif
+        _viewModel.GetSortedItems();
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
@@ -67,7 +67,6 @@ public partial class ListPage
             Logger.Log($"Removing item: {item.Name} from list");
             _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
         }
-
 #if __ANDROID__ || __IOS__
         var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
         CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
@@ -179,11 +178,7 @@ public partial class ListPage
     {
         var categoryPicker = new Picker
         {
-#if WINDOWS || __MACOS__
-            Title = "",
-#elif __ANDROID__ || __IOS__
             Title = "Select category",
-#endif
             AutomationId = "ListPageCategoryPicker",
             TextColor = (Color)Application.Current!.Resources["TextColor"],
             TitleColor = (Color)Application.Current.Resources["PickerTitleColor"],
@@ -275,7 +270,7 @@ public partial class ListPage
             FontSize = (double)Application.Current!.Resources["FontSizeM"],
             ReturnCommand = _viewModel.AddItemCommand
         };
-        entryField.SetBinding(Entry.TextProperty, "NewObservableItem.Title");
+        entryField.SetBinding(Entry.TextProperty, "NewItemName");
         entryField.Unfocused += (_, _) => AddButton.Focus();
         entryField.Completed += (_, _) =>
         {

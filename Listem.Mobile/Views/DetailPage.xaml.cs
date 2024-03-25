@@ -6,18 +6,14 @@ namespace Listem.Mobile.Views;
 
 public partial class DetailPage
 {
-    public DetailPage(Item item, List list)
+    public DetailPage(Item item)
     {
         InitializeComponent();
 
-        if (
-            IPlatformApplication.Current?.Services.GetService<IServiceProvider>() is
-            { } serviceProvider
-        )
-        {
-            BindingContext = new DetailViewModel(item, list, serviceProvider);
-        }
-        throw new NullReferenceException("ServiceProvider is null");
+        if (IPlatformApplication.Current?.Services.GetService<IServiceProvider>() is not { } sp)
+            throw new NullReferenceException("ServiceProvider is null");
+
+        BindingContext = new DetailViewModel(item, sp);
     }
 
     private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)
@@ -28,7 +24,7 @@ public partial class DetailPage
         QuantityProperty.Text = e.NewValue.ToString(CultureInfo.CurrentCulture);
     }
 
-    private void IsImportantSwitch_OnToggled(object? sender, ToggledEventArgs toggledEventArgs)
+    private void IsImportantSwitch_OnToggled(object? sender, ToggledEventArgs _)
     {
         if (sender is not Switch toggle)
             return;

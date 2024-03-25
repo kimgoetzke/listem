@@ -70,7 +70,7 @@ public static class RealmService
         JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
         using var realm = GetRealm();
-        await SetSubscriptions(realm);
+        // await SetSubscriptions(realm); // Only for development to update subscriptions on app launch
         await realm.Subscriptions.WaitForSynchronizationAsync();
     }
 

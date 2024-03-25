@@ -54,7 +54,7 @@ public class ItemService : IItemService
             }
             if (category != null)
             {
-                item.Category = category;
+                item.Category = new Category { Name = category.Name };
             }
             if (quantity != null)
             {

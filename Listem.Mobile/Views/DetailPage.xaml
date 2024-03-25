@@ -53,8 +53,8 @@
                             <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
                             <Picker Grid.Column="1"
                                     Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select category'}"
-                                    SelectedItem="{Binding CurrentCategory, Mode=TwoWay}"
                                     ItemsSource="{Binding Categories}"
+                                    SelectedItem="{Binding CurrentCategory}"
                                     TextColor="{DynamicResource TextColor}"
                                     TitleColor="{DynamicResource PickerTitleColor}"
                                     MinimumWidthRequest="400" MaximumWidthRequest="850"

@@ -19,23 +19,23 @@ public partial class DetailViewModel : ObservableObject
     [ObservableProperty]
     private Item _item;
 
-    private readonly IItemService _itemService;
     public ListType ListType { get; }
 
-    public DetailViewModel(Item item, List list, IServiceProvider serviceProvider)
+    private readonly IItemService _itemService;
+
+    public DetailViewModel(Item item, IServiceProvider serviceProvider)
     {
-        Item = item;
-        ListType = Enum.TryParse(list.ListType, out ListType type) ? type : ListType.Standard;
-        CurrentCategory = new Category();
-        Categories = list.Categories;
         _itemService = serviceProvider.GetService<IItemService>()!;
+        Item = item;
+        ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
+        Categories = item.List!.Categories;
+        CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
     }
 
     [RelayCommand]
     private async Task SaveAndBack()
     {
-        Item.Category = CurrentCategory;
-        await _itemService.CreateAsync(Item);
+        await _itemService.UpdateAsync(Item, category: CurrentCategory);
         Back().SafeFireAndForget();
     }
 

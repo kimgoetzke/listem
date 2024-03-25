@@ -122,17 +122,6 @@ public partial class MainViewModel : ObservableObject
         return Task.CompletedTask;
     }
 
-    // ReSharper disable once UnusedMember.Local
-    private static async Task<bool> IsRestartConfirmed()
-    {
-        return await Shell.Current.DisplayAlert(
-            "Restart required",
-            $"For the theme change to take full effect, you'll need to restart the application. Would you like to close the application now or later?",
-            "Now",
-            "Later"
-        );
-    }
-
     [RelayCommand]
     private async Task BackToStartPage()
     {
