@@ -36,7 +36,7 @@
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding List.Name, Mode=TwoWay}"
+                    <Entry Text="{Binding CurrentName}"
                            Unfocused="OnEntryUnfocused" />
                 </Frame>
             </Grid>
@@ -54,7 +54,7 @@
                                 x:Name="ListTypePicker"
                                 Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select type'}"
                                 ItemsSource="{Binding ListTypes}"
-                                SelectedIndexChanged="ListTypePicker_OnSelectedIndexChanged"
+                                SelectedItem="{Binding CurrentListType, Mode=TwoWay}"
                                 TextColor="{DynamicResource TextColor}"
                                 TitleColor="{DynamicResource PickerTitleColor}"
                                 MinimumWidthRequest="400" MaximumWidthRequest="850"
@@ -87,7 +87,7 @@
 
             <!-- Categories list -->
             <Frame Margin="5, 5" Padding="0" BorderColor="Transparent" CornerRadius="15">
-                <CollectionView ItemsSource="{Binding Categories}"
+                <CollectionView ItemsSource="{Binding List.Categories}"
                                 Margin="0"
                                 SelectionMode="None"
                                 HeightRequest="175"

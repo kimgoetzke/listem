@@ -8,31 +8,54 @@ public class ListService : IListService
 {
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
-    public async Task CreateOrUpdateAsync(List list)
+    public async Task CreateAsync(List list)
     {
         await _realm.WriteAsync(() =>
         {
-            if (list.IsDraft)
+            list.IsDraft = false;
+            list.Categories.Add(new Category { Name = Constants.DefaultCategoryName });
+            _realm.Add(list);
+            Logger.Log($"Added: {list.ToLoggableString()}");
+        });
+    }
+
+    public async Task UpdateAsync(
+        List list,
+        string? name = null,
+        string? ownedBy = null,
+        ISet<string>? sharedWith = null,
+        string? listType = null
+    )
+    {
+        await _realm.WriteAsync(() =>
+        {
+            if (_realm.Find<List>(list.Id) == null)
             {
-                var defaultCategory = new Category { Name = Constants.DefaultCategoryName };
-                list.Categories.Add(defaultCategory);
-                list.IsDraft = false;
-                _realm.Add(list);
-                Logger.Log($"Added list: {list.ToLoggableString()}");
+                Logger.Log($"List has an id but couldn't be found: {list.ToLoggableString()}");
+                return;
             }
-            else
+            if (name != null)
             {
-                var existingList = _realm.Find<List>(list.Id);
-                if (existingList == null)
+                list.Name = name;
+            }
+            if (ownedBy != null)
+            {
+                list.OwnedBy = ownedBy;
+            }
+            if (sharedWith != null)
+            {
+                list.SharedWith.Clear();
+                foreach (var s in sharedWith)
                 {
-                    Logger.Log($"List has an id but couldn't be found: {list.ToLoggableString()}");
-                    return;
+                    list.SharedWith.Add(s);
                 }
-                existingList.Name = list.Name;
-                existingList.ListType = list.ListType;
-                existingList.UpdatedOn = list.UpdatedOn;
-                Logger.Log($"Updated list: {list.ToLoggableString()}");
             }
+            if (listType != null)
+            {
+                list.ListType = listType;
+            }
+            list.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
+            Logger.Log($"Updated: {list.ToLoggableString()}");
         });
     }
 

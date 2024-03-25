@@ -12,11 +12,14 @@ public partial class Item : IRealmObject
     [PrimaryKey]
     [MapTo("_id")]
     public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+    public string Name { get; set; }
+    public string OwnedBy { get; set; } = null!;
+    public ISet<string> SharedWith { get; } = null!;
     public List? List { get; set; }
     public Category? Category { get; set; }
-    public string Name { get; set; }
     public int Quantity { get; set; }
     public bool IsImportant { get; set; }
+    public bool IsDraft { get; set; } = true;
     public DateTimeOffset UpdatedOn { get; set; }
 
     public override string ToString()

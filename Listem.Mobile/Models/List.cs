@@ -1,15 +1,17 @@
+using System.Diagnostics.CodeAnalysis;
 using Listem.Mobile.Services;
 using MongoDB.Bson;
 using Realms;
-// ReSharper disable UnassignedGetOnlyAutoProperty
-// ReSharper disable ReplaceAutoPropertyWithComputedProperty
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-// ReSharper disable RedundantExtendsListEntry
-// ReSharper disable MemberCanBePrivate.Global
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace Listem.Mobile.Models;
 
+[SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
+[SuppressMessage("ReSharper", "ReplaceAutoPropertyWithComputedProperty")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+[SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
+[SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
 public partial class List : IRealmObject
 {
     [PrimaryKey]
@@ -39,6 +41,28 @@ public partial class List : IRealmObject
         }
     }
 
+    public List UntrackedCopy()
+    {
+        var list = new List
+        {
+            Id = Id,
+            Name = Name,
+            OwnedBy = OwnedBy,
+            ListType = ListType,
+            UpdatedOn = UpdatedOn,
+            IsDraft = IsDraft
+        };
+        foreach (var s in SharedWith)
+        {
+            list.SharedWith.Add(s);
+        }
+        foreach (var category in Categories)
+        {
+            list.Categories.Add(category);
+        }
+        return list;
+    }
+
     public bool IsAccessibleToMe => IsSharedWithMe || IsMine;
 
     public override string ToString()
@@ -48,6 +72,7 @@ public partial class List : IRealmObject
 
     public string ToLoggableString()
     {
-        return $"[RealmList] '{Name}' {Id}, type: '{ListType}', last updated: {UpdatedOn}";
+        var sharedWith = SharedWith.Count > 0 ? string.Join(", ", SharedWith) : "none";
+        return $"[RealmList] '{Name}' {Id}, type: {ListType}, owned by: {OwnedBy}, shared with: {sharedWith}, last updated: {UpdatedOn.ToLocalTime()}";
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
@@ -17,13 +16,13 @@ public partial class EditListViewModel : ObservableObject
     private List _list;
 
     [ObservableProperty]
+    private string _currentName;
+
+    [ObservableProperty]
+    private ListType _currentListType;
+
+    [ObservableProperty]
     private ObservableCollection<ListType> _listTypes = [];
-
-    [ObservableProperty]
-    private Category _newCategory;
-
-    [ObservableProperty]
-    private IQueryable<Category> _categories;
 
     private readonly ICategoryService _categoryService;
     private readonly IItemService _itemService;
@@ -35,13 +34,13 @@ public partial class EditListViewModel : ObservableObject
         _categoryService = serviceProvider.GetService<ICategoryService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
         List = list;
-        // TODO: Current list type isn't selected
         ListTypes = new ObservableCollection<ListType>(
             Enum.GetValues(typeof(ListType)).Cast<ListType>()
         );
-        // TODO: Fix below to make sure that categories are updated when item is added/removed
-        Categories = new EnumerableQuery<Category>(list.Categories);
-        NewCategory = new Category();
+        CurrentListType = Enum.TryParse(list.ListType, out ListType type)
+            ? type
+            : ListType.Standard;
+        CurrentName = list.Name;
     }
 
     [RelayCommand]
@@ -50,17 +49,15 @@ public partial class EditListViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(text))
             return;
 
-        NewCategory.Name = StringProcessor.TrimAndCapitalise(text);
-        if (Categories.Any(category => category.Name == NewCategory.Name))
+        var category = new Category { Name = StringProcessor.TrimAndCapitalise(text) };
+        if (List.Categories.Any(c => c.Name == category.Name))
         {
-            Notifier.ShowToast($"Cannot add '{NewCategory.Name}' - it already exists");
+            Notifier.ShowToast($"Cannot add '{category.Name}' - it already exists");
             return;
         }
 
-        await _categoryService.CreateAsync(NewCategory, List);
-        Notifier.ShowToast($"Added: {NewCategory.Name}");
-        NewCategory = new Category();
-        OnPropertyChanged(nameof(NewCategory));
+        await _categoryService.CreateAsync(category, List);
+        Notifier.ShowToast($"Added: {category.Name}");
     }
 
     [RelayCommand]
@@ -105,7 +102,7 @@ public partial class EditListViewModel : ObservableObject
         if (!await IsRemoveItemsRequestConfirmed())
             return;
 
-        await _itemService.DeleteAllByListIdAsync(List.Id);
+        await _itemService.DeleteAllInListAsync(List);
         Notifier.ShowToast("Removed all items from list");
     }
 
@@ -122,8 +119,8 @@ public partial class EditListViewModel : ObservableObject
     [RelayCommand]
     private async Task SaveAndBack()
     {
-        List.Name = StringProcessor.TrimAndCapitalise(List.Name);
-        await _listService.CreateOrUpdateAsync(List);
+        var name = StringProcessor.TrimAndCapitalise(CurrentName);
+        await _listService.UpdateAsync(List, name: name, listType: CurrentListType.ToString());
         await Back();
     }
 

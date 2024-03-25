@@ -5,9 +5,18 @@ namespace Listem.Mobile.Services;
 
 public interface IItemService
 {
-    Task CreateOrUpdateAsync(Item item);
+    Task CreateAsync(Item item);
+    Task UpdateAsync(
+        Item item,
+        string? name = null,
+        string? ownedBy = null,
+        ISet<string>? sharedWith = null,
+        Category? category = null,
+        int? quantity = null,
+        bool? isImportant = null
+    );
     Task DeleteAsync(Item item);
-    Task DeleteAllByListIdAsync(ObjectId listId);
+    Task DeleteAllInListAsync(List list);
     Task UpdateAllToDefaultCategoryAsync(ObjectId listId);
     Task UpdateAllToCategoryAsync(string categoryName, ObjectId listId);
 }

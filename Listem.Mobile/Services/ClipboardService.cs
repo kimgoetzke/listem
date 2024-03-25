@@ -163,7 +163,7 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
     {
         foreach (var item in toCreate)
         {
-            await _itemService.CreateOrUpdateAsync(item);
+            await _itemService.CreateAsync(item);
         }
     }
 

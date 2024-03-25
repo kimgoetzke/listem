@@ -32,6 +32,7 @@ public static class RealmService
             () => JsonProcessor.FromFile<AtlasConfig>("atlasConfig.json")
         );
         var appConfig = new AppConfiguration(config.AppId) { BaseUri = new Uri(config.BaseUrl) };
+        Realms.Logging.Logger.LogLevel = Realms.Logging.LogLevel.Debug;
 
         _app = Realms.Sync.App.Create(appConfig);
         _serviceInitialised = true;
@@ -48,7 +49,7 @@ public static class RealmService
         {
             WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
         }
-        Logger.Log($"Initialised realm with: (see below)\n- RU: {_app.CurrentUser}\n- LU: {User}");
+        Logger.Log($"Initialised realm with: {User}");
     }
 
     public static Realm GetMainThreadRealm()
@@ -56,7 +57,7 @@ public static class RealmService
         var realm = _mainThreadRealm ??= GetRealm();
         if (realm.Subscriptions.Count == 0)
         {
-            SetSubscription(realm, SubscriptionType.Mine).SafeFireAndForget();
+            throw new InvalidOperationException("No subscriptions set in main thread realm");
         }
         return realm;
     }
@@ -68,6 +69,9 @@ public static class RealmService
         User.Update(_app.CurrentUser);
         JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
         WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+        using var realm = GetRealm();
+        await SetSubscriptions(realm);
+        await realm.Subscriptions.WaitForSynchronizationAsync();
     }
 
     public static async Task SignUpAsync(string email, string password)
@@ -100,79 +104,68 @@ public static class RealmService
         _mainThreadRealm = null;
     }
 
-    public static async Task SetSubscription(Realm realm, SubscriptionType subType)
-    {
-        if (subType == CurrentSubscriptionType(realm))
-            return;
-
-        realm.Subscriptions.Update(() =>
-        {
-            realm.Subscriptions.RemoveAll(true);
-            var (query, queryName) = GetQueryForSubscriptionType(realm, subType);
-            realm.Subscriptions.Add(query, new SubscriptionOptions { Name = queryName });
-        });
-
-        if (realm.SyncSession.ConnectionState != ConnectionState.Disconnected)
-        {
-            await realm.Subscriptions.WaitForSynchronizationAsync();
-        }
-    }
-
-    private static SubscriptionType? CurrentSubscriptionType(Realm realm)
-    {
-        return realm.Subscriptions.FirstOrDefault()?.Name switch
-        {
-            "accessible" => SubscriptionType.AccessibleToMe,
-            "shared" => SubscriptionType.SharedWithMe,
-            "mine" => SubscriptionType.Mine,
-            _ => null
-        };
-    }
-
-    private static (IQueryable<List> Query, string Name) GetQueryForSubscriptionType(
-        Realm realm,
-        SubscriptionType subType
-    )
-    {
-        IQueryable<List>? query;
-        string? queryName;
-        switch (subType)
-        {
-            case SubscriptionType.Mine:
-                query = realm.All<List>().Where(i => i.OwnedBy == User.Id);
-                queryName = "mine";
-                break;
-            case SubscriptionType.AccessibleToMe:
-                query = realm
-                    .All<List>()
-                    .Where(l => l.OwnedBy == User.Id || l.SharedWith.Contains(User.Id!));
-                queryName = "accessible";
-                break;
-            case SubscriptionType.SharedWithMe:
-                query = realm.All<List>().Where(l => l.SharedWith.Contains(User.Id!));
-                queryName = "shared";
-                break;
-            default:
-                throw new ArgumentException("Unknown subscription type");
-        }
-        return (query, queryName);
-    }
-
     private static Realm GetRealm()
     {
         var config = new FlexibleSyncConfiguration(_app.CurrentUser!)
         {
             PopulateInitialSubscriptions = realm =>
             {
-                var (query, queryName) = GetQueryForSubscriptionType(
-                    realm,
-                    SubscriptionType.AccessibleToMe
-                );
-                realm.Subscriptions.Add(query, new SubscriptionOptions { Name = queryName });
+                var (lqName, listQuery) = QueryForLists(realm);
+                realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
+                var (iqName, itemQuery) = QueryForItems(realm);
+                realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
             }
         };
-
         return Realm.GetInstance(config);
+    }
+
+    private static async Task SetSubscriptions(Realm realm)
+    {
+        RemoveAllSubscriptions(realm, true);
+        realm.Subscriptions.Update(() =>
+        {
+            var (lqName, listQuery) = QueryForLists(realm);
+            realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
+            var (iqName, itemQuery) = QueryForItems(realm);
+            realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
+        });
+        Logger.Log("Default subscriptions set, syncing now...");
+        if (realm.SyncSession.ConnectionState != ConnectionState.Disconnected)
+        {
+            await realm.Subscriptions.WaitForSynchronizationAsync();
+        }
+    }
+
+    private static (string queryName, IQueryable<Item> query) QueryForItems(Realm realm)
+    {
+        var query = realm
+            .All<Item>()
+            .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id)
+            .OrderByDescending(x => x.UpdatedOn);
+        return ("accessibleItems", query);
+    }
+
+    private static (string queryName, IQueryable<List> query) QueryForLists(Realm realm)
+    {
+        var query = realm
+            .All<List>()
+            .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id)
+            .OrderByDescending(x => x.UpdatedOn);
+        return ("accessibleLists", query);
+    }
+
+    private static void RemoveAllSubscriptions(Realm realm, bool removeNamed)
+    {
+        Logger.Log($"Removing all subscriptions (removedNamed={removeNamed})");
+        foreach (var subscription in realm.Subscriptions)
+        {
+            Logger.Log($"- {subscription.Name}: {subscription.Query}");
+        }
+        realm.Subscriptions.Update(() =>
+        {
+            var count = realm.Subscriptions.RemoveAll(removeNamed);
+            Logger.Log($"Removed {count} subscription(s)");
+        });
     }
 
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]

@@ -15,10 +15,7 @@ namespace Listem.Mobile.ViewModel;
 public partial class MainViewModel : ObservableObject
 {
     [ObservableProperty]
-    private IQueryable<List> _lists;
-
-    [ObservableProperty]
-    private List _newList;
+    private IQueryable<List> _lists = null!;
 
     [ObservableProperty]
     private ObservableCollection<ObservableTheme> _themes = [];
@@ -42,8 +39,7 @@ public partial class MainViewModel : ObservableObject
         _serviceProvider = serviceProvider;
         _listService = serviceProvider.GetService<IListService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
-        NewList = new List();
-        Lists = _realm.All<List>();
+        GetSortedLists();
         Themes = ThemeHandler.GetAllThemesAsCollection();
         CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
 
@@ -60,6 +56,12 @@ public partial class MainViewModel : ObservableObject
         );
     }
 
+    // TODO: Implement sorting and filtering
+    private void GetSortedLists()
+    {
+        Lists = _realm.All<List>().OrderByDescending(l => l.UpdatedOn);
+    }
+
     public void InitialiseUser()
     {
         var currentUser = RealmService.User;
@@ -73,18 +75,15 @@ public partial class MainViewModel : ObservableObject
         if (name.Length == 0)
             return;
 
-        NewList.Name = StringProcessor.TrimAndCapitalise(name);
-        NewList.OwnedBy = RealmService.User.Id!;
-        NewList.ListType = ListType.Standard.ToString();
-        NewList.UpdatedOn = DateTime.Now.ToUniversalTime();
-        await _listService.CreateOrUpdateAsync(NewList);
-        Notifier.ShowToast($"Added: {NewList.Name}");
-        SortLists();
-    }
-
-    private void SortLists()
-    {
-        OnPropertyChanged(nameof(Lists));
+        var newList = new List
+        {
+            Name = StringProcessor.TrimAndCapitalise(name),
+            OwnedBy = RealmService.User.Id!,
+            ListType = ListType.Standard.ToString(),
+            UpdatedOn = DateTime.Now.ToUniversalTime()
+        };
+        await _listService.CreateAsync(newList);
+        GetSortedLists();
     }
 
     [RelayCommand]
@@ -96,7 +95,7 @@ public partial class MainViewModel : ObservableObject
             return;
         }
 
-        await _itemService.DeleteAllByListIdAsync(list.Id);
+        await _itemService.DeleteAllInListAsync(list);
         await _listService.DeleteAsync(list);
     }
 

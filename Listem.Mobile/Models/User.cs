@@ -67,7 +67,7 @@ public class User
     {
         var at = ExtractPayload(AccessToken);
         var rt = ExtractPayload(RefreshToken);
-        return $"[User] Email: {EmailAddress ?? "null"}, status: {Status}, valid token: {!IsTokenExpired}, valid until: {TokenExpiresAt}), access token: {at ?? "null"}, refresh token: {rt ?? "null"}";
+        return $"[User] _id: {Id ?? "null"}, email: {EmailAddress ?? "null"}, status: {Status}, valid token: {!IsTokenExpired}, valid until: {TokenExpiresAt}), access token: {at ?? "null"}, refresh token: {rt ?? "null"}";
     }
 
     // Extracts the payload from a JWT token so that header and signature aren't logged.

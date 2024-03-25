@@ -63,7 +63,7 @@
             <Label Text="{Binding UserEmail}"
                    Padding="10, 0,10,10"
                    IsVisible="{Binding IsUserRegistered}"
-                   FontAttributes="Bold"
+                   FontFamily="MulishBold"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center" />
 

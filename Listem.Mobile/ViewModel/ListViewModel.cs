@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using Listem.Mobile.Events;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
@@ -14,13 +12,10 @@ namespace Listem.Mobile.ViewModel;
 public partial class ListViewModel : ObservableObject
 {
     [ObservableProperty]
-    private List _list;
+    private List _currentList;
 
     [ObservableProperty]
-    private Item _newItem;
-
-    [ObservableProperty]
-    private IQueryable<Item> _items;
+    private IQueryable<Item> _items = null!;
 
     [ObservableProperty]
     private List<Item> _itemsToDelete;
@@ -29,91 +24,88 @@ public partial class ListViewModel : ObservableObject
     private IList<Category> _categories;
 
     [ObservableProperty]
-    private Category? _currentCategory;
+    private string _newItemName = string.Empty;
 
-    private readonly ICategoryService _categoryService;
+    [ObservableProperty]
+    private int _newItemQuantity = 1;
+
+    [ObservableProperty]
+    private bool _newItemIsImportant;
+
+    [ObservableProperty]
+    private Category _currentCategory;
+
     private readonly IItemService _itemService;
     private readonly IClipboardService _clipboardService;
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
     public ListViewModel(List list, IServiceProvider serviceProvider)
     {
-        _categoryService = serviceProvider.GetService<ICategoryService>()!;
         _itemService = serviceProvider.GetService<IItemService>()!;
         _clipboardService = serviceProvider.GetService<IClipboardService>()!;
-        List = list;
+        CurrentList = list;
         ItemsToDelete = [];
-        Categories = List.Categories;
+        Categories = CurrentList.Categories;
         CurrentCategory = Categories.First(c => c.Name == Shared.Constants.DefaultCategoryName);
-        Items = _realm.All<Item>().Where(i => i.List!.Id == list.Id);
-        NewItem = new Item { List = list };
-        SortItems();
+
+        Logger.Log($"[ListViewModel] Current category: {CurrentCategory.ToLoggableString()}");
+        GetSortedItems();
     }
 
     [RelayCommand]
     private async Task AddItem()
     {
-        if (string.IsNullOrWhiteSpace(NewItem.Name))
+        if (string.IsNullOrWhiteSpace(NewItemName))
             return;
 
-        NewItem.Name = StringProcessor.TrimAndCapitalise(NewItem.Name);
-        NewItem.UpdatedOn = DateTime.Now.ToUniversalTime();
-        await _itemService.CreateOrUpdateAsync(NewItem);
-        var value = new ItemChangedDto(List.Id, NewItem);
-        WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
-        Notifier.ShowToast($"Added: {NewItem.Name}");
+        var newItem = new Item
+        {
+            Name = StringProcessor.TrimAndCapitalise(NewItemName),
+            OwnedBy = RealmService.User.Id!,
+            List = CurrentList,
+            Category = new Category { Name = CurrentCategory.Name },
+            Quantity = NewItemQuantity,
+            IsImportant = NewItemIsImportant,
+            UpdatedOn = DateTime.Now.ToUniversalTime(),
+        };
 
-        NewItem = new Item() { List = List, Category = CurrentCategory };
-        SortItems();
+        await _itemService.CreateAsync(newItem);
+        // var value = new ItemChangedDto(List.Id, NewItem);
+        // WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
+        Notifier.ShowToast($"Added: {newItem.Name}");
+
+        NewItemName = string.Empty;
+        NewItemQuantity = 1;
+        NewItemIsImportant = false;
+        GetSortedItems();
     }
 
     [RelayCommand]
-    private async Task RemoveItem(Item i)
+    private async Task RemoveItem(Item item)
     {
-        await _itemService.DeleteAsync(i);
-        var value = new ItemChangedDto(List.Id, i);
-        WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
-        OnPropertyChanged(nameof(List));
+        await _itemService.DeleteAsync(item);
+        // var value = new ItemChangedDto(List.Id, i);
+        // WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
+        // OnPropertyChanged(nameof(List));
     }
 
     [RelayCommand]
-    private async Task RemoveAllItems()
+    private async Task TogglePriority(Item item)
     {
-        if (!await IsRequestConfirmedByUser())
-            return;
-
-        await _itemService.DeleteAllByListIdAsync(List.Id);
-        Notifier.ShowToast("Removed all items from list");
-    }
-
-    private static async Task<bool> IsRequestConfirmedByUser()
-    {
-        return await Shell.Current.DisplayAlert(
-            "Clear list",
-            $"This will remove all items from your list. Are you sure you want to continue?",
-            "Yes",
-            "No"
-        );
+        await _itemService.UpdateAsync(item, isImportant: !item.IsImportant);
+        GetSortedItems();
     }
 
     [RelayCommand]
-    private async Task TogglePriority(Item i)
-    {
-        i.IsImportant = !i.IsImportant;
-        await _itemService.CreateOrUpdateAsync(i);
-        SortItems();
-    }
-
-    [RelayCommand]
-    private static async Task GoBack(Item i)
+    private static async Task GoBack()
     {
         await Shell.Current.Navigation.PopAsync();
     }
 
     [RelayCommand]
-    private async Task TapItem(Item i)
+    private async Task TapItem(Item item)
     {
-        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i, List));
+        await Shell.Current.Navigation.PushModalAsync(new DetailPage(item, CurrentList));
     }
 
     [RelayCommand]
@@ -125,24 +117,30 @@ public partial class ListViewModel : ObservableObject
     [RelayCommand]
     private void InsertFromClipboard()
     {
-        _clipboardService.InsertFromClipboardAsync(Items.ToList(), Categories.ToList(), List);
+        _clipboardService.InsertFromClipboardAsync(
+            Items.ToList(),
+            Categories.ToList(),
+            CurrentList
+        );
     }
 
+    // TODO: Test this because it'll probably break when using Realm
     public string ProcessedObservableItemListName
     {
         get
         {
-            if (List.Name.Length > 15)
+            if (CurrentList.Name.Length > 15)
             {
-                return List.Name[..15].Trim() + "...";
+                return CurrentList.Name[..15].Trim() + "...";
             }
 
-            return List.Name;
+            return CurrentList.Name;
         }
     }
 
-    private void SortItems()
+    // TODO: Implement sorting and filtering
+    private void GetSortedItems()
     {
-        OnPropertyChanged(nameof(Items));
+        Items = _realm.All<Item>().Where(i => i.List == CurrentList);
     }
 }

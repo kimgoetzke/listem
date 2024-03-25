@@ -6,8 +6,6 @@ using Listem.Mobile.ViewModel;
 using CommunityToolkit.Maui.Core;
 #endif
 
-// ReSharper disable UnusedMember.Local
-
 namespace Listem.Mobile.Views;
 
 public partial class MainPage
@@ -15,7 +13,6 @@ public partial class MainPage
     private readonly MainViewModel _viewModel;
     private const uint AnimationDuration = 400u;
     private bool _isMenuOpen;
-    private Frame _frame = new();
 
     public MainPage(MainViewModel viewModel)
     {
@@ -70,9 +67,9 @@ public partial class MainPage
         _isMenuOpen = false;
     }
 
-    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-    // ReSharper disable once UnusedParameter.Local
+    [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+    [SuppressMessage("ReSharper", "UnusedParameter.Local")]
     private async Task OpenSettings(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__
@@ -89,7 +86,7 @@ public partial class MainPage
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-    // ReSharper disable once UnusedParameter.Local
+    [SuppressMessage("ReSharper", "UnusedParameter.Local")]
     private async Task CloseSettings(CancellationTokenSource cancellationTokenSource)
     {
 #if __ANDROID__ || __IOS__

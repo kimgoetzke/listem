@@ -179,7 +179,7 @@
     <!-- Spans -->
     <Style TargetType="Span" x:Key="Highlight">
         <Setter Property="TextColor" Value="{DynamicResource TextHighlightColor}" />
-        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontFamily" Value="MulishBold" />
         <Setter Property="TextTransform" Value="Uppercase" />
     </Style>
     <Style TargetType="Span" x:Key="StandardSpan">

@@ -35,7 +35,7 @@ public partial class DetailViewModel : ObservableObject
     private async Task SaveAndBack()
     {
         Item.Category = CurrentCategory;
-        await _itemService.CreateOrUpdateAsync(Item);
+        await _itemService.CreateAsync(Item);
         Back().SafeFireAndForget();
     }
 

@@ -9,15 +9,64 @@ public class ItemService : IItemService
 {
     private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
-    public async Task<List<Item>> GetAllByListIdAsync(ObjectId listId)
+    public async Task CreateAsync(Item item)
     {
-        Logger.Log($"Getting all items for list {listId} (not implemented yet)");
-        return [];
+        await _realm.WriteAsync(() =>
+        {
+            item.IsDraft = false;
+            _realm.Add(item);
+            Logger.Log($"Added: {item.ToLoggableString()}");
+        });
     }
 
-    public async Task CreateOrUpdateAsync(Item item)
+    public async Task UpdateAsync(
+        Item item,
+        string? name = null,
+        string? ownedBy = null,
+        ISet<string>? sharedWith = null,
+        Category? category = null,
+        int? quantity = null,
+        bool? isImportant = null
+    )
     {
-        Logger.Log($"Added or updated item: {item.ToLoggableString()} (not implemented yet)");
+        await _realm.WriteAsync(() =>
+        {
+            if (_realm.Find<Item>(item.Id) == null)
+            {
+                Logger.Log($"Not updated because it doesn't exist: {item.ToLoggableString()}");
+                return;
+            }
+            if (name != null)
+            {
+                item.Name = name;
+            }
+            if (ownedBy != null)
+            {
+                item.OwnedBy = ownedBy;
+            }
+            if (sharedWith != null)
+            {
+                item.SharedWith.Clear();
+                foreach (var user in sharedWith)
+                {
+                    item.SharedWith.Add(user);
+                }
+            }
+            if (category != null)
+            {
+                item.Category = category;
+            }
+            if (quantity != null)
+            {
+                item.Quantity = (int)quantity;
+            }
+            if (isImportant != null)
+            {
+                item.IsImportant = (bool)isImportant;
+            }
+            item.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
+            Logger.Log($"Updated: {item.ToLoggableString()}");
+        });
     }
 
     public async Task DeleteAsync(Item item)
@@ -29,9 +78,9 @@ public class ItemService : IItemService
         });
     }
 
-    public async Task DeleteAllByListIdAsync(ObjectId listId)
+    public async Task DeleteAllInListAsync(List list)
     {
-        Logger.Log($"Removed all items from list {listId} (not implemented yet)");
+        Logger.Log($"Removed all items in list '{list.Name}' (not implemented yet)");
     }
 
     public async Task UpdateAllToDefaultCategoryAsync(ObjectId listId)

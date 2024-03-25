@@ -21,10 +21,10 @@ public partial class ListPage
     private Frame CategoryPickerFrame { get; set; } = null!;
     private Button AddButton { get; set; } = null!;
 
-    public ListPage(List observableList, IServiceProvider serviceProvider)
+    public ListPage(List list, IServiceProvider serviceProvider)
     {
         InitializeComponent();
-        _viewModel = new ListViewModel(observableList, serviceProvider);
+        _viewModel = new ListViewModel(list, serviceProvider);
         BindingContext = _viewModel;
         InitialiseMenuToAddItems();
     }
@@ -96,7 +96,7 @@ public partial class ListPage
         menuGrid.Add(EntryFieldFrame, 0);
         menuGrid.Add(CategoryPickerFrame, 1);
 
-        if (_viewModel.List.ListType == ListType.Shopping.ToString())
+        if (_viewModel.CurrentList.ListType == ListType.Shopping.ToString())
         {
             var quantityGrid = GetQuantityGrid();
             menuGrid.Add(quantityGrid, 3);
@@ -135,7 +135,7 @@ public partial class ListPage
         menuGrid.Add(AddButton, 2);
         menuGrid.Add(CategoryPickerFrame, 0, 1);
 
-        if (_viewModel.List.ListType == ListType.Shopping.ToString())
+        if (_viewModel.CurrentList.ListType == ListType.Shopping.ToString())
         {
             var quantityGrid = GetQuantityGrid();
             menuGrid.Add(quantityGrid, 1, 1);
@@ -167,8 +167,8 @@ public partial class ListPage
             Command = new Command(() =>
             {
                 AddButton.IsEnabled = false;
-                _viewModel.NewItem.Name = EntryField.Text;
-                _viewModel.AddItemCommand.ExecuteAsync(_viewModel.NewItem).SafeFireAndForget();
+                _viewModel.NewItemName = EntryField.Text;
+                _viewModel.AddItemCommand.ExecuteAsync(null).SafeFireAndForget();
                 EntryField.Focus();
                 AddButton.IsEnabled = true;
             }),
@@ -191,8 +191,9 @@ public partial class ListPage
             Margin = new Thickness(0),
             HorizontalOptions = LayoutOptions.Fill
         };
-        categoryPicker.SetBinding(Picker.SelectedItemProperty, "CurrentCategory");
         categoryPicker.SetBinding(Picker.ItemsSourceProperty, "Categories");
+        categoryPicker.SetBinding(Picker.SelectedItemProperty, "CurrentCategory");
+        Logger.Log($"[ListPage] Current category: {_viewModel.CurrentCategory.ToLoggableString()}");
         categoryPicker.SelectedIndexChanged += (sender, _) =>
         {
             if (sender is not Picker picker)
@@ -269,7 +270,7 @@ public partial class ListPage
             Placeholder = "Enter item name",
             AutomationId = "ListPageEntryField",
             FontFamily = "MulishLight",
-            Text = _viewModel.NewItem.Name,
+            Text = _viewModel.NewItemName,
             Margin = new Thickness(0),
             FontSize = (double)Application.Current!.Resources["FontSizeM"],
             ReturnCommand = _viewModel.AddItemCommand
@@ -278,7 +279,7 @@ public partial class ListPage
         entryField.Unfocused += (_, _) => AddButton.Focus();
         entryField.Completed += (_, _) =>
         {
-            _viewModel.NewItem.Name = entryField.Text;
+            _viewModel.NewItemName = entryField.Text;
             entryField.Focus();
         };
         return entryField;
@@ -289,7 +290,7 @@ public partial class ListPage
         var quantityGrid = new Grid { Margin = new Thickness(5) };
         var quantityLabel = new Label
         {
-            Text = $"Quantity: {_viewModel.NewItem.Quantity}",
+            Text = $"Quantity: {_viewModel.NewItemQuantity}",
             FontSize = (double)Application.Current!.Resources["FontSizeS"],
             FontFamily = "MulishSemiBold",
             VerticalTextAlignment = TextAlignment.Start,
@@ -337,7 +338,7 @@ public partial class ListPage
             AutomationId = "ListPageIsImportantSwitch",
             Margin = new Thickness(0, 15, 0, 0)
         };
-        isImportantSwitch.SetBinding(Switch.IsToggledProperty, "NewObservableItem.IsImportant");
+        isImportantSwitch.SetBinding(Switch.IsToggledProperty, "NewItemIsImportant");
         isImportantGrid.Add(isImportantSwitch, 0);
         return isImportantGrid;
     }
