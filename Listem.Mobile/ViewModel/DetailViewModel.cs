@@ -10,38 +10,38 @@ namespace Listem.Mobile.ViewModel;
 [QueryProperty(nameof(Item), nameof(Item))]
 public partial class DetailViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private IList<Category> _categories = [];
+  [ObservableProperty]
+  private IList<Category> _categories = [];
 
-    [ObservableProperty]
-    private Category _currentCategory;
+  [ObservableProperty]
+  private Category _currentCategory;
 
-    [ObservableProperty]
-    private Item _item;
+  [ObservableProperty]
+  private Item _item;
 
-    public ListType ListType { get; }
+  public ListType ListType { get; }
 
-    private readonly IItemService _itemService;
+  private readonly IItemService _itemService;
 
-    public DetailViewModel(Item item, IServiceProvider serviceProvider)
-    {
-        _itemService = serviceProvider.GetService<IItemService>()!;
-        Item = item;
-        ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
-        Categories = item.List!.Categories;
-        CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
-    }
+  public DetailViewModel(Item item, IServiceProvider serviceProvider)
+  {
+    _itemService = serviceProvider.GetService<IItemService>()!;
+    Item = item;
+    ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
+    Categories = item.List!.Categories;
+    CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
+  }
 
-    [RelayCommand]
-    private async Task SaveAndBack()
-    {
-        await _itemService.UpdateAsync(Item, category: CurrentCategory);
-        Back().SafeFireAndForget();
-    }
+  [RelayCommand]
+  private async Task SaveAndBack()
+  {
+    await _itemService.UpdateAsync(Item, category: CurrentCategory);
+    Back().SafeFireAndForget();
+  }
 
-    [RelayCommand]
-    private static async Task Back()
-    {
-        await Shell.Current.Navigation.PopModalAsync();
-    }
+  [RelayCommand]
+  private static async Task Back()
+  {
+    await Shell.Current.Navigation.PopModalAsync();
+  }
 }

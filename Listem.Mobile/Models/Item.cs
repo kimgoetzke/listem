@@ -13,26 +13,26 @@ namespace Listem.Mobile.Models;
 [SuppressMessage("ReSharper", "ReplaceAutoPropertyWithComputedProperty")]
 public partial class Item : IRealmObject, IShareable
 {
-    [PrimaryKey]
-    [MapTo("_id")]
-    public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
-    public string Name { get; set; }
-    public string OwnedBy { get; set; } = RealmService.User.Id!;
-    public ISet<string> SharedWith { get; } = null!;
-    public List? List { get; set; }
-    public Category? Category { get; set; }
-    public int Quantity { get; set; }
-    public bool IsImportant { get; set; }
-    public bool IsDraft { get; set; } = true;
-    public DateTimeOffset UpdatedOn { get; set; }
+  [PrimaryKey]
+  [MapTo("_id")]
+  public ObjectId Id { get; set; } = ObjectId.GenerateNewId();
+  public string Name { get; set; }
+  public string OwnedBy { get; set; } = RealmService.User.Id!;
+  public ISet<string> SharedWith { get; } = null!;
+  public List? List { get; set; }
+  public Category? Category { get; set; }
+  public int Quantity { get; set; }
+  public bool IsImportant { get; set; }
+  public bool IsDraft { get; set; } = true;
+  public DateTimeOffset UpdatedOn { get; set; }
 
-    public override string ToString()
-    {
-        return Name;
-    }
+  public override string ToString()
+  {
+    return Name;
+  }
 
-    public string ToLoggableString()
-    {
-        return $"[RealmItem] {Name} {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
-    }
+  public string ToLog()
+  {
+    return $"[RealmItem] {Name} {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
+  }
 }

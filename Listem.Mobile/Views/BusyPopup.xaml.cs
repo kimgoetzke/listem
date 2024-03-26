@@ -2,8 +2,8 @@ namespace Listem.Mobile.Views;
 
 public partial class BusyPopup
 {
-    public BusyPopup()
-    {
-        InitializeComponent();
-    }
+  public BusyPopup()
+  {
+    InitializeComponent();
+  }
 }

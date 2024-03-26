@@ -4,9 +4,9 @@ namespace Listem.Mobile.Views;
 
 public partial class SignUpPage
 {
-    public SignUpPage(IServiceProvider serviceProvider)
-    {
-        InitializeComponent();
-        BindingContext = serviceProvider.GetService<LoginViewModel>();
-    }
+  public SignUpPage(IServiceProvider serviceProvider)
+  {
+    InitializeComponent();
+    BindingContext = serviceProvider.GetService<LoginViewModel>();
+  }
 }

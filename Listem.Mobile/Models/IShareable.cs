@@ -2,7 +2,7 @@
 
 public interface IShareable
 {
-    string OwnedBy { get; set; }
-    ISet<string> SharedWith { get; }
-    DateTimeOffset UpdatedOn { get; set; }
+  string OwnedBy { get; set; }
+  ISet<string> SharedWith { get; }
+  DateTimeOffset UpdatedOn { get; set; }
 }

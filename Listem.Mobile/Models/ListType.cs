@@ -2,6 +2,6 @@
 
 public enum ListType
 {
-    Standard,
-    Shopping
+  Standard,
+  Shopping
 }

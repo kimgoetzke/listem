@@ -5,21 +5,21 @@ namespace Listem.Mobile.ViewModel;
 
 public partial class BaseViewModel : ObservableObject
 {
-    [ObservableProperty]
-    private bool _isBusy;
+  [ObservableProperty]
+  private bool _isBusy;
 
-    private Action? _currentDismissAction;
+  private Action? _currentDismissAction;
 
-    partial void OnIsBusyChanged(bool value)
+  partial void OnIsBusyChanged(bool value)
+  {
+    if (value)
     {
-        if (value)
-        {
-            _currentDismissAction = Notifier.ShowActivityIndicator();
-        }
-        else
-        {
-            _currentDismissAction?.Invoke();
-            _currentDismissAction = null;
-        }
+      _currentDismissAction = Notifier.ShowActivityIndicator();
     }
+    else
+    {
+      _currentDismissAction?.Invoke();
+      _currentDismissAction = null;
+    }
+  }
 }
