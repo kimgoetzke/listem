@@ -12,7 +12,7 @@ namespace Listem.Mobile.Utilities;
 
 public static class ThemeHandler
 {
-  private static ILogger Logger => Logging.CreateLogger("ThemeService");
+  private static ILogger Logger => LoggerProvider.CreateLogger("ThemeService");
 
   public static void SetCurrentThemeFromSystem(AppTheme? systemTheme)
   {

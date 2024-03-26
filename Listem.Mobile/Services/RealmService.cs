@@ -17,7 +17,7 @@ public static class RealmService
   private static bool _serviceInitialised;
   private static Realms.Sync.App _app = null!;
   private static Realm? _mainThreadRealm;
-  private static ILogger Logger => Logging.CreateLogger("RealmService");
+  private static ILogger Logger => LoggerProvider.CreateLogger("RealmService");
 
   public static async Task Init()
   {

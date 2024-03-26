@@ -38,7 +38,7 @@ public static class MauiProgram
       .RegisterViews()
       .Build();
 
-    Logging.LoggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+    LoggerProvider.LoggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
     return app;
   }
 
