@@ -11,7 +11,7 @@ namespace Listem.Mobile.Models;
 [SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "ReplaceAutoPropertyWithComputedProperty")]
-public partial class Item : IRealmObject
+public partial class Item : IRealmObject, IShareable
 {
     [PrimaryKey]
     [MapTo("_id")]

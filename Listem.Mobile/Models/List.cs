@@ -12,7 +12,7 @@ namespace Listem.Mobile.Models;
 [SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
-public partial class List : IRealmObject
+public partial class List : IRealmObject, IShareable
 {
     [PrimaryKey]
     [MapTo("_id")]

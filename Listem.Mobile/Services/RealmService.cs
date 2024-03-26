@@ -110,23 +110,24 @@ public static class RealmService
         {
             PopulateInitialSubscriptions = realm =>
             {
-                var (lqName, listQuery) = QueryForLists(realm);
+                var (lqName, listQuery) = Query<List>(realm);
                 realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
-                var (iqName, itemQuery) = QueryForItems(realm);
+                var (iqName, itemQuery) = Query<Item>(realm);
                 realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
             }
         };
         return Realm.GetInstance(config);
     }
 
+    [SuppressMessage("ReSharper", "UnusedMember.Local")]
     private static async Task SetSubscriptions(Realm realm)
     {
         RemoveAllSubscriptions(realm, true);
         realm.Subscriptions.Update(() =>
         {
-            var (lqName, listQuery) = QueryForLists(realm);
+            var (lqName, listQuery) = Query<List>(realm);
             realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
-            var (iqName, itemQuery) = QueryForItems(realm);
+            var (iqName, itemQuery) = Query<Item>(realm);
             realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
         });
         Logger.Log("Default subscriptions set, syncing now...");
@@ -139,22 +140,14 @@ public static class RealmService
     // It does not appear to be possible to filter items by referring to the linked List object, see
     // https://www.mongodb.com/docs/realm/sdk/dotnet/sync/flexible-sync/#flexible-sync-rql-requirements-and-limitations.
     // This is why we duplicate the OwnedBy and SharedWith fields in the Item object. :-(
-    private static (string queryName, IQueryable<Item> query) QueryForItems(Realm realm)
+    private static (string queryName, IQueryable<T> query) Query<T>(Realm realm)
+        where T : IRealmObject, IShareable
     {
         var query = realm
-            .All<Item>()
+            .All<T>()
             .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id)
             .OrderByDescending(x => x.UpdatedOn);
-        return ("accessibleItems", query);
-    }
-
-    private static (string queryName, IQueryable<List> query) QueryForLists(Realm realm)
-    {
-        var query = realm
-            .All<List>()
-            .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id)
-            .OrderByDescending(x => x.UpdatedOn);
-        return ("accessibleLists", query);
+        return (typeof(T).Name + "Query", query);
     }
 
     private static void RemoveAllSubscriptions(Realm realm, bool removeNamed)
