@@ -59,15 +59,27 @@ public class ListService(ILogger<CategoryService> logger) : IListService
 
   public async Task ShareWith(List list, string userName)
   {
-    await _realm.WriteAsync(() => list.SharedWith.Add(userName));
-    // TODO: Update all items in the list to be shared with the new user
+    await _realm.WriteAsync(() =>
+    {
+      list.SharedWith.Add(userName);
+      foreach (var item in list.Items)
+      {
+        item.SharedWith.Add(userName);
+      }
+    });
     logger.Info("Shared: {List} with {User}", list.Name, userName);
   }
 
   public async Task RevokeAccess(List list, string userName)
   {
-    await _realm.WriteAsync(() => list.SharedWith.Remove(userName));
-    // TODO: Update all items in the list to remove access of the user
+    await _realm.WriteAsync(() =>
+    {
+      list.SharedWith.Remove(userName);
+      foreach (var item in list.Items)
+      {
+        item.SharedWith.Remove(userName);
+      }
+    });
     logger.Info("Removed access of user {User} from {List}", userName, list.Name);
   }
 }
