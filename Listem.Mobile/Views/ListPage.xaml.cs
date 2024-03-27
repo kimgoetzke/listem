@@ -63,7 +63,7 @@ public partial class ListPage
   protected override void OnDisappearing()
   {
     base.OnDisappearing();
-    _logger.Info("Removing item selected item(s), if applicable");
+    _logger.Debug("Removing selected item(s), if applicable");
     foreach (var item in _viewModel.ItemsToDelete)
     {
       _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
@@ -302,7 +302,7 @@ public partial class ListPage
       HorizontalOptions = LayoutOptions.Center,
       Margin = new Thickness(0, 15, 0, 0)
     };
-    quantityStepper.SetBinding(Stepper.ValueProperty, "NewObservableItem.Quantity");
+    quantityStepper.SetBinding(Stepper.ValueProperty, "NewItemQuantity");
     quantityStepper.ValueChanged += (_, e) =>
     {
       quantityLabel.Text = $"Quantity: {e.NewValue}";

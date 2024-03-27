@@ -25,7 +25,6 @@
         <ScrollView VerticalScrollBarVisibility="Always" Grid.Row="1">
             <VerticalStackLayout Padding="20,0"
                                  BackgroundColor="{DynamicResource BackgroundColorAccent}"
-                                 MinimumWidthRequest="400" MaximumWidthRequest="850"
                                  VerticalOptions="Fill"
                                  HorizontalOptions="Fill">
 

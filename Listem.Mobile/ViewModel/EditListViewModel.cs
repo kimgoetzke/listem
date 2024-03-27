@@ -59,7 +59,7 @@ public partial class EditListViewModel : BaseViewModel
       return;
     }
     await _categoryService.CreateAsync(category, List);
-    Categories.Add(categoryName);
+    Categories.Add(category.Name);
     Notifier.ShowToast($"Added: {category.Name}");
   }
 
