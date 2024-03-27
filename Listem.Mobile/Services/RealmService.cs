@@ -59,7 +59,8 @@ public static class RealmService
     var realm = _mainThreadRealm ??= GetRealm();
     if (realm.Subscriptions.Count == 0)
     {
-      throw new InvalidOperationException("No subscriptions set in main thread realm");
+      Logger.Warn("No subscriptions in main thread realm - requesting now but cannot await sync");
+      SetSubscriptions(realm).SafeFireAndForget();
     }
     return realm;
   }
@@ -147,8 +148,7 @@ public static class RealmService
   {
     var query = realm
       .All<T>()
-      .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id)
-      .OrderByDescending(x => x.UpdatedOn);
+      .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.EmailAddress);
     return (typeof(T).Name + "Query", query);
   }
 

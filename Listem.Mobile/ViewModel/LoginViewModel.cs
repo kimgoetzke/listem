@@ -111,7 +111,7 @@ public partial class LoginViewModel : BaseViewModel
     catch (Exception ex)
     {
       IsBusy = false;
-      _logger.Info("Sign in failed: {Exception}", ex);
+      _logger.Info("Sign up failed: {Exception}", ex);
       await Notifier.ShowAlertAsync("Sign up failed", ex.Message, "OK");
     }
   }

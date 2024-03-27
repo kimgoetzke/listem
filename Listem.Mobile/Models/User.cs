@@ -25,7 +25,6 @@ public class User
 
   public void SignUp(Realms.Sync.User realmUser)
   {
-    Id = realmUser.Id;
     EmailAddress = realmUser.Profile.Email;
     AccessToken = null;
     RefreshToken = null;
