@@ -35,14 +35,8 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
         logger.Info("Not updated because it doesn't exist: {Item}", item.ToLog());
         return;
       }
-      if (name != null)
-      {
-        item.Name = name;
-      }
-      if (ownedBy != null)
-      {
-        item.OwnedBy = ownedBy;
-      }
+      item.Name = name ?? item.Name;
+      item.OwnedBy = ownedBy ?? item.OwnedBy;
       if (sharedWith != null)
       {
         item.SharedWith.Clear();
@@ -55,14 +49,8 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
       {
         item.Category = new Category { Name = category.Name };
       }
-      if (quantity != null)
-      {
-        item.Quantity = (int)quantity;
-      }
-      if (isImportant != null)
-      {
-        item.IsImportant = (bool)isImportant;
-      }
+      item.Quantity = quantity ?? item.Quantity;
+      item.IsImportant = isImportant ?? item.IsImportant;
       item.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
       logger.Info("Updated: {Item}", item.ToLog());
     });
