@@ -2,6 +2,11 @@
 
 public static class LoggerExtensions
 {
+  public static void Debug(this ILogger logger, string? message, params object?[] args)
+  {
+    logger.LogDebug(message, args);
+  }
+
   public static void Info(this ILogger logger, string? message, params object?[] args)
   {
     logger.LogInformation(message, args);
