@@ -1,5 +1,4 @@
-﻿using AsyncAwaitBestPractices;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
@@ -11,13 +10,13 @@ namespace Listem.Mobile.ViewModel;
 public partial class DetailViewModel : BaseViewModel
 {
   [ObservableProperty]
-  private IList<Category> _categories = [];
+  private Item _item;
 
   [ObservableProperty]
   private Category _currentCategory;
 
   [ObservableProperty]
-  private Item _item;
+  private IList<Category> _categories = [];
 
   public ListType ListType { get; }
 
@@ -27,21 +26,21 @@ public partial class DetailViewModel : BaseViewModel
   {
     _itemService = serviceProvider.GetService<IItemService>()!;
     Item = item;
-    ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
     Categories = item.List!.Categories;
     CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
+    ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
   }
 
   [RelayCommand]
   private async Task SaveAndBack()
   {
-    await _itemService.UpdateAsync(Item, category: CurrentCategory);
-    Back().SafeFireAndForget();
-  }
+    if (CurrentCategory.Name == Item.Category?.Name)
+    {
+      await Shell.Current.Navigation.PopModalAsync();
+      return;
+    }
 
-  [RelayCommand]
-  private static async Task Back()
-  {
+    await _itemService.UpdateAsync(Item, category: CurrentCategory);
     await Shell.Current.Navigation.PopModalAsync();
   }
 }

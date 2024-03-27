@@ -132,9 +132,11 @@ public partial class MainViewModel : BaseViewModel
   [RelayCommand]
   private async Task BackToStartPage()
   {
+    IsBusy = true;
     await RealmService.SignOutAsync();
-    IsUserSignedIn = false;
     await Shell.Current.Navigation.PopToRootAsync();
+    IsUserSignedIn = false;
+    IsBusy = false;
   }
 
   [RelayCommand]
@@ -149,7 +151,9 @@ public partial class MainViewModel : BaseViewModel
   [RelayCommand]
   private async Task EditList(List list)
   {
+    IsBusy = true;
     _logger.Info("Editing list: {List}", list.ToLog());
     await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
+    IsBusy = false;
   }
 }

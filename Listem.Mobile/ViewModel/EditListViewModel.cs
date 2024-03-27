@@ -128,8 +128,7 @@ public partial class EditListViewModel : BaseViewModel
     )
       return;
 
-    var emptySet = new HashSet<string>();
-    await _listService.UpdateAsync(List, sharedWith: emptySet);
+    await _listService.UpdateAsync(List, sharedWith: new HashSet<string>());
     Notifier.ShowToast("List is now private");
   }
 
@@ -152,6 +151,12 @@ public partial class EditListViewModel : BaseViewModel
   private async Task SaveAndBack()
   {
     var name = StringProcessor.TrimAndCapitalise(CurrentName);
+    if (name == List.Name && CurrentListType.ToString() == List.ListType)
+    {
+      await Shell.Current.Navigation.PopModalAsync();
+      return;
+    }
+
     await _listService.UpdateAsync(List, name: name, listType: CurrentListType.ToString());
     await Shell.Current.Navigation.PopModalAsync();
   }

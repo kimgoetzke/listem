@@ -4,6 +4,7 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Microsoft.Extensions.Logging;
 using Realms;
 using StringProcessor = Listem.Mobile.Utilities.StringProcessor;
 
@@ -38,12 +39,14 @@ public partial class ListViewModel : BaseViewModel
   private readonly Realm _realm = RealmService.GetMainThreadRealm();
   private readonly IItemService _itemService;
   private readonly IClipboardService _clipboardService;
+  private readonly ILogger<ListViewModel> _logger;
 
   public ListViewModel(List list, IServiceProvider serviceProvider)
   {
     IsBusy = true;
     _itemService = serviceProvider.GetService<IItemService>()!;
     _clipboardService = serviceProvider.GetService<IClipboardService>()!;
+    _logger = serviceProvider.GetService<ILogger<ListViewModel>>()!;
     CurrentList = list;
     ItemsToDelete = [];
     Categories = CurrentList.Categories;
@@ -99,8 +102,9 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private static async Task TapItem(Item item)
+  private async Task TapItem(Item item)
   {
+    _logger.Info("Opening item: {Item}", item.ToLog());
     await Shell.Current.Navigation.PushModalAsync(new DetailPage(item));
   }
 

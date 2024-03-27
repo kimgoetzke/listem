@@ -19,7 +19,7 @@
             <Grid Margin="0, 15, 0,0">
                 <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
-                             Command="{Binding BackCommand}"
+                             Command="{Binding SaveAndBackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="15, 0" />
                 <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
                        VerticalOptions="Center" />
@@ -106,11 +106,6 @@
                 <Label Text="Added on: " Style="{DynamicResource ItemProperty}" />
                 <Label Text="{Binding Item.Id.CreationTime}" Style="{DynamicResource ItemProperty}" />
             </HorizontalStackLayout>
-
-            <!-- Save button -->
-            <Button Text="Save"
-                    Style="{DynamicResource GradientButton}"
-                    Command="{Binding SaveAndBackCommand}" />
 
         </VerticalStackLayout>
 
