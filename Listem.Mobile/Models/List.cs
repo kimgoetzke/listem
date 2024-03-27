@@ -72,7 +72,7 @@ public partial class List : IRealmObject, IShareable
 
   public string ToLog()
   {
-    var sharedWith = SharedWith.Count > 0 ? string.Join(", ", SharedWith) : "none";
-    return $"[RealmList] '{Name}' {Id}, type: {ListType}, owned by: {OwnedBy}, shared with: {sharedWith}, last updated: {UpdatedOn.ToLocalTime()}";
+    var sharedWith = SharedWith.Count > 0 ? string.Join(", ", SharedWith) : "";
+    return $"[RealmList] '{Name}' {Id}, type: {ListType}, owned by: {OwnedBy}, shared with: [{sharedWith}], last updated: {UpdatedOn.ToLocalTime()}";
   }
 }

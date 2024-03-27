@@ -1,5 +1,4 @@
 ﻿using Listem.Mobile.Models;
-using Listem.Mobile.Utilities;
 using Microsoft.Extensions.Logging;
 using Realms;
 
@@ -56,5 +55,19 @@ public class ListService(ILogger<CategoryService> logger) : IListService
   {
     logger.Info("Removing: {List}", list.ToLog());
     await _realm.WriteAsync(() => _realm.Remove(list));
+  }
+
+  public async Task ShareWith(List list, string userName)
+  {
+    await _realm.WriteAsync(() => list.SharedWith.Add(userName));
+    // TODO: Update all items in the list to be shared with the new user
+    logger.Info("Shared: {List} with {User}", list.Name, userName);
+  }
+
+  public async Task RevokeAccess(List list, string userName)
+  {
+    await _realm.WriteAsync(() => list.SharedWith.Remove(userName));
+    // TODO: Update all items in the list to remove access of the user
+    logger.Info("Removed access of user {User} from {List}", userName, list.Name);
   }
 }

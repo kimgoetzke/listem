@@ -23,4 +23,9 @@ public static class Notifier
   {
     return Shell.Current.DisplayAlert(title, message, button);
   }
+
+  public static async Task<bool> ShowConfirmationAlertAsync(string title, string message)
+  {
+    return await Shell.Current.DisplayAlert(title, message, "Yes", "No");
+  }
 }
