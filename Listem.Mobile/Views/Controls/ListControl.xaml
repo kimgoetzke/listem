@@ -133,7 +133,7 @@
                                         </Label.Triggers>
                                     </Label>
                                     <Image x:Name="PriorityIcon"
-                                           Source="important_primary.png"
+                                           Source="important_accentbright.png"
                                            Scale="0.5"
                                            IsVisible="False"
                                            HeightRequest="50"
