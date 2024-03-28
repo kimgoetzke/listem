@@ -100,7 +100,8 @@ public partial class LoginViewModel : BaseViewModel
     try
     {
       IsBusy = true;
-      await RealmService.SignUpAsync(UserEmail!, Password!);
+      UserEmail = UserEmail!.ToLower();
+      await RealmService.SignUpAsync(UserEmail, Password!);
       HideKeyboard(view);
       await Shell.Current.Navigation.PopAsync();
       IsUserRegistered = true;
@@ -125,7 +126,8 @@ public partial class LoginViewModel : BaseViewModel
     try
     {
       IsBusy = true;
-      await RealmService.SignInAsync(UserEmail!, Password!);
+      UserEmail = UserEmail!.ToLower();
+      await RealmService.SignInAsync(UserEmail, Password!);
       HideKeyboard(view);
       await Shell.Current.Navigation.PopAsync();
       IsUserSignedIn = true;

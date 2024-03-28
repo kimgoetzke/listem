@@ -131,7 +131,8 @@ public partial class MainViewModel : BaseViewModel
     }
 
     IsBusy = true;
-    await _listService.RevokeAccess(list, CurrentUserEmail!);
+    CurrentUserEmail = CurrentUserEmail!.ToLower();
+    await _listService.RevokeAccess(list, CurrentUserEmail);
     IsBusy = false;
   }
 

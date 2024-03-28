@@ -103,6 +103,7 @@ public partial class EditListViewModel : BaseViewModel
     if (string.IsNullOrWhiteSpace(userName))
       return;
 
+    userName = userName.ToLower();
     await _listService.ShareWith(List, userName);
     Notifier.ShowToast($"Shared list with: {userName}");
   }
@@ -113,6 +114,7 @@ public partial class EditListViewModel : BaseViewModel
     if (string.IsNullOrWhiteSpace(userName))
       return;
 
+    userName = userName.ToLower();
     await _listService.RevokeAccess(List, userName);
     Notifier.ShowToast($"Revoked access of: {userName}");
   }
