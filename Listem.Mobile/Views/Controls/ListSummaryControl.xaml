@@ -80,9 +80,10 @@
                             </HorizontalStackLayout>
 
                             <!-- List summary: Items inside the list -->
-                            <CollectionView Grid.Row="2" ItemsSource="{Binding Items}"
+                            <CollectionView Grid.Row="2"
+                                            ItemsSource="{Binding Items}"
                                             VerticalOptions="Fill"
-                                            Margin="0,5,0,0"
+                                            Margin="0,15,0,0"
                                             BackgroundColor="Transparent"
                                             SelectionMode="None">
 
@@ -96,13 +97,14 @@
                                 <CollectionView.ItemTemplate>
                                     <DataTemplate x:DataType="{x:Type models:Item}">
                                         <HorizontalStackLayout HorizontalOptions="Fill" Padding="0" Margin="0"
+                                                               HeightRequest="30"
                                                                VerticalOptions="Fill">
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
                                                     CommandParameter="{Binding Path=List}" />
                                             </HorizontalStackLayout.GestureRecognizers>
-                                            <CheckBox Scale="0.8" IsEnabled="False" />
+                                            <CheckBox Scale="0.8" IsEnabled="False" Margin="-13,0,0,0" />
                                             <Label Text="{Binding Name}"
                                                    VerticalOptions="Center"
                                                    TextColor="{DynamicResource TextColor}">
