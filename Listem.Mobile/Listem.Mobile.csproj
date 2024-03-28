@@ -155,6 +155,8 @@
           <DependentUpon>Tag.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
+        <Compile Remove="Converters\MoreItemsTextConverter.cs" />
+        <Compile Remove="Converters\FirstXInCollectionConverter.cs" />
     </ItemGroup>
 
 </Project>
