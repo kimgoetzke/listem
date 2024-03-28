@@ -34,12 +34,12 @@
                        HorizontalOptions="Start"
                        Padding="25,30,20,10" />
                 <Label FontFamily="MulishRegular"
-                       FontSize="{DynamicResource FontSizeXS}"
+                       FontSize="{DynamicResource FontSizeS}"
                        IsVisible="{Binding IsUserSignedIn}"
-                       Text="Logged in as:"
+                       Text="Signed in as:"
                        Padding="25,10,20,0" />
                 <Label FontFamily="MulishRegular"
-                       FontSize="{DynamicResource FontSizeXS}"
+                       FontSize="{DynamicResource FontSizeS}"
                        IsVisible="{Binding IsUserSignedIn}"
                        Text="{Binding CurrentUserEmail}"
                        Padding="25,0,20,10" />

@@ -148,7 +148,7 @@
                                 <HorizontalStackLayout Grid.Column="0"
                                                        HorizontalOptions="End"
                                                        VerticalOptions="Center"
-                                                       Margin="10,10">
+                                                       Margin="0,10">
 
                                     <!-- Right aligned stack: Transparent to white gradient -->
                                     <BoxView WidthRequest="100" Style="{DynamicResource LeftTransparentToRightWhite}"
@@ -187,6 +187,9 @@
                                             </Image.Triggers>
                                         </Image>
                                     </Grid>
+
+                                    <BoxView WidthRequest="10"
+                                             BackgroundColor="{DynamicResource BackgroundColorAccent}" />
 
                                 </HorizontalStackLayout>
                             </Grid>
