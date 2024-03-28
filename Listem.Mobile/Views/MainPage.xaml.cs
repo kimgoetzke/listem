@@ -80,6 +80,7 @@ public partial class MainPage
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
     MainPageContent.CornerRadius = 20;
+    MainPageContent.HasShadow = true; // Doesn't work yet: https://github.com/dotnet/maui/issues/11025
     MenuButton.Source = "expand_neutral.png";
     var resize = MainPageContent.TranslateTo(Width * 0.6, 0, AnimationDuration);
     var scaleDown = MainPageContent.ScaleTo(0.85, AnimationDuration);
@@ -99,6 +100,7 @@ public partial class MainPage
     var tasks = new List<Task> { scaleBack, resize };
     await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token);
     MainPageContent.CornerRadius = 0;
+    MainPageContent.HasShadow = false; // Doesn't work yet: https://github.com/dotnet/maui/issues/11025
     MenuButton.Source = "menu_neutral.png";
     var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);

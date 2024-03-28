@@ -128,8 +128,8 @@
         </Grid>
 
         <!-- Content -->
-        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent"
-               HasShadow="True" Shadow="{DynamicResource DarkShadowL}">
+        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent" 
+               HasShadow="False" Shadow="{DynamicResource DarkShadowL}">
             <Grid RowDefinitions="Auto, .4*, *, Auto"
                   BackgroundColor="{DynamicResource BackgroundColor}"
                   VerticalOptions="Fill"
@@ -153,7 +153,7 @@
                 </Grid>
 
                 <!-- Content: Collection view with list of lists -->
-                <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding}" />
+                <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding .}" />
 
                 <!-- Content: Add button -->
                 <Grid Grid.Row="3">
