@@ -50,6 +50,7 @@
 
         <!-- Custom Fonts -->
         <MauiFont Include="Resources\Fonts\*" />
+        <MauiAsset Include="atlasConfig.template.json" />
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
         <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
