@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:Listem.Mobile.Models"
              xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
              xmlns:converters="clr-namespace:Listem.Mobile.Converters"
+             xmlns:controls="clr-namespace:Listem.Mobile.Views.Controls"
              x:Class="Listem.Mobile.Views.Controls.ListControl"
              x:DataType="viewmodel:ListViewModel">
 
@@ -19,7 +20,7 @@
         SelectionMode="None"
         VerticalOptions="Fill">
         <CollectionView.Header>
-            <BoxView HeightRequest="50" BackgroundColor="{DynamicResource BackgroundColor}" />
+            <BoxView HeightRequest="30" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Header>
         <CollectionView.ItemTemplate>
             <DataTemplate x:DataType="{x:Type models:Item}">
@@ -53,7 +54,7 @@
                             <SwipeItemView
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
                                 CommandParameter="{Binding .}">
-                                <Frame BackgroundColor="{DynamicResource Secondary}"
+                                <Frame BackgroundColor="{DynamicResource AccentBright}"
                                        BorderColor="Transparent"
                                        Padding="0"
                                        VerticalOptions="Center"
@@ -72,7 +73,7 @@
 
                     <!-- List of added items: Contents of list -->
                     <Grid Padding="0" RowDefinitions="Auto, Auto" VerticalOptions="Fill">
-                        <Frame HeightRequest="50"
+                        <Frame HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                Margin="20, 5"
                                Padding="0"
                                VerticalOptions="Fill"
@@ -88,16 +89,22 @@
 
                             <!-- Contents of list: Content -->
                             <Grid ColumnDefinitions="*,Auto" VerticalOptions="Fill">
-                                <StackLayout Orientation="Horizontal" Grid.Column="0"
-                                             VerticalOptions="Center"
-                                             Padding="5, 0">
+
+                                <!-- Content: Left aligned stack -->
+                                <HorizontalStackLayout Grid.Column="0"
+                                                       VerticalOptions="Center"
+                                                       Padding="5, 0">
+
+                                    <!-- Left aligned stack: Checkbox -->
                                     <CheckBox x:Name="DoneBox"
-                                              IsChecked="False" Scale="1"
+                                              IsChecked="False" Scale="1.2"
                                               CheckedChanged="CheckBox_OnCheckChanged"
                                               BindingContext="{Binding .}" />
+
+                                    <!-- Left aligned stack: Item name -->
                                     <Label Text="{Binding Name}"
                                            AutomationId="{Binding Id}"
-                                           HeightRequest="50"
+                                           HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                            HorizontalOptions="Start"
                                            VerticalTextAlignment="Center">
                                         <Label.TextDecorations>
@@ -113,8 +120,10 @@
                                             </DataTrigger>
                                         </Label.Triggers>
                                     </Label>
+
+                                    <!-- Left aligned stack: Quantity label -->
                                     <Label x:Name="QuantityLabel"
-                                           HeightRequest="50"
+                                           HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                            IsVisible="False"
                                            HorizontalOptions="Start"
                                            VerticalTextAlignment="Center">
@@ -132,53 +141,55 @@
                                             </DataTrigger>
                                         </Label.Triggers>
                                     </Label>
-                                    <Image x:Name="PriorityIcon"
-                                           Source="important_accentbright.png"
-                                           Scale="0.5"
-                                           IsVisible="False"
-                                           HeightRequest="50"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Start">
-                                        <Image.Triggers>
-                                            <DataTrigger TargetType="Image"
-                                                         Binding="{Binding IsImportant}"
-                                                         Value="True">
-                                                <Setter Property="IsVisible" Value="True" />
-                                            </DataTrigger>
-                                        </Image.Triggers>
-                                    </Image>
-                                </StackLayout>
-                                <BoxView Grid.Column="0" Grid.ColumnSpan="2"
-                                         Style="{DynamicResource LeftTransparentToRightWhite}"
-                                         Background="{DynamicResource LeftTransparentToRightWhiteBrush2}" />
-                                <Frame Grid.Column="1" HeightRequest="20" VerticalOptions="Center"
-                                       HorizontalOptions="End"
-                                       Margin="10,10" Padding="0"
-                                       BorderColor="Transparent"
-                                       CornerRadius="4"
-                                       HasShadow="True"
-                                       Shadow="{DynamicResource NeutralShadowM}"
-                                       BackgroundColor="{DynamicResource Tertiary}">
-                                    <Label Text="{Binding Category.Name}"
-                                           FontSize="{DynamicResource FontSizeS}"
-                                           TextColor="{DynamicResource Neutral}"
-                                           Margin="0"
-                                           Padding="3, 0"
-                                           HorizontalOptions="Center"
-                                           HorizontalTextAlignment="Center"
-                                           VerticalOptions="Center"
-                                           VerticalTextAlignment="Center">
-                                    </Label>
-                                    <Frame.Triggers>
-                                        <DataTrigger TargetType="Frame"
-                                                     Binding="{Binding Category.Name}"
-                                                     Value="{StaticResource DefaultCategoryName}">
-                                            <Setter Property="IsVisible" Value="False" />
-                                        </DataTrigger>
-                                    </Frame.Triggers>
-                                </Frame>
-                            </Grid>
 
+                                </HorizontalStackLayout>
+
+                                <!-- Content: Right aligned stack -->
+                                <HorizontalStackLayout Grid.Column="0"
+                                                       HorizontalOptions="End"
+                                                       VerticalOptions="Center"
+                                                       Margin="10,10">
+
+                                    <!-- Right aligned stack: Transparent to white gradient -->
+                                    <BoxView WidthRequest="100" Style="{DynamicResource LeftTransparentToRightWhite}"
+                                             Background="{DynamicResource LeftTransparentToRightWhiteBrush2}" />
+
+                                    <!-- Right aligned stack: Category tag -->
+                                    <controls:Tag TagColor="{DynamicResource Tertiary}"
+                                                  TextColor="{DynamicResource TextColorInverted}"
+                                                  BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                                                  VerticalOptions="Center"
+                                                  Text="{Binding Category.Name}">
+                                        <controls:Tag.Triggers>
+                                            <DataTrigger TargetType="controls:Tag"
+                                                         Binding="{Binding Category.Name}"
+                                                         Value="{StaticResource DefaultCategoryName}">
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </DataTrigger>
+                                        </controls:Tag.Triggers>
+                                    </controls:Tag>
+
+                                    <!-- Right aligned stack: Priority icon  -->
+                                    <!-- Note: Must be in a Grid as adding a BackgroundColor to the Image makes it ignore its vertical alignment -->
+                                    <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                                        <Image x:Name="PriorityIcon"
+                                               Source="important_accentbright.png"
+                                               Scale="0.5"
+                                               IsVisible="False"
+                                               HeightRequest="{DynamicResource StandardSwipeItemHeight}"
+                                               VerticalOptions="Center">
+                                            <Image.Triggers>
+                                                <DataTrigger TargetType="Image"
+                                                             Binding="{Binding IsImportant}"
+                                                             Value="True">
+                                                    <Setter Property="IsVisible" Value="True" />
+                                                </DataTrigger>
+                                            </Image.Triggers>
+                                        </Image>
+                                    </Grid>
+
+                                </HorizontalStackLayout>
+                            </Grid>
                         </Frame>
                     </Grid>
 
@@ -213,7 +224,7 @@
             </ContentView>
         </CollectionView.EmptyView>
         <CollectionView.Footer>
-            <BoxView HeightRequest="100" BackgroundColor="{DynamicResource BackgroundColor}" />
+            <BoxView HeightRequest="60" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Footer>
     </CollectionView>
 </ContentView>

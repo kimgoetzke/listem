@@ -7,13 +7,18 @@
 
     <Frame Padding="3"
            Margin="0"
-           CornerRadius="5"
+           CornerRadius="4"
            BorderColor="Transparent"
            BackgroundColor="{Binding TagColor, Source={x:Reference TagContentView}}">
         <Label Text="{Binding Text, Source={x:Reference TagContentView}}"
                TextColor="{Binding TextColor, Source={x:Reference TagContentView}}"
                FontSize="{DynamicResource FontSizeXS}"
-               HorizontalTextAlignment="Center" />
+               Padding="3, 0"
+               Margin="0"
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center"
+               VerticalOptions="Center"
+               VerticalTextAlignment="Center" />
         <Frame.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding Command, Source={x:Reference TagContentView}}" 
                                   CommandParameter="{Binding CommandParameter, Source={x:Reference TagContentView}}" />
