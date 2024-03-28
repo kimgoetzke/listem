@@ -172,5 +172,6 @@ public static class RealmService
   {
     public string AppId { get; init; } = null!;
     public string BaseUrl { get; init; } = null!;
+    public string SecretKey { get; init; } = null!;
   }
 }
