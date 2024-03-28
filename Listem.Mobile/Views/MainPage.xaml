@@ -171,7 +171,7 @@
                     </ImageButton>
                 </Grid>
 
-                <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" PlaceholderText="Enter list name..." />
+                <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" PlaceholderText="Enter list name" />
             </Grid>
         </Frame>
     </Grid>
