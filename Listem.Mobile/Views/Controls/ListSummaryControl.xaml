@@ -150,11 +150,21 @@
                                 <ImageButton Source="bin_secondary_margin.png"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=RemoveListCommand}"
                                              CommandParameter="{Binding .}"
+                                             IsVisible="{Binding IsMine}"
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="End"
                                              WidthRequest="40"
                                              HeightRequest="40" />
+                                <ImageButton Source="exit_secondary_margin.png"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=ExitListCommand}"
+                                             CommandParameter="{Binding .}"
+                                             IsVisible="{Binding IsSharedWithMe}"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="End"
+                                             WidthRequest="36"
+                                             HeightRequest="36" />
                             </Grid>
 
                         </Grid>

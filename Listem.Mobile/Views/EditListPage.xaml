@@ -93,7 +93,8 @@
                        Padding="5, 10, 5,0" />
 
                 <!-- Collaborate buttons -->
-                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="0" Padding="5, 10">
+                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="0" Padding="5, 10"
+                      IsVisible="{Binding List.IsMine}">
                     <Button Grid.Column="0"
                             Text="Share"
                             Margin="0"
@@ -111,8 +112,13 @@
                 </Grid>
 
                 <!-- Collaborate CollectionView -->
+                <Label Padding="5, 10, 5,0" TextColor="{DynamicResource TextColor}"
+                       Text="You don't own this list. Only the owner of a list can add or remove collaborators."
+                       FontSize="{DynamicResource FontSizeS}"
+                       IsVisible="{Binding List.IsSharedWithMe}"/>
                 <controls:FramedCollection ItemsSource="{Binding List.SharedWith}"
                                            DataType="{x:Type x:String}"
+                                           IsVisible="{Binding List.IsMine}"
                                            SwipeCommand="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RevokeAccessCommand}" />
 
                 <BoxView Margin="10" />

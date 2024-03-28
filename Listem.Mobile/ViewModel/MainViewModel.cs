@@ -117,6 +117,25 @@ public partial class MainViewModel : BaseViewModel
   }
 
   [RelayCommand]
+  private async Task ExitList(List list)
+  {
+    if (
+      !await Notifier.ShowConfirmationAlertAsync(
+        "Exit list",
+        "You don't own this list but you can remove yourself from this list without deleting it for the owner. Do you want to continue?"
+      )
+    )
+    {
+      _logger.Info("Cancelled action to exit list: {List}", list.ToLog());
+      return;
+    }
+
+    IsBusy = true;
+    await _listService.RevokeAccess(list, CurrentUserEmail!);
+    IsBusy = false;
+  }
+
+  [RelayCommand]
   private Task SetTheme(ObservableTheme? theme)
   {
     if (theme == null)
