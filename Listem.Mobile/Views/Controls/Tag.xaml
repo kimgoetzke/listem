@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Listem.Mobile.Views.Controls.Tag"
+             x:Name="TagContentView">
+
+    <Frame Padding="3"
+           Margin="0"
+           CornerRadius="5"
+           BorderColor="Transparent"
+           BackgroundColor="{Binding TagColor, Source={x:Reference TagContentView}}">
+        <Label Text="{Binding Text, Source={x:Reference TagContentView}}"
+               TextColor="{Binding TextColor, Source={x:Reference TagContentView}}"
+               FontSize="{DynamicResource FontSizeXS}"
+               HorizontalTextAlignment="Center" />
+        <Frame.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference TagContentView}}" 
+                                  CommandParameter="{Binding CommandParameter, Source={x:Reference TagContentView}}" />
+        </Frame.GestureRecognizers>
+    </Frame>
+</ContentView>

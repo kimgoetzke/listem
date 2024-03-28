@@ -103,6 +103,9 @@
         <MauiXaml Update="Views\Controls\FramedCollection.xaml">
           <SubType>Designer</SubType>
         </MauiXaml>
+        <MauiXaml Update="Views\Controls\Tag.xaml">
+          <SubType>Designer</SubType>
+        </MauiXaml>
     </ItemGroup>
 
     <ItemGroup>
@@ -145,6 +148,10 @@
         </Compile>
         <Compile Update="Views\Controls\FramedCollection.xaml.cs">
           <DependentUpon>FramedCollection.xaml</DependentUpon>
+          <SubType>Code</SubType>
+        </Compile>
+        <Compile Update="Views\Controls\Tag.xaml.cs">
+          <DependentUpon>Tag.xaml</DependentUpon>
           <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
