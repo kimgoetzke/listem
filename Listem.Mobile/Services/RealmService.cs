@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Security.Cryptography;
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.Messaging;
 using Listem.Mobile.Events;
@@ -17,6 +18,7 @@ public static class RealmService
   private static bool _serviceInitialised;
   private static Realms.Sync.App _app = null!;
   private static Realm? _mainThreadRealm;
+  public static byte[]? ExistingEncryptionKey { get; set; }
   private static ILogger Logger => LoggerProvider.CreateLogger("RealmService");
 
   public static async Task Init()
@@ -109,6 +111,7 @@ public static class RealmService
 
   private static Realm GetRealm()
   {
+    var encryptionKey = EncryptionKey();
     var config = new FlexibleSyncConfiguration(_app.CurrentUser!)
     {
       PopulateInitialSubscriptions = realm =>
@@ -117,9 +120,30 @@ public static class RealmService
         realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
         var (iqName, itemQuery) = Query<Item>(realm);
         realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
-      }
+      },
+      EncryptionKey = encryptionKey
     };
     return Realm.GetInstance(config);
+  }
+
+  private static byte[] EncryptionKey()
+  {
+    if (ExistingEncryptionKey is not null)
+    {
+      Logger.Info("Using existing encryption key");
+      return ExistingEncryptionKey;
+    }
+
+    var newEncryptionKey = new byte[64];
+    using var rng = RandomNumberGenerator.Create();
+    rng.GetBytes(newEncryptionKey);
+
+    SecureStorage
+      .Default.SetAsync(Constants.LocalEncryptionKey, Convert.ToBase64String(newEncryptionKey))
+      .SafeFireAndForget();
+    ExistingEncryptionKey = newEncryptionKey;
+    Logger.Info("Using newly created encryption key");
+    return newEncryptionKey;
   }
 
   [SuppressMessage("ReSharper", "UnusedMember.Local")]
