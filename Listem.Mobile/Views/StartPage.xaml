@@ -101,11 +101,15 @@
                                  Binding="{Binding UserStatus}"
                                  Value="NotSignedInAndNotRegistered">
                         <Setter Property="Text" Value="Continue without an account" />
+                        <!-- TODO: Configure offline flow to work with Realm -->
+                        <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding UserStatus}"
                                  Value="NotSignedInButRegistered">
                         <Setter Property="Text" Value="Continue without signing in" />
+                        <!-- TODO: Configure offline flow to work with Realm -->
+                        <Setter Property="IsVisible" Value="False" /> 
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding UserStatus}"
