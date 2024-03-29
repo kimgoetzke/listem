@@ -1,13 +1,17 @@
-﻿namespace Listem.Mobile.Models;
+﻿using System.Diagnostics.CodeAnalysis;
 
+namespace Listem.Mobile.Models;
+
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class User
 {
   public string? Id { get; set; }
   public string? EmailAddress { get; set; }
   public string? AccessToken { get; set; }
   public string? RefreshToken { get; set; }
-  private DateTime TokenExpiresAt { get; set; } = DateTime.Now;
+  public DateTime TokenExpiresAt { get; set; } = DateTime.Now;
   public bool IsTokenExpired => TokenExpiresAt <= DateTime.Now;
+  public bool ShouldRefreshToken => TokenExpiresAt <= DateTime.Now.AddDays(7);
   public bool IsRegistered => EmailAddress != null;
   public bool IsSignedIn => IsTokenExpired == false;
   public Status Status
@@ -31,16 +35,13 @@ public class User
     TokenExpiresAt = DateTime.Now;
   }
 
-  public void Update(Realms.Sync.User realmUser)
+  public void Refresh(Realms.Sync.User realmUser)
   {
-    if (realmUser.Profile.Email != null && realmUser.Profile.Email != EmailAddress)
-    {
-      Id = realmUser.Id;
-      EmailAddress = realmUser.Profile.Email;
-    }
+    EmailAddress = realmUser.Profile.Email;
+    Id = realmUser.Id;
     AccessToken = realmUser.AccessToken;
     RefreshToken = realmUser.RefreshToken;
-    TokenExpiresAt = DateTime.Now + TimeSpan.FromDays(29);
+    TokenExpiresAt = DateTime.Now.AddDays(30);
   }
 
   public void SignIn(Realms.Sync.User realmUser)
@@ -52,7 +53,7 @@ public class User
     }
     AccessToken = realmUser.AccessToken;
     RefreshToken = realmUser.RefreshToken;
-    TokenExpiresAt = DateTime.Now + TimeSpan.FromDays(29);
+    TokenExpiresAt = DateTime.Now.AddDays(30);
   }
 
   public void SignOut()
