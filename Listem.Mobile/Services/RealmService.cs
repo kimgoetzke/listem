@@ -22,13 +22,13 @@ public static class RealmService
   private static Realm? _mainThreadRealm;
   private static ILogger Logger => LoggerProvider.CreateLogger("RealmService");
 
-  public static async Task Init()
+  public static async Task<bool> Init()
   {
     if (_serviceInitialised)
-      return;
+      return true;
 
     await InitialiseSyncApp();
-    await InitialiseUser();
+    return await InitialiseUser();
   }
 
   private static async Task InitialiseSyncApp()
@@ -42,18 +42,18 @@ public static class RealmService
     _serviceInitialised = true;
   }
 
-  private static async Task InitialiseUser()
+  private static async Task<bool> InitialiseUser()
   {
     User = await JsonProcessor.FromSecureStorage<User>(Constants.User) ?? new User();
+
     if (_app.CurrentUser?.RefreshToken != null)
     {
-      await SucceedOrSignOut(RefreshToken);
+      // TODO: Only refresh token if necessary
+      return await SucceedOrSignOut(RefreshToken);
     }
-    else
-    {
-      WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
-    }
-    Logger.Info("Initialised realm with: {User}", User);
+
+    WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+    return false;
   }
 
   public static async Task RetrieveDataFromSecureStorage()
@@ -159,16 +159,18 @@ public static class RealmService
     return newEncryptionKey;
   }
 
-  private static async Task SucceedOrSignOut(Func<Task> request)
+  private static async Task<bool> SucceedOrSignOut(Func<Task> request)
   {
     try
     {
       await request.Invoke();
+      return true;
     }
     catch (Exception e)
     {
       Logger.Info(e, "Signing user out because an exception occured: {Message}", e.Message);
       await SignOutAsync();
+      return false;
     }
   }
 

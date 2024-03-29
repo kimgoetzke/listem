@@ -38,7 +38,6 @@ public partial class LoginViewModel : BaseViewModel
   private readonly IServiceProvider _serviceProvider;
   private readonly ILogger<LoginViewModel> _logger;
 
-  // TODO: Enable displaying a loading state on app load (i.e. while attempting to refresh token)
   public LoginViewModel(IServiceProvider serviceProvider)
   {
     _serviceProvider = serviceProvider;
@@ -58,7 +57,9 @@ public partial class LoginViewModel : BaseViewModel
       }
     );
 
-    await RealmService.Init();
+    if (!await RealmService.Init())
+      Notifier.ShowToast(Constants.TokenRefreshFailedMessage);
+
     IsBusy = false;
   }
 
