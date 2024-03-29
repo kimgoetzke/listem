@@ -33,6 +33,6 @@ public partial class Item : IRealmObject, IShareable
 
   public string ToLog()
   {
-    return $"[RealmItem] {Name} {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
+    return $"[Item] {Name} {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
   }
 }

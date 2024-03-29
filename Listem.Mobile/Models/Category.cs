@@ -15,6 +15,6 @@ public partial class Category : IEmbeddedObject
 
   public string ToLog()
   {
-    return $"[RealmCategory] {Name}";
+    return $"[Category] {Name}";
   }
 }
