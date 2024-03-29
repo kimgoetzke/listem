@@ -85,7 +85,7 @@ public partial class MainViewModel : BaseViewModel
       Name = StringProcessor.TrimAndCapitalise(name),
       OwnedBy = RealmService.User.Id!,
       ListType = ListType.Standard.ToString(),
-      UpdatedOn = DateTime.Now.ToUniversalTime()
+      UpdatedOn = DateTime.Now
     };
     await _listService.CreateAsync(newList);
     GetSortedLists();

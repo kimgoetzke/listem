@@ -68,7 +68,7 @@ public partial class ListViewModel : BaseViewModel
       Category = new Category { Name = CurrentCategory.Name },
       Quantity = NewItemQuantity,
       IsImportant = NewItemIsImportant,
-      UpdatedOn = DateTime.Now.ToUniversalTime(),
+      UpdatedOn = DateTime.Now
     };
 
     await _itemService.CreateAsync(newItem);
