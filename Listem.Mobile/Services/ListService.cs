@@ -57,12 +57,12 @@ public class ListService(ILogger<CategoryService> logger) : IListService
     await _realm.WriteAsync(() => _realm.Remove(list));
   }
 
-  public async Task ShareWith(List list, string email)
+  public async Task<bool> ShareWith(List list, string email)
   {
     if (await RealmService.ResolveToUserId(email) is not { } id)
     {
       logger.Info("Cannot share list with '{User}' - user not found", email);
-      return;
+      return false;
     }
     await _realm.WriteAsync(() =>
     {
@@ -73,6 +73,7 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       }
     });
     logger.Info("Shared: {List} with {User}", list.ToLog(), email);
+    return true;
   }
 
   public async Task RevokeAccess(List list, string id)
