@@ -37,7 +37,6 @@ public static class RealmService
       () => JsonProcessor.FromFile<AtlasConfig>("atlasConfig.json")
     );
     var appConfig = new AppConfiguration(config.AppId) { BaseUri = new Uri(config.BaseUrl) };
-    Realms.Logging.Logger.LogLevel = Realms.Logging.LogLevel.Debug;
     _app = Realms.Sync.App.Create(appConfig);
     _serviceInitialised = true;
   }
@@ -48,12 +47,15 @@ public static class RealmService
 
     if (_app.CurrentUser?.RefreshToken != null)
     {
-      // TODO: Only refresh token if necessary
-      return await SucceedOrSignOut(RefreshToken);
+      if (User.ShouldRefreshToken)
+        return await RefreshToken();
+
+      WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+      return true;
     }
 
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
-    return false;
+    return User.Status != Status.SignedIn;
   }
 
   public static async Task RetrieveDataFromSecureStorage()
@@ -80,16 +82,26 @@ public static class RealmService
     return realm;
   }
 
-  private static async Task RefreshToken()
+  private static async Task<bool> RefreshToken()
   {
-    Logger.Info("Refreshing token for current user...");
-    await _app.CurrentUser!.RefreshCustomDataAsync();
-    using var realm = GetRealm();
-    // await SetSubscriptions(realm); // Only for development to update subscriptions on app launch
-    await realm.Subscriptions.WaitForSynchronizationAsync();
-    User.Update(_app.CurrentUser);
-    JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
-    WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+    try
+    {
+      Logger.Info("Refreshing token for current user...");
+      await _app.CurrentUser!.RefreshCustomDataAsync();
+      using var realm = GetRealm();
+      // await SetSubscriptions(realm); // Only for development to update subscriptions on app launch
+      await realm.Subscriptions.WaitForSynchronizationAsync();
+      User.Refresh(_app.CurrentUser);
+      JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
+      WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+      return true;
+    }
+    catch (Exception e)
+    {
+      Logger.Info(e, "Signing user out because an exception occured: {Message}", e.Message);
+      await SignOutAsync();
+      return false;
+    }
   }
 
   public static async Task SignUpAsync(string email, string password)
@@ -157,21 +169,6 @@ public static class RealmService
     ExistingEncryptionKey = newEncryptionKey;
     Logger.Info("Using newly created encryption key");
     return newEncryptionKey;
-  }
-
-  private static async Task<bool> SucceedOrSignOut(Func<Task> request)
-  {
-    try
-    {
-      await request.Invoke();
-      return true;
-    }
-    catch (Exception e)
-    {
-      Logger.Info(e, "Signing user out because an exception occured: {Message}", e.Message);
-      await SignOutAsync();
-      return false;
-    }
   }
 
   [SuppressMessage("ReSharper", "UnusedMember.Local")]
