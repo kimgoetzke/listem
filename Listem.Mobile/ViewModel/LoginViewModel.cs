@@ -138,6 +138,7 @@ public partial class LoginViewModel : BaseViewModel
     {
       IsBusy = false;
       _logger.Info("Sign in failed: {Exception}", ex);
+      await RealmService.SignOutAsync();
       await Notifier.ShowAlertAsync("Sign in failed", ex.Message, "OK");
     }
   }
