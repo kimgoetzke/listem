@@ -21,7 +21,7 @@ public partial class List : IRealmObject, IShareable
   public string OwnedBy { get; set; } = null!;
   public ISet<string> SharedWith { get; } = null!;
   public string ListType { get; set; } = null!;
-  public DateTimeOffset UpdatedOn { get; set; }
+  public DateTimeOffset UpdatedOn { get; set; } = DateTimeOffset.Now;
   public IList<Category> Categories { get; } = null!;
   public bool IsDraft { get; set; } = true;
 

@@ -51,7 +51,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
       }
       item.Quantity = quantity ?? item.Quantity;
       item.IsImportant = isImportant ?? item.IsImportant;
-      item.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
+      item.UpdatedOn = DateTimeOffset.Now;
       logger.Info("Updated: {Item}", item.ToLog());
     });
   }
@@ -80,6 +80,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
       foreach (var item in list.Items)
       {
         item.Category = new Category { Name = defaultCategory.Name };
+        item.UpdatedOn = DateTimeOffset.Now;
         count++;
       }
     });
@@ -104,6 +105,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
       foreach (var item in relevantItems)
       {
         item.Category = new Category { Name = defaultCategory.Name };
+        item.UpdatedOn = DateTimeOffset.Now;
         count++;
       }
     });

@@ -24,7 +24,7 @@ public partial class Item : IRealmObject, IShareable
   public int Quantity { get; set; }
   public bool IsImportant { get; set; }
   public bool IsDraft { get; set; } = true;
-  public DateTimeOffset UpdatedOn { get; set; }
+  public DateTimeOffset UpdatedOn { get; set; } = DateTimeOffset.Now;
 
   public override string ToString()
   {
@@ -33,6 +33,6 @@ public partial class Item : IRealmObject, IShareable
 
   public string ToLog()
   {
-    return $"[Item] {Name} {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
+    return $"[Item] '{Name}' {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
   }
 }

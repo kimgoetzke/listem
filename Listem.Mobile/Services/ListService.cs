@@ -45,7 +45,7 @@ public class ListService(ILogger<CategoryService> logger) : IListService
         }
       }
       list.ListType = listType ?? list.ListType;
-      list.UpdatedOn = DateTimeOffset.Now.ToUniversalTime();
+      list.UpdatedOn = DateTimeOffset.Now;
 
       logger.Info("Updated: {List}", list.ToLog());
     });
@@ -71,6 +71,7 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       {
         item.SharedWith.Add(id);
       }
+      list.UpdatedOn = DateTimeOffset.Now;
     });
     logger.Info("Shared: {List} with {User}", list.ToLog(), email);
     return true;
@@ -85,6 +86,7 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       {
         item.SharedWith.Remove(id);
       }
+      list.UpdatedOn = DateTimeOffset.Now;
     });
     logger.Info("Removed access of user '{User}' from {List}", id, list.Name);
   }
