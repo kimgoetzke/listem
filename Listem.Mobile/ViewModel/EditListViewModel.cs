@@ -60,6 +60,9 @@ public partial class EditListViewModel : BaseViewModel
     }
     await _categoryService.CreateAsync(category, List);
     Categories.Add(category.Name);
+    OnPropertyChanged(nameof(List));
+    OnPropertyChanged(nameof(Categories));
+    OnPropertyChanged(nameof(HasCustomCategories));
     Notifier.ShowToast($"Added: {category.Name}");
   }
 
@@ -77,6 +80,9 @@ public partial class EditListViewModel : BaseViewModel
     await _itemService.ResetSelectedToDefaultCategoryAsync(List, category: toDelete);
     await _categoryService.DeleteAsync(toDelete);
     Categories.Remove(categoryName);
+    OnPropertyChanged(nameof(List));
+    OnPropertyChanged(nameof(Categories));
+    OnPropertyChanged(nameof(HasCustomCategories));
     Notifier.ShowToast(message);
   }
 
@@ -94,6 +100,9 @@ public partial class EditListViewModel : BaseViewModel
     await _itemService.ResetAllToDefaultCategoryAsync(List);
     await _categoryService.ResetAsync(List);
     Categories.Clear();
+    OnPropertyChanged(nameof(List));
+    OnPropertyChanged(nameof(Categories));
+    OnPropertyChanged(nameof(HasCustomCategories));
     Notifier.ShowToast("Reset categories");
   }
 
