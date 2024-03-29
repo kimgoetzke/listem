@@ -18,6 +18,9 @@ public partial class MainViewModel : BaseViewModel
   private IQueryable<List> _lists = null!;
 
   [ObservableProperty]
+  private ObservableCollection<List> _observableLists = [];
+
+  [ObservableProperty]
   private ObservableCollection<ObservableTheme> _themes = [];
 
   [ObservableProperty]
@@ -65,6 +68,19 @@ public partial class MainViewModel : BaseViewModel
   private void GetSortedLists()
   {
     Lists = _realm.All<List>().OrderByDescending(l => l.UpdatedOn);
+    UpdateObservableLists();
+  }
+
+  // Pretty nasty but the UI doesn't update when changes are made to the Realm collection, so this is
+  // an attempt to make sure the list summaries are always reflecting the current state of the Realm.
+  // Could possibly remove the Lists property entirely but need to test if that would work.
+  private void UpdateObservableLists()
+  {
+    ObservableLists.Clear();
+    foreach (var list in Lists)
+    {
+      ObservableLists.Add(list);
+    }
   }
 
   public void InitialiseUser()
@@ -72,6 +88,12 @@ public partial class MainViewModel : BaseViewModel
     var currentUser = RealmService.User;
     CurrentUserEmail = currentUser.EmailAddress;
     IsUserSignedIn = currentUser.IsSignedIn;
+  }
+
+  public void TriggerListPropertyChange()
+  {
+    OnPropertyChanged(nameof(Lists));
+    UpdateObservableLists();
   }
 
   [RelayCommand]

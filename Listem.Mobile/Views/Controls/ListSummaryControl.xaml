@@ -7,7 +7,7 @@
              xmlns:controls="clr-namespace:Listem.Mobile.Views.Controls"
              x:Class="Listem.Mobile.Views.Controls.ListSummaryControl">
 
-    <CollectionView ItemsSource="{Binding Lists}"
+    <CollectionView ItemsSource="{Binding ObservableLists}"
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
                     SelectionMode="None"

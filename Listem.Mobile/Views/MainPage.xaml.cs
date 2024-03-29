@@ -34,6 +34,7 @@ public partial class MainPage
   {
     base.OnAppearing();
     StickyEntry.SetVisibility(false);
+    _viewModel.TriggerListPropertyChange();
 
     if (!Settings.FirstRun)
       return;
