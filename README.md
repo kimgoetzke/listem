@@ -1,34 +1,39 @@
-# The Listem Project
+# The Listem Project With MongoDB Atlas and Realm
 
 This repository contains an Android application and the relevant backend. The first one is a simple, minimalist to-do
-list Android app written in C# using .NET 8 MAUI, the CommunityToolkit, and SQLite. It also contains the backend for
-this app, also written in C# using .NET 8, Entity Framework Core, and ASP Core Authentication.
+list Android app written in C# using .NET 8 MAUI, the CommunityToolkit, and MongoDB Atlas with Realm and Flexible Sync.
 
 > [!IMPORTANT]  
 > This project is a work in progress and actively being worked on. While the backend has been connected, there is no
 > data sync when switching between online and offline modes. The app is also configured for localhost only.
 
-The goal was to learn something about .NET MAUI and Android app development by building on
-my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) which I created the week before, and make a
-look a little less nasty and also use some shared, custom controls. In addition, I wanted to learn about web development
-with .NET and create a basic but fully-deployable service.
+The goals were to 1) learn something about .NET MAUI and Android app development by building on
+my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) which I had
+created the week before, and 2) make it look a little less nasty and explore using some shared, custom controls. In
+addition, I wanted to 3) create a fully deployable application.
+
+> [!NOTE]  
+> I explored creating a ASP.NET Core backend (see
+> branch [use-backend-api](https://github.com/kimgoetzke/practice-maui-listem/tree/use-backend-api)) but I didn't find
+> an easy solution to deal with data synchronisation and conflict management (e.g. when a user is offline and makes
+> changes, especially to shared lists). This eventually led me to implement MongoDB Atlas with Realm and Flexible Sync
+> because it allows for offline-first development, deals with conflict resolution, and even offers
+> authorisation/authentication.
 
 ![Screenshots PNG](./assets/screenshots.png)
-
-## MAUI Android application
 
 ### Overview
 
 - A super basic, minimalist to-do list app targeting Android
-- Users can register and log in to save their lists and categories in the cloud
+- Users can register and log in to save their lists and use collaboration features
+- Users can share lists with other users through the app and collaborate on them
 - Alternatively, the app can be used without account/connection, storing all data in a SQLite database on the device
 - Lists can be somewhat customised by adding categories or list types (e.g. changing to shopping list exposes a
   quantity control)
 - A list's content can be exported to the clipboard as text
 - List items can be imported from a comma-separated string from the clipboard and merged with the current list
 - Native confirmation prompts are used for destructive actions
-- Theming hasn't been implemented this time but can be enabled by configuring `DarkTheme.xaml` and exposing a control to
-  change theme
+- The theme can be changed but the only other theme, `DarkTheme.xaml`, hasn't been configured yet
 - Icons used are CC0 from [iconsDB.com](https://www.iconsdb.com/) or self-made
 - Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
@@ -61,9 +66,11 @@ phone.
 
 ### How to run UI tests
 
-_Note: Currently, I am unable to get Appium to install the APK correctly on the emulator. The only way to make the app
-start during tests is to first install the APK on the device and then run the tests. If the APK is ever installed by
-Appium, the device needs to be wiped and the APK installed again without Appium for the tests to run._
+> [!NOTE]  
+> This is still work in progress. Currently, I am unable to get Appium to install the APK correctly on the emulator. The
+> only way to make the app start during tests is to first install the APK on the device and then run the tests. If the
+> APK is ever installed by Appium, the device needs to be wiped and the APK installed again without Appium for the tests
+> to run.
 
 To run the tests:
 
@@ -71,47 +78,3 @@ To run the tests:
 2. Navigate to the `Listem.UITests` project with `cd Listem.UITests`
 3. Run the tests via your IDE or `donet test`
 
-## Backend
-
-### Overview
-
-- A minimal REST API for managing lists, categories, and items
-- Token based authentication flow
-- Separate Entity Framework Core database contexts for each entity type
-- Middleware that creates and makes available a request context (e.g. containing the user id) for each authenticated
-  endpoint
-- Custom logging middleware
-- Custom exception handling middleware
-
-### How to configure the backend for development
-
-1. Run `dotnet restore` in the base directory to restore all dependencies, if you haven't already done so.
-2. The first time running the application, you'll need to create the database and run the migrations. This can be done
-   by running the following command from the root of the repository:
-
-    ```shell
-    cd Listem.API && dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists  && dotnet ef database update --context ListDbContext && dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories && dotnet ef database update --context CategoryDbContext && dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items && dotnet ef database update --context ItemDbContext && dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users && dotnet ef database update --context UserDbContext
-    ```
-
-   Alternatively, if you want to run each command separately:
-
-    ```shell
-    cd Listem.API
-    dotnet ef migrations add InitialCreate --context ListDbContext --output-dir Migrations/Lists
-    dotnet ef database update --context ListDbContext
-    dotnet ef migrations add InitialCreate --context CategoryDbContext --output-dir Migrations/Categories 
-    dotnet ef database update --context CategoryDbContext
-    dotnet ef migrations add InitialCreate --context ItemDbContext --output-dir Migrations/Items
-    dotnet ef database update --context ItemDbContext
-    dotnet ef migrations add InitialCreate --context UserDbContext --output-dir Migrations/Users 
-    dotnet ef database update --context UserDbContext
-    ```
-
-3. You can use the Postman collection in the `/assets` directory to test the API.
-
-Note for the future: You can create a new certificate if you are running the application for the first time in HTTPS
-mode:
-
-```shell
-dotnet dev-certs https --trust
-```
