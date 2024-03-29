@@ -40,9 +40,9 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
       if (sharedWith != null)
       {
         item.SharedWith.Clear();
-        foreach (var user in sharedWith)
+        foreach (var id in sharedWith)
         {
-          item.SharedWith.Add(user);
+          item.SharedWith.Add(id);
         }
       }
       if (category != null)

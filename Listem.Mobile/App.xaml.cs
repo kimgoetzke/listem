@@ -9,7 +9,7 @@ public partial class App
   public App()
   {
     InitializeComponent();
-    LoadEncryptionKeyAsync().SafeFireAndForget();
+    RealmService.RetrieveDataFromSecureStorage().SafeFireAndForget();
     SetThemeToSystemThemeOnFirstRun();
     var currentTheme = Settings.CurrentTheme;
     ThemeHandler.SetTheme(currentTheme);
@@ -23,11 +23,5 @@ public partial class App
 
     var systemTheme = Current?.RequestedTheme;
     ThemeHandler.SetCurrentThemeFromSystem(systemTheme);
-  }
-
-  private static async Task LoadEncryptionKeyAsync()
-  {
-    if (await SecureStorage.Default.GetAsync(Constants.LocalEncryptionKey) is { } key)
-      RealmService.ExistingEncryptionKey = Convert.FromBase64String(key);
   }
 }

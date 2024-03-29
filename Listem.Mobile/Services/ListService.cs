@@ -39,9 +39,9 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       if (sharedWith != null)
       {
         list.SharedWith.Clear();
-        foreach (var s in sharedWith)
+        foreach (var id in sharedWith)
         {
-          list.SharedWith.Add(s);
+          list.SharedWith.Add(id);
         }
       }
       list.ListType = listType ?? list.ListType;
@@ -57,29 +57,34 @@ public class ListService(ILogger<CategoryService> logger) : IListService
     await _realm.WriteAsync(() => _realm.Remove(list));
   }
 
-  public async Task ShareWith(List list, string userName)
+  public async Task ShareWith(List list, string email)
   {
+    if (await RealmService.ResolveToUserId(email) is not { } id)
+    {
+      logger.Info("Cannot share list with '{User}' - user not found", email);
+      return;
+    }
     await _realm.WriteAsync(() =>
     {
-      list.SharedWith.Add(userName);
+      list.SharedWith.Add(id);
       foreach (var item in list.Items)
       {
-        item.SharedWith.Add(userName);
+        item.SharedWith.Add(id);
       }
     });
-    logger.Info("Shared: {List} with {User}", list.Name, userName);
+    logger.Info("Shared: {List} with {User}", list.ToLog(), email);
   }
 
-  public async Task RevokeAccess(List list, string userName)
+  public async Task RevokeAccess(List list, string id)
   {
     await _realm.WriteAsync(() =>
     {
-      list.SharedWith.Remove(userName);
+      list.SharedWith.Remove(id);
       foreach (var item in list.Items)
       {
-        item.SharedWith.Remove(userName);
+        item.SharedWith.Remove(id);
       }
     });
-    logger.Info("Removed access of user {User} from {List}", userName, list.Name);
+    logger.Info("Removed access of user '{User}' from {List}", id, list.Name);
   }
 }

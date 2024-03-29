@@ -30,8 +30,7 @@ public partial class List : IRealmObject, IShareable
 
   public bool IsMine => OwnedBy == RealmService.User.Id;
   public bool IsShared => SharedWith.Count > 0;
-  public bool IsSharedWithMe =>
-    RealmService.User.EmailAddress != null && SharedWith.Contains(RealmService.User.EmailAddress);
+  public bool IsSharedWithMe => SharedWith.Contains(RealmService.User.Id!);
   public bool IsSharedByMe => IsMine && IsShared;
 
   public List UntrackedCopy()

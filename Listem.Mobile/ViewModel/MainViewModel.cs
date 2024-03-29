@@ -131,8 +131,8 @@ public partial class MainViewModel : BaseViewModel
     }
 
     IsBusy = true;
-    CurrentUserEmail = CurrentUserEmail!.ToLower();
-    await _listService.RevokeAccess(list, CurrentUserEmail);
+    var id = list.SharedWith.First(id => id == RealmService.User.Id);
+    await _listService.RevokeAccess(list, id);
     IsBusy = false;
   }
 

@@ -15,10 +15,11 @@ namespace Listem.Mobile.Services;
 public static class RealmService
 {
   public static User User { get; private set; } = new();
+  private static HashSet<KnownUser> KnownUsers { get; set; } = [];
+  private static byte[]? ExistingEncryptionKey { get; set; }
   private static bool _serviceInitialised;
   private static Realms.Sync.App _app = null!;
   private static Realm? _mainThreadRealm;
-  public static byte[]? ExistingEncryptionKey { get; set; }
   private static ILogger Logger => LoggerProvider.CreateLogger("RealmService");
 
   public static async Task Init()
@@ -37,7 +38,6 @@ public static class RealmService
     );
     var appConfig = new AppConfiguration(config.AppId) { BaseUri = new Uri(config.BaseUrl) };
     Realms.Logging.Logger.LogLevel = Realms.Logging.LogLevel.Debug;
-
     _app = Realms.Sync.App.Create(appConfig);
     _serviceInitialised = true;
   }
@@ -47,7 +47,7 @@ public static class RealmService
     User = await JsonProcessor.FromSecureStorage<User>(Constants.User) ?? new User();
     if (_app.CurrentUser?.RefreshToken != null)
     {
-      await RefreshToken();
+      await SucceedOrSignOut(RefreshToken);
     }
     else
     {
@@ -56,14 +56,27 @@ public static class RealmService
     Logger.Info("Initialised realm with: {User}", User);
   }
 
+  public static async Task RetrieveDataFromSecureStorage()
+  {
+    if (await SecureStorage.Default.GetAsync(Constants.LocalEncryptionKey) is { } key)
+      ExistingEncryptionKey = Convert.FromBase64String(key);
+
+    if (await SecureStorage.Default.GetAsync(Constants.KnownUsers) is { } json)
+    {
+      var knownUsers = JsonProcessor.FromString<HashSet<KnownUser>>(json);
+      KnownUsers = knownUsers ?? [];
+      Logger.Info("Retrieved known users: {Users}", KnownUsers);
+    }
+  }
+
   public static Realm GetMainThreadRealm()
   {
     var realm = _mainThreadRealm ??= GetRealm();
-    if (realm.Subscriptions.Count == 0)
-    {
-      Logger.Warn("No subscriptions in main thread realm - requesting now but cannot await sync");
-      SetSubscriptions(realm).SafeFireAndForget();
-    }
+    if (realm.Subscriptions.Count != 0)
+      return realm;
+
+    Logger.Warn("No subscriptions in main thread realm - requesting now but cannot await sync");
+    SetSubscriptions(realm).SafeFireAndForget();
     return realm;
   }
 
@@ -71,18 +84,18 @@ public static class RealmService
   {
     Logger.Info("Refreshing token for current user...");
     await _app.CurrentUser!.RefreshCustomDataAsync();
-    User.Update(_app.CurrentUser);
-    JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
-    WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
     using var realm = GetRealm();
     // await SetSubscriptions(realm); // Only for development to update subscriptions on app launch
     await realm.Subscriptions.WaitForSynchronizationAsync();
+    User.Update(_app.CurrentUser);
+    JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
+    WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
   }
 
   public static async Task SignUpAsync(string email, string password)
   {
     await _app.EmailPasswordAuth.RegisterUserAsync(email, password);
-    User.SignUp(_app.CurrentUser!);
+    User.SignUp(email);
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
   }
@@ -146,6 +159,19 @@ public static class RealmService
     return newEncryptionKey;
   }
 
+  private static async Task SucceedOrSignOut(Func<Task> request)
+  {
+    try
+    {
+      await request.Invoke();
+    }
+    catch (Exception e)
+    {
+      Logger.Info(e, "Signing user out because an exception occured: {Message}", e.Message);
+      await SignOutAsync();
+    }
+  }
+
   [SuppressMessage("ReSharper", "UnusedMember.Local")]
   private static async Task SetSubscriptions(Realm realm)
   {
@@ -170,9 +196,7 @@ public static class RealmService
   private static (string queryName, IQueryable<T> query) Query<T>(Realm realm)
     where T : IRealmObject, IShareable
   {
-    var query = realm
-      .All<T>()
-      .Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.EmailAddress);
+    var query = realm.All<T>().Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id);
     return (typeof(T).Name + "Query", query);
   }
 
@@ -192,10 +216,38 @@ public static class RealmService
 
   [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
   [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
+  [SuppressMessage("ReSharper", "UnusedMember.Local")]
   private record AtlasConfig
   {
     public string AppId { get; init; } = null!;
     public string BaseUrl { get; init; } = null!;
     public string SecretKey { get; init; } = null!;
+  }
+
+  public static async Task<string?> ResolveToUserId(string email)
+  {
+    if (KnownUsers.FirstOrDefault(u => u.Email == email) is { } user)
+    {
+      Logger.Info("Resolved {Email} to known user: {User}", email, user.ToLog());
+      return user.Id;
+    }
+    var id = await _app.CurrentUser!.Functions.CallAsync("findUser", email);
+    Logger.Info("Resolved {Email} to {Id} through calling 'findUser' function", email, id);
+
+    if (id.ToString() == null || id.ToString() == "BsonNull")
+      return null;
+
+    var newUser = new KnownUser(id.ToString()!, email);
+    KnownUsers.Add(newUser);
+    JsonProcessor.ToSecureStorage(Constants.KnownUsers, KnownUsers).SafeFireAndForget();
+    Logger.Info("Added: {User}", newUser);
+    return id.ToString();
+  }
+
+  public static string ResolveToUserEmail(string id)
+  {
+    var user = KnownUsers.FirstOrDefault(u => u.Id == id);
+    Logger.Info("Resolved {Id} to {Email} from known user", id, user?.Email);
+    return user?.Email ?? "Unknown user";
   }
 }

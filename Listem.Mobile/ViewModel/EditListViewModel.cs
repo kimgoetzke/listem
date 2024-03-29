@@ -109,14 +109,10 @@ public partial class EditListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private async Task RevokeAccess(string userName)
+  private async Task RevokeAccess(string id)
   {
-    if (string.IsNullOrWhiteSpace(userName))
-      return;
-
-    userName = userName.ToLower();
-    await _listService.RevokeAccess(List, userName);
-    Notifier.ShowToast($"Revoked access of: {userName}");
+    await _listService.RevokeAccess(List, id);
+    Notifier.ShowToast($"Revoked access of: {id}");
   }
 
   [RelayCommand]

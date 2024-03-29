@@ -23,9 +23,9 @@ public class User
     }
   }
 
-  public void SignUp(Realms.Sync.User realmUser)
+  public void SignUp(string email)
   {
-    EmailAddress = realmUser.Profile.Email;
+    EmailAddress = email;
     AccessToken = null;
     RefreshToken = null;
     TokenExpiresAt = DateTime.Now;

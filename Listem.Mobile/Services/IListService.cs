@@ -13,6 +13,6 @@ public interface IListService
     string? listType = null
   );
   Task DeleteAsync(List list);
-  Task ShareWith(List list, string userName);
-  Task RevokeAccess(List list, string userName);
+  Task ShareWith(List list, string email);
+  Task RevokeAccess(List list, string id);
 }
