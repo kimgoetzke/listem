@@ -56,8 +56,8 @@
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="Start"
-                                             WidthRequest="30"
-                                             HeightRequest="30" />
+                                             WidthRequest="32"
+                                             HeightRequest="32" />
                             </Grid>
 
                             <HorizontalStackLayout Grid.Row="1" Spacing="5">
