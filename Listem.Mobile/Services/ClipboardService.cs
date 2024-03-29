@@ -1,231 +1,208 @@
-using System.Collections.ObjectModel;
 using System.Text;
-using CommunityToolkit.Mvvm.Messaging;
-using Listem.Mobile.Events;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace Listem.Mobile.Services;
 
 public class ClipboardService(IServiceProvider sp) : IClipboardService
 {
-    private readonly ICategoryService _categoryService = sp.GetService<ICategoryService>()!;
-    private readonly IItemService _itemService = sp.GetService<IItemService>()!;
+  private readonly ICategoryService _categoryService = sp.GetService<ICategoryService>()!;
+  private readonly IItemService _itemService = sp.GetService<IItemService>()!;
+  private readonly ILogger<ClipboardService> _logger = sp.GetService<ILogger<ClipboardService>>()!;
 
-    public async void InsertFromClipboardAsync(
-        ObservableCollection<ObservableItem> observableItems,
-        ObservableCollection<ObservableCategory> categories,
-        string listId
+  public async void InsertFromClipboardAsync(
+    IList<Item> items,
+    IList<Category> categories,
+    List list
+  )
+  {
+    var import = await Clipboard.GetTextAsync();
+
+    if (IsClipboardEmpty(import))
+      return;
+
+    if (
+      !WasAbleToExtractCandidates(
+        list,
+        import!,
+        categories.ToList(),
+        out var itemCount,
+        out var categoryCount,
+        out var itemCandidates,
+        out var categoryCandidates
+      )
     )
+      return;
+
+    if (!await IsImportConfirmedByUser(itemCount, categoryCount))
+      return;
+
+    await _categoryService.CreateAllAsync(categoryCandidates, list);
+    await CreateCandidateItems(itemCandidates);
+    Notifier.ShowToast($"Imported {itemCount} items from clipboard");
+  }
+
+  private static bool IsClipboardEmpty(string? import)
+  {
+    if (import != null)
+      return false;
+
+    Notifier.ShowToast("Nothing to import - your clipboard is empty");
+    return true;
+  }
+
+  private bool WasAbleToExtractCandidates(
+    List list,
+    string import,
+    List<Category> existingCategories,
+    out int itemCount,
+    out int categoryCount,
+    out List<Item> itemList,
+    out List<Category> categoryCandidates
+  )
+  {
+    _logger.Info("Extracted from clipboard: {Elements}", import.Replace(Environment.NewLine, ","));
+    var category = existingCategories.Find(c => c.Name == Constants.DefaultCategoryName)!;
+    itemCount = 0;
+    categoryCount = 0;
+    itemList = [];
+    categoryCandidates = [];
+    foreach (var substring in import.Replace(Environment.NewLine, ",").Split(","))
     {
-        var import = await Clipboard.GetTextAsync();
+      if (string.IsNullOrWhiteSpace(substring))
+        continue;
 
-        if (IsClipboardEmpty(import))
-            return;
-
-        var observableCategories = await _categoryService.GetAllByListIdAsync(listId);
+      if (StringProcessor.IsCategoryName(substring))
+      {
         if (
-            !WasAbleToConvertToItemList(
-                listId,
-                import!,
-                observableCategories.ToList(),
-                out var itemCount,
-                out var categoryCount,
-                out var itemList,
-                out var categoryList
-            )
+          AddValidCategoryCandidate(
+            existingCategories,
+            ref categoryCount,
+            categoryCandidates,
+            substring
+          ) is
+          { } newCategory
         )
-            return;
+          category = newCategory;
+        continue;
+      }
 
-        if (!await IsImportConfirmedByUser(itemCount, categoryCount))
-            return;
-
-        await CreateMissingStores(categories, categoryList);
-        await ImportItemList(observableItems, itemList);
-        Notifier.ShowToast($"Imported {itemCount} items from clipboard");
+      AddItemCandidate(ref itemCount, itemList, substring, category, list);
     }
 
-    private static bool IsClipboardEmpty(string? import)
+    if (itemCount != 0)
+      return true;
+
+    Notifier.ShowToast("Nothing to import - your clipboard may contain invalid data");
+    return false;
+  }
+
+  private static Category? AddValidCategoryCandidate(
+    List<Category> existingCategories,
+    ref int categoryCount,
+    List<Category> categoryCandidates,
+    string str
+  )
+  {
+    var name = StringProcessor.ExtractCategoryName(str);
+
+    if (existingCategories.Find(c => c.Name == name) != null)
+      return null;
+
+    var processedName = new Category { Name = name };
+    categoryCount++;
+    categoryCandidates.Add(processedName);
+    return processedName;
+  }
+
+  private static void AddItemCandidate(
+    ref int itemCount,
+    List<Item> itemCandidates,
+    string substring,
+    Category category,
+    List list
+  )
+  {
+    var (title, quantity, isImportant) = StringProcessor.ExtractItem(substring);
+    var processedTitle = StringProcessor.TrimAndCapitalise(title);
+    var item = new Item
     {
-        if (import != null)
-            return false;
+      Name = processedTitle,
+      List = list,
+      Category = new Category { Name = category.Name },
+      Quantity = quantity,
+      IsImportant = isImportant
+    };
+    itemCandidates.Add(item);
+    itemCount++;
+  }
 
-        Notifier.ShowToast("Nothing to import - your clipboard is empty");
-        return true;
-    }
+  private static async Task<bool> IsImportConfirmedByUser(int itemCount, int categoryCount)
+  {
+    var message = CreateToastMessage(itemCount, categoryCount);
+    var isConfirmed = await Shell.Current.DisplayAlert(
+      "Import from clipboard",
+      message,
+      "Yes",
+      "No"
+    );
 
-    private static bool WasAbleToConvertToItemList(
-        string listId,
-        string import,
-        List<ObservableCategory> categories,
-        out int itemCount,
-        out int categoryCount,
-        out List<ObservableItem> itemList,
-        out List<ObservableCategory> categoryList
-    )
+    if (!isConfirmed)
+      Notifier.ShowToast("Import cancelled");
+
+    return isConfirmed;
+  }
+
+  private static string CreateToastMessage(int itemCount, int categoryCount)
+  {
+    return categoryCount > 0
+      ? $"Extracted {itemCount} item(s) and {categoryCount} category(/ies) from your clipboard. Would you like to create the missing category(/ies) and add the item(s) to your list?"
+      : $"Extracted {itemCount} item(s) from your clipboard. Would you like to add the item(s) to your list?";
+  }
+
+  private async Task CreateCandidateItems(List<Item> toCreate)
+  {
+    foreach (var item in toCreate)
     {
-        Logger.Log("Extracted from clipboard: " + import.Replace(Environment.NewLine, ","));
-        var categoryName = Shared.Constants.DefaultCategoryName;
-        itemCount = 0;
-        categoryCount = 0;
-        itemList = [];
-        categoryList = [];
-        foreach (var substring in import.Replace(Environment.NewLine, ",").Split(","))
-        {
-            if (string.IsNullOrWhiteSpace(substring))
-                continue;
-
-            if (StringProcessor.IsCategoryName(substring))
-            {
-                categoryName = AddCategory(
-                    listId,
-                    categories,
-                    ref categoryCount,
-                    categoryList,
-                    substring
-                );
-                continue;
-            }
-
-            AddItem(ref itemCount, itemList, substring, categoryName, listId);
-        }
-
-        if (itemCount != 0)
-            return true;
-
-        Notifier.ShowToast("Nothing to import - your clipboard may contain invalid data");
-        return false;
+      await _itemService.CreateAsync(item);
     }
+  }
 
-    private static void AddItem(
-        ref int itemCount,
-        List<ObservableItem> itemList,
-        string substring,
-        string categoryName,
-        string listId
-    )
+  public void CopyToClipboard(IList<Item> items, IList<Category> categories)
+  {
+    var text = BuildStringFromList(items.ToList(), categories.ToList());
+    Clipboard.SetTextAsync(text);
+    _logger.Info("Copied to clipboard: {Elements}", text.Replace(Environment.NewLine, ", "));
+    Notifier.ShowToast("Copied list to clipboard");
+  }
+
+  private static string BuildStringFromList(List<Item> items, List<Category> categories)
+  {
+    var builder = new StringBuilder();
+    foreach (var category in categories)
     {
-        var (title, quantity, isImportant) = StringProcessor.ExtractItem(substring);
-        var processedTitle = StringProcessor.TrimAndCapitalise(title);
-        var item = new ObservableItem(listId)
-        {
-            Title = processedTitle,
-            CategoryName = categoryName,
-            Quantity = quantity,
-            IsImportant = isImportant
-        };
-        itemList.Add(item);
-        itemCount++;
+      var itemsFromStore = items.Where(item => item.Category!.Name == category.Name).ToList();
+      if (itemsFromStore.Count == 0)
+        continue;
+      builder.AppendLine($"[{category.Name}]:");
+      foreach (var item in itemsFromStore)
+      {
+        builder.Append(item);
+        if (item.Quantity > 1)
+          builder.Append($" ({item.Quantity})");
+        if (item.IsImportant)
+          builder.Append('!');
+        builder.AppendLine();
+      }
+
+      builder.AppendLine();
     }
 
-    private static string AddCategory(
-        string listId,
-        List<ObservableCategory> categories,
-        ref int categoryCount,
-        List<ObservableCategory> categoryList,
-        string s
-    )
-    {
-        var extractedName = StringProcessor.ExtractCategoryName(s);
-        var matchingStore = categories.Find(c => c.Name == extractedName);
+    // Remove last two line breaks as they are only needed to separate stores
+    if (builder.Length >= 2)
+      builder.Length -= 2;
 
-        if (matchingStore != null)
-            return extractedName;
-
-        categoryList.Add(new ObservableCategory(listId) { Name = extractedName });
-        categoryCount++;
-        return extractedName;
-    }
-
-    private static async Task<bool> IsImportConfirmedByUser(int itemCount, int categoryCount)
-    {
-        var message = CreateToastMessage(itemCount, categoryCount);
-        var isConfirmed = await Shell.Current.DisplayAlert(
-            "Import from clipboard",
-            message,
-            "Yes",
-            "No"
-        );
-
-        if (!isConfirmed)
-            Notifier.ShowToast("Import cancelled");
-
-        return isConfirmed;
-    }
-
-    private static string CreateToastMessage(int itemCount, int categoryCount)
-    {
-        return categoryCount > 0
-            ? $"Extracted {itemCount} item(s) and {categoryCount} category(/ies) from your clipboard. Would you like to create the missing category(/ies) and add the item(s) to your list?"
-            : $"Extracted {itemCount} item(s) from your clipboard. Would you like to add the item(s) to your list?";
-    }
-
-    private async Task CreateMissingStores(
-        ObservableCollection<ObservableCategory> stores,
-        List<ObservableCategory> toCreate
-    )
-    {
-        foreach (var store in toCreate)
-        {
-            await _categoryService.CreateOrUpdateAsync(store);
-            stores.Add(store);
-        }
-    }
-
-    private async Task ImportItemList(
-        ObservableCollection<ObservableItem> items,
-        List<ObservableItem> toImport
-    )
-    {
-        foreach (var item in toImport)
-        {
-            await _itemService.CreateOrUpdateAsync(item);
-            var value = new ItemChangedDto(item.ListId, item);
-            WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
-            items.Add(item);
-        }
-    }
-
-    public void CopyToClipboard(
-        ObservableCollection<ObservableItem> items,
-        ObservableCollection<ObservableCategory> categories
-    )
-    {
-        var text = BuildStringFromList(items, categories);
-        Clipboard.SetTextAsync(text);
-        Logger.Log("Copied to clipboard: " + text.Replace(Environment.NewLine, ", "));
-        Notifier.ShowToast("Copied list to clipboard");
-    }
-
-    private static string BuildStringFromList(
-        ObservableCollection<ObservableItem> items,
-        ObservableCollection<ObservableCategory> categories
-    )
-    {
-        var builder = new StringBuilder();
-        foreach (var category in categories)
-        {
-            var itemsFromStore = items.Where(item => item.CategoryName == category.Name).ToList();
-            if (itemsFromStore.Count == 0)
-                continue;
-            builder.AppendLine($"[{category.Name}]:");
-            foreach (var item in itemsFromStore)
-            {
-                builder.Append(item);
-                if (item.Quantity > 1)
-                    builder.Append($" ({item.Quantity})");
-                if (item.IsImportant)
-                    builder.Append('!');
-                builder.AppendLine();
-            }
-
-            builder.AppendLine();
-        }
-
-        // Remove last two line breaks as they are only needed to separate stores
-        if (builder.Length >= 2)
-            builder.Length -= 2;
-
-        return builder.ToString();
-    }
+    return builder.ToString();
+  }
 }

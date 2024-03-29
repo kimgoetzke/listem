@@ -1,69 +1,46 @@
-﻿using System.Collections.ObjectModel;
-using AsyncAwaitBestPractices;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
-using ListType = Listem.Shared.Enums.ListType;
+using ListType = Listem.Mobile.Models.ListType;
 
 namespace Listem.Mobile.ViewModel;
 
-[QueryProperty(nameof(ObservableItem), nameof(ObservableItem))]
-public partial class DetailViewModel : ObservableObject
+[QueryProperty(nameof(Item), nameof(Item))]
+public partial class DetailViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private ObservableCollection<ObservableCategory> _categories = [];
+  [ObservableProperty]
+  private Item _item;
 
-    [ObservableProperty]
-    private ObservableCategory _currentCategory;
+  [ObservableProperty]
+  private Category _currentCategory;
 
-    [ObservableProperty]
-    private ObservableItem _observableItem;
+  [ObservableProperty]
+  private IList<Category> _categories = [];
 
-    private readonly ICategoryService _categoryService;
-    private readonly IItemService _itemService;
-    public ListType ListType { get; }
+  public ListType ListType { get; }
 
-    public DetailViewModel(
-        ObservableItem observableItem,
-        ObservableList observableList,
-        ICategoryService categoryService,
-        IItemService itemService
-    )
+  private readonly IItemService _itemService;
+
+  public DetailViewModel(Item item, IServiceProvider serviceProvider)
+  {
+    _itemService = serviceProvider.GetService<IItemService>()!;
+    Item = item;
+    Categories = item.List!.Categories;
+    CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
+    ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
+  }
+
+  [RelayCommand]
+  private async Task SaveAndBack()
+  {
+    if (CurrentCategory.Name == Item.Category?.Name)
     {
-        ObservableItem = observableItem;
-        ListType = observableList.ListType;
-        CurrentCategory = new ObservableCategory(observableItem.ListId);
-        _categoryService = categoryService;
-        _itemService = itemService;
-        SetCategories();
+      await Shell.Current.Navigation.PopModalAsync();
+      return;
     }
 
-    [RelayCommand]
-    private async Task SaveAndBack()
-    {
-        ObservableItem.CategoryName = CurrentCategory.Name;
-        await _itemService.CreateOrUpdateAsync(ObservableItem);
-        Back().SafeFireAndForget();
-    }
-
-    [RelayCommand]
-    private static async Task Back()
-    {
-        await Shell.Current.Navigation.PopModalAsync();
-    }
-
-    private async void SetCategories()
-    {
-        var loaded = await _categoryService.GetAllByListIdAsync(ObservableItem.ListId);
-        Categories.Clear();
-        foreach (var category in loaded)
-        {
-            Categories.Add(category);
-            if (category.Name == ObservableItem.CategoryName)
-            {
-                CurrentCategory = category;
-            }
-        }
-    }
+    await _itemService.UpdateAsync(Item, category: CurrentCategory);
+    await Shell.Current.Navigation.PopModalAsync();
+  }
 }

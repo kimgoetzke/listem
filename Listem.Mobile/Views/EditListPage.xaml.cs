@@ -1,69 +1,53 @@
 ﻿using Listem.Mobile.Models;
 using Listem.Mobile.ViewModel;
-using Listem.Shared.Enums;
 
 namespace Listem.Mobile.Views;
 
 public partial class EditListPage
 {
-    private readonly EditListViewModel _viewModel;
+  private readonly EditListViewModel _viewModel;
 
-    public EditListPage(ObservableList observableList)
+  public EditListPage(List list, IServiceProvider serviceProvider)
+  {
+    InitializeComponent();
+    _viewModel = new EditListViewModel(list, serviceProvider);
+    BindingContext = _viewModel;
+
+    StickyEntryCategory.Submitted += (_, text) =>
     {
-        InitializeComponent();
-        _viewModel = new EditListViewModel(observableList);
-        BindingContext = _viewModel;
-
-        StickyEntry.Submitted += (_, text) =>
-        {
-            _viewModel.AddCategoryCommand.Execute(text);
-        };
-    }
-
-    protected override void OnAppearing()
+      _viewModel.AddCategoryCommand.Execute(text);
+    };
+    StickyEntryShareWith.Submitted += (_, text) =>
     {
-        base.OnAppearing();
-        ListTypePicker.SelectedIndex = (int)_viewModel.ObservableList.ListType;
-        StickyEntry.SetVisibility(false);
-    }
+      _viewModel.ShareCommand.Execute(text);
+    };
+  }
 
-    private void OnEntryUnfocused(object sender, FocusEventArgs e)
-    {
-        AddCategoryButton.Focus();
-    }
+  protected override void OnAppearing()
+  {
+    base.OnAppearing();
+    StickyEntryCategory.SetVisibility(false);
+    StickyEntryShareWith.SetVisibility(false);
+  }
 
-    private void ImageButton_OnPressed(object? sender, EventArgs e)
-    {
-        if (sender is not ImageButton button)
-            return;
+  private void OnEntryUnfocused(object sender, FocusEventArgs e)
+  {
+    AddCategoryButton.Focus();
+  }
 
-        button.Source = "bin_secondary.png";
-    }
+  private void AddCategoryButton_OnClicked(object? sender, EventArgs e)
+  {
+    if (!_viewModel.AddCategoryCommand.CanExecute(null))
+      return;
 
-    private void ImageButton_OnReleased(object? sender, EventArgs e)
-    {
-        if (sender is not ImageButton button)
-            return;
+    StickyEntryCategory.SetVisibility(true);
+  }
 
-        button.Source = "bin_neutral.png";
-    }
+  private void ShareWithButton_OnClicked(object? sender, EventArgs e)
+  {
+    if (!_viewModel.ShareCommand.CanExecute(null))
+      return;
 
-    private void AddListButton_OnClicked(object? sender, EventArgs e)
-    {
-        if (!_viewModel.AddCategoryCommand.CanExecute(null))
-            return;
-
-        StickyEntry.SetVisibility(true);
-    }
-
-    private void ListTypePicker_OnSelectedIndexChanged(object? sender, EventArgs e)
-    {
-        if (sender is not Picker picker)
-            return;
-
-        if (picker.SelectedItem is not ListType listType)
-            return;
-
-        _viewModel.ObservableList.ListType = listType;
-    }
+    StickyEntryShareWith.SetVisibility(true);
+  }
 }

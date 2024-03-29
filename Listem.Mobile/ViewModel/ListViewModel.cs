@@ -1,175 +1,147 @@
-﻿using System.Collections.ObjectModel;
-using AsyncAwaitBestPractices;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Mvvm.Messaging;
-using Listem.Mobile.Events;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Microsoft.Extensions.Logging;
+using Realms;
 using StringProcessor = Listem.Mobile.Utilities.StringProcessor;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class ListViewModel : ObservableObject
+public partial class ListViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private ObservableList _observableList;
+  [ObservableProperty]
+  private List _currentList;
 
-    [ObservableProperty]
-    private ObservableItem _newObservableItem;
+  [ObservableProperty]
+  private IQueryable<Item> _items = null!;
 
-    [ObservableProperty]
-    private ObservableCollection<ObservableItem> _items = [];
+  [ObservableProperty]
+  private List<Item> _itemsToDelete;
 
-    [ObservableProperty]
-    private ObservableCollection<ObservableItem> _itemsToDelete = [];
+  [ObservableProperty]
+  private IList<Category> _categories;
 
-    [ObservableProperty]
-    private ObservableCollection<ObservableCategory> _categories = [];
+  [ObservableProperty]
+  private string _newItemName = string.Empty;
 
-    [ObservableProperty]
-    private ObservableCategory? _currentCategory;
+  [ObservableProperty]
+  private int _newItemQuantity = 1;
 
-    private readonly ICategoryService _categoryService;
-    private readonly IItemService _itemService;
-    private readonly IClipboardService _clipboardService;
+  [ObservableProperty]
+  private bool _newItemIsImportant;
 
-    public ListViewModel(ObservableList observableList)
+  [ObservableProperty]
+  private Category _currentCategory;
+
+  private readonly Realm _realm = RealmService.GetMainThreadRealm();
+  private readonly IItemService _itemService;
+  private readonly IClipboardService _clipboardService;
+  private readonly ILogger<ListViewModel> _logger;
+
+  public ListViewModel(List list, IServiceProvider serviceProvider)
+  {
+    IsBusy = true;
+    _itemService = serviceProvider.GetService<IItemService>()!;
+    _clipboardService = serviceProvider.GetService<IClipboardService>()!;
+    _logger = serviceProvider.GetService<ILogger<ListViewModel>>()!;
+    CurrentList = list;
+    ItemsToDelete = [];
+    Categories = CurrentList.Categories;
+    CurrentCategory = Categories.First(c => c.Name == Constants.DefaultCategoryName);
+    GetSortedItems();
+    IsBusy = false;
+  }
+
+  [RelayCommand]
+  private async Task AddItem()
+  {
+    if (string.IsNullOrWhiteSpace(NewItemName))
+      return;
+
+    var newItem = new Item
     {
-        _categoryService = IPlatformApplication.Current!.Services.GetService<ICategoryService>()!;
-        _itemService = IPlatformApplication.Current.Services.GetService<IItemService>()!;
-        _clipboardService = IPlatformApplication.Current.Services.GetService<IClipboardService>()!;
-        ObservableList = observableList;
-        Items = new ObservableCollection<ObservableItem>(observableList.Items);
-        NewObservableItem = new ObservableItem(ObservableList.Id!);
-        SortItems();
-        LoadCategories().SafeFireAndForget();
-    }
+      Name = StringProcessor.TrimAndCapitalise(NewItemName),
+      List = CurrentList,
+      Category = new Category { Name = CurrentCategory.Name },
+      Quantity = NewItemQuantity,
+      IsImportant = NewItemIsImportant,
+      UpdatedOn = DateTime.Now
+    };
 
-    private async Task LoadCategories()
+    await _itemService.CreateAsync(newItem);
+    Notifier.ShowToast($"Added: {newItem.Name}");
+
+    NewItemName = string.Empty;
+    NewItemQuantity = 1;
+    NewItemIsImportant = false;
+    GetSortedItems();
+  }
+
+  [RelayCommand]
+  private async Task RemoveItem(Item item)
+  {
+    IsBusy = true;
+    await _itemService.DeleteAsync(item);
+    IsBusy = false;
+  }
+
+  [RelayCommand]
+  private async Task TogglePriority(Item item)
+  {
+    await _itemService.UpdateAsync(item, isImportant: !item.IsImportant);
+    GetSortedItems();
+  }
+
+  [RelayCommand]
+  private static async Task GoBack()
+  {
+    await Shell.Current.Navigation.PopAsync();
+  }
+
+  [RelayCommand]
+  private async Task TapItem(Item item)
+  {
+    _logger.Info("Opening item: {Item}", item.ToLog());
+    await Shell.Current.Navigation.PushModalAsync(new DetailPage(item));
+  }
+
+  [RelayCommand]
+  private void CopyToClipboard()
+  {
+    _clipboardService.CopyToClipboard(Items.ToList(), Categories.ToList());
+  }
+
+  [RelayCommand]
+  private void InsertFromClipboard()
+  {
+    _clipboardService.InsertFromClipboardAsync(Items.ToList(), Categories.ToList(), CurrentList);
+  }
+
+  public string ProcessedObservableItemListName
+  {
+    get
     {
-        var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id!);
-        Categories = new ObservableCollection<ObservableCategory>(categories);
-        CurrentCategory = Categories.FirstOrDefault(c =>
-            c.Name == Shared.Constants.DefaultCategoryName
-        );
-        OnPropertyChanged(nameof(Categories));
-        OnPropertyChanged(nameof(CurrentCategory));
-        Logger.Log(
-            $"Loaded {Categories.Count} categories for list {ObservableList.Id} from the database"
-        );
+      if (CurrentList.Name.Length > 15)
+      {
+        return CurrentList.Name[..15].Trim() + "...";
+      }
+
+      return CurrentList.Name;
     }
+  }
 
-    [RelayCommand]
-    private async Task AddItem()
-    {
-        // Don't add empty items
-        if (string.IsNullOrWhiteSpace(NewObservableItem.Title))
-            return;
-
-        // Pre-process item
-        NewObservableItem.Title = StringProcessor.TrimAndCapitalise(NewObservableItem.Title);
-        NewObservableItem.CategoryName =
-            CurrentCategory != null ? CurrentCategory.Name : Shared.Constants.DefaultCategoryName;
-
-        // Add to list and database
-        Logger.Log($"Adding item: {NewObservableItem.ToLoggableString()}");
-        await _itemService.CreateOrUpdateAsync(NewObservableItem);
-        var value = new ItemChangedDto(ObservableList.Id!, NewObservableItem);
-        WeakReferenceMessenger.Default.Send(new ItemAddedToListMessage(value));
-        Items.Add(NewObservableItem);
-        Notifier.ShowToast($"Added: {NewObservableItem.Title}");
-
-        // Make sure the UI is reset/updated
-        NewObservableItem = new ObservableItem(ObservableList.Id!);
-        SortItems();
-        OnPropertyChanged(nameof(NewObservableItem));
-    }
-
-    [RelayCommand]
-    private async Task RemoveItem(ObservableItem i)
-    {
-        await _itemService.DeleteAsync(i);
-        ObservableList.Items.Remove(i);
-        Items.Remove(i);
-        var value = new ItemChangedDto(ObservableList.Id!, i);
-        WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
-        OnPropertyChanged(nameof(ObservableList));
-    }
-
-    [RelayCommand]
-    private async Task RemoveAllItems()
-    {
-        if (!await IsRequestConfirmedByUser())
-            return;
-
-        Items.Clear();
-        await _itemService.DeleteAllByListIdAsync(ObservableList.Id!);
-        Notifier.ShowToast("Removed all items from list");
-    }
-
-    private static async Task<bool> IsRequestConfirmedByUser()
-    {
-        return await Shell.Current.DisplayAlert(
-            "Clear list",
-            $"This will remove all items from your list. Are you sure you want to continue?",
-            "Yes",
-            "No"
-        );
-    }
-
-    [RelayCommand]
-    private async Task TogglePriority(ObservableItem i)
-    {
-        i.IsImportant = !i.IsImportant;
-        await _itemService.CreateOrUpdateAsync(i);
-        SortItems();
-    }
-
-    [RelayCommand]
-    private static async Task GoBack(ObservableItem i)
-    {
-        await Shell.Current.Navigation.PopAsync();
-    }
-
-    [RelayCommand]
-    private async Task TapItem(ObservableItem i)
-    {
-        await Shell.Current.Navigation.PushModalAsync(new DetailPage(i, ObservableList));
-    }
-
-    [RelayCommand]
-    private void CopyToClipboard()
-    {
-        _clipboardService.CopyToClipboard(Items, Categories);
-    }
-
-    [RelayCommand]
-    private void InsertFromClipboard()
-    {
-        _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableList.Id!);
-    }
-
-    public string ProcessedObservableItemListName
-    {
-        get
-        {
-            if (ObservableList.Name.Length > 15)
-            {
-                return ObservableList.Name[..15].Trim() + "...";
-            }
-
-            return ObservableList.Name;
-        }
-    }
-
-    private void SortItems()
-    {
-        Items = new ObservableCollection<ObservableItem>(
-            Items.OrderBy(i => i.CategoryName).ThenByDescending(i => i.AddedOn)
-        );
-        OnPropertyChanged(nameof(Items));
-    }
+  // TODO: Implement custom sorting and filtering using locally stored preferences
+  // Note that listing default category items first or last may be difficult, see:
+  // https://www.mongodb.com/community/forums/t/c-linq-condition-inside-orderby/149393
+  public void GetSortedItems()
+  {
+    Items = _realm
+      .All<Item>()
+      .Where(i => i.List == CurrentList)
+      .OrderBy(i => i.Category!.Name)
+      .ThenByDescending(i => i.UpdatedOn);
+  }
 }

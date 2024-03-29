@@ -2,8 +2,8 @@
 
 public partial class ListSummaryControl
 {
-    public ListSummaryControl()
-    {
-        InitializeComponent();
-    }
+  public ListSummaryControl()
+  {
+    InitializeComponent();
+  }
 }

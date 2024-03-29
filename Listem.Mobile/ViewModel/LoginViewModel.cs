@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
 using Listem.Mobile.Events;
@@ -6,175 +7,190 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
-using Listem.Shared.Contracts;
+using Microsoft.Extensions.Logging;
+using User = Listem.Mobile.Models.User;
 #if __ANDROID__
 using CommunityToolkit.Maui.Core.Platform;
 #endif
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class LoginViewModel : ObservableObject
+public partial class LoginViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private bool _isUserRegistered;
+  [ObservableProperty]
+  private bool _isUserRegistered;
 
-    [ObservableProperty]
-    private bool _isUserSignedIn;
+  [ObservableProperty]
+  private bool _isUserSignedIn;
 
-    [ObservableProperty]
-    private Status _userStatus;
+  [ObservableProperty]
+  private Status _userStatus;
 
-    [ObservableProperty]
-    private string? _userEmail;
+  [ObservableProperty]
+  private string? _userEmail;
 
-    [ObservableProperty]
-    private string? _password;
+  [ObservableProperty]
+  private string? _password;
 
-    [ObservableProperty]
-    private string? _passwordConfirmed;
+  [ObservableProperty]
+  private string? _passwordConfirmed;
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly AuthService _authService;
+  private readonly IServiceProvider _serviceProvider;
+  private readonly ILogger<LoginViewModel> _logger;
 
-    // TODO: Enable displaying a loading state on app load (i.e. while attempting to refresh token)
-    public LoginViewModel(IServiceProvider serviceProvider)
+  public LoginViewModel(IServiceProvider serviceProvider)
+  {
+    _serviceProvider = serviceProvider;
+    _logger = serviceProvider.GetService<ILogger<LoginViewModel>>()!;
+    Initialise();
+  }
+
+  private async void Initialise()
+  {
+    IsBusy = true;
+    WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
+      this,
+      (_, m) =>
+      {
+        _logger.Info("Received message: Current user status has changed to: {User}", m.Value);
+        UpdateUser(m.Value);
+      }
+    );
+
+    if (!await RealmService.Init())
+      Notifier.ShowToast(Constants.TokenRefreshFailedMessage);
+
+    IsBusy = false;
+  }
+
+  private void UpdateUser(User user)
+  {
+    IsUserRegistered = user.IsRegistered;
+    IsUserSignedIn = user.IsSignedIn;
+    UserEmail = user.EmailAddress;
+    UserStatus = user.Status;
+  }
+
+  public void RedirectIfUserIsSignedIn()
+  {
+    if (!IsUserSignedIn)
+      return;
+
+    _logger.Info("User is signed in, redirecting now...");
+    Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+  }
+
+  [RelayCommand]
+  private static async Task Back()
+  {
+    await Shell.Current.Navigation.PopModalAsync();
+  }
+
+  [RelayCommand]
+  private async Task SignUp(ITextInput view)
+  {
+    if (!IsInputValid())
+      return;
+
+    if (Password != PasswordConfirmed)
     {
-        _serviceProvider = serviceProvider;
-        _authService =
-            serviceProvider.GetService<AuthService>()
-            ?? throw new NullReferenceException("AuthenticationService is null");
-        Initialise();
+      await Notifier.ShowAlertAsync("Sign up failed", "Passwords do not match", "OK");
+      return;
     }
 
-    private async void Initialise()
+    try
     {
-        WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log(
-                    $"[LoginViewModel] Received message: Current user status has changed to: {m.Value}"
-                );
-                UpdateUser(m.Value);
-            }
-        );
-
-        var user = await _authService.GetCurrentUser();
-        UpdateUser(user);
+      IsBusy = true;
+      UserEmail = UserEmail!.ToLower();
+      await RealmService.SignUpAsync(UserEmail, Password!);
+      HideKeyboard(view);
+      await Shell.Current.Navigation.PopAsync();
+      IsUserRegistered = true;
+      Password = null;
+      PasswordConfirmed = null;
+      IsBusy = false;
     }
-
-    private void UpdateUser(User user)
+    catch (Exception ex)
     {
-        UserStatus = user.Status;
-        IsUserRegistered = user.IsRegistered;
-        IsUserSignedIn = user.IsSignedIn;
-        UserEmail = user.EmailAddress;
+      IsBusy = false;
+      _logger.Info("Sign up failed: {Exception}", ex);
+      await Notifier.ShowAlertAsync("Sign up failed", ex.Message, "OK");
     }
+  }
 
-    public void RedirectIfUserIsSignedIn()
+  [RelayCommand]
+  private async Task SignIn(ITextInput view)
+  {
+    if (!IsInputValid())
+      return;
+
+    try
     {
-        if (!IsUserSignedIn)
-            return;
-
-        Logger.Log("User is signed in, redirecting now...");
-        Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+      IsBusy = true;
+      UserEmail = UserEmail!.ToLower();
+      await RealmService.SignInAsync(UserEmail, Password!);
+      HideKeyboard(view);
+      await Shell.Current.Navigation.PopAsync();
+      IsUserSignedIn = true;
+      Password = null;
+      IsBusy = false;
     }
-
-    [RelayCommand]
-    private static async Task Back()
+    catch (Exception ex)
     {
-        await Shell.Current.Navigation.PopModalAsync();
+      IsBusy = false;
+      _logger.Info("Sign in failed: {Exception}", ex);
+      await RealmService.SignOutAsync();
+      await Notifier.ShowAlertAsync("Sign in failed", ex.Message, "OK");
     }
+  }
 
-    [RelayCommand]
-    private async Task SignUp(ITextInput view)
-    {
-        if (!IsInputValid([UserEmail, Password, PasswordConfirmed]))
-            return;
+  // TODO: Add password reset functionality (requires sending emails though)
+  [RelayCommand]
+  private static Task ForgotPassword()
+  {
+    Notifier.ShowToast("Sorry, not implemented yet");
+    return Task.CompletedTask;
+  }
 
-        if (Password != PasswordConfirmed)
-        {
-            const string msg = "Passwords do not match";
-            Logger.Log(msg);
-            Notifier.ShowToast(msg);
-            return;
-        }
+  [RelayCommand]
+  private async Task GoToSignUp()
+  {
+    await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<SignUpPage>());
+  }
 
-        var result = await _authService.SignUp(new UserCredentials(UserEmail!, Password!));
-        Notifier.ShowToast(result.Message);
-        if (result.Success)
-        {
-            HideKeyboard(view);
-            await Shell.Current.Navigation.PopAsync();
-            Password = null;
-            PasswordConfirmed = null;
-        }
-    }
+  [RelayCommand]
+  private async Task GoToSignIn()
+  {
+    await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<SignInPage>());
+  }
 
-    [RelayCommand]
-    private async Task SignIn(ITextInput view)
-    {
-        if (!IsInputValid([UserEmail, Password]))
-            return;
+  [RelayCommand]
+  private static void SignOut()
+  {
+    RealmService.SignOutAsync().SafeFireAndForget();
+  }
 
-        var result = await _authService.SignIn(new UserCredentials(UserEmail!, Password!));
-        Notifier.ShowToast(result.Message);
-        if (result.Success)
-        {
-            HideKeyboard(view);
-            Password = null;
-            await Shell.Current.Navigation.PopAsync();
-        }
-    }
+  [RelayCommand]
+  private async Task GoToMainPage()
+  {
+    await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+  }
 
-    [RelayCommand]
-    private static Task ForgotPassword()
-    {
-        Notifier.ShowToast("Sorry, not implemented yet");
-        return Task.CompletedTask;
-    }
+  private bool IsInputValid()
+  {
+    if (!string.IsNullOrEmpty(UserEmail) && !string.IsNullOrEmpty(Password))
+      return true;
 
-    [RelayCommand]
-    private async Task GoToSignUp()
-    {
-        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<SignUpPage>());
-    }
+    Notifier.ShowToast("You must enter both email and password");
+    return false;
+  }
 
-    [RelayCommand]
-    private async Task GoToSignIn()
-    {
-        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<SignInPage>());
-    }
-
-    [RelayCommand]
-    private Task SignOut()
-    {
-        _authService.SignOut();
-        return Task.CompletedTask;
-    }
-
-    [RelayCommand]
-    private async Task GoToMainPage()
-    {
-        await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
-    }
-
-    // TODO: Replace with real validation and add requirements and live feedback on page
-    private static bool IsInputValid(IEnumerable<string?> strings)
-    {
-        if (!strings.Any(string.IsNullOrEmpty))
-            return true;
-
-        Notifier.ShowToast("You must enter both email and password");
-        return false;
-    }
-
-    // ReSharper disable once UnusedParameter.Local
-    private static void HideKeyboard(ITextInput view)
-    {
+  // ReSharper disable once UnusedParameter.Local
+  private void HideKeyboard(ITextInput view)
+  {
 #if __ANDROID__
-        var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
-        Logger.Log("Keyboard hidden: " + isKeyboardHidden);
+    var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
+    _logger.Info("Keyboard hidden: {State}", isKeyboardHidden);
 #endif
-    }
+  }
 }

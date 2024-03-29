@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:views="clr-namespace:Listem.Mobile.Views.Controls"
+             x:Class="Listem.Mobile.Views.Controls.FramedCollection">
+
+    <Frame Margin="5, 5" Padding="0" BorderColor="Transparent" CornerRadius="15">
+        <CollectionView x:Name="ItemsCollectionView"
+                        Margin="0"
+                        SelectionMode="None"
+                        HeightRequest="175"
+                        VerticalScrollBarVisibility="Always">
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type x:String}">
+                    <SwipeView android:SwipeView.SwipeTransitionMode="Reveal">
+                        <SwipeView.RightItems>
+                            <SwipeItems SwipeBehaviorOnInvoked="Close">
+                                <SwipeItemView
+                                    Command="{Binding Path=SwipeCommand, Source={RelativeSource Mode=FindAncestor, AncestorType={x:Type views:FramedCollection}}}"
+                                    CommandParameter="{Binding .}">
+
+                                    <Frame BackgroundColor="{DynamicResource Secondary}"
+                                           BorderColor="Transparent"
+                                           Padding="0"
+                                           CornerRadius="0"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Fill"
+                                           HeightRequest="75"
+                                           WidthRequest="75">
+                                        <Image Source="bin_white.png"
+                                               Aspect="AspectFit"
+                                               WidthRequest="25"
+                                               HeightRequest="25"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Frame>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+
+                        <Grid Padding="5" VerticalOptions="Fill" HorizontalOptions="Fill">
+                            <Frame Margin="0"
+                                   Padding="0"
+                                   VerticalOptions="Fill"
+                                   HorizontalOptions="Fill"
+                                   BorderColor="Transparent"
+                                   BackgroundColor="{DynamicResource White}">
+
+                                <Frame.Triggers>
+                                    <DataTrigger TargetType="Frame"
+                                                 Binding="{Binding .}"
+                                                 Value="{StaticResource DefaultCategoryName}">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                </Frame.Triggers>
+
+                                <VerticalStackLayout Padding="5, 5" HorizontalOptions="Fill">
+                                    <Label Text="{Binding .}"
+                                           HeightRequest="25"
+                                           FontSize="{DynamicResource FontSizeM}"
+                                           VerticalTextAlignment="Center"
+                                           HorizontalTextAlignment="Center" />
+                                </VerticalStackLayout>
+
+                            </Frame>
+                        </Grid>
+                    </SwipeView>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.Footer>
+                <BoxView HeightRequest="40" BackgroundColor="{DynamicResource BackgroundColor}" />
+            </CollectionView.Footer>
+        </CollectionView>
+    </Frame>
+</ContentView>

@@ -1,42 +1,34 @@
 ﻿using System.Globalization;
 using Listem.Mobile.Models;
-using Listem.Mobile.Services;
 using Listem.Mobile.ViewModel;
 
 namespace Listem.Mobile.Views;
 
 public partial class DetailPage
 {
-    public DetailPage(ObservableItem observableItem, ObservableList observableList)
-    {
-        InitializeComponent();
-        var storeService = IPlatformApplication.Current?.Services.GetService<ICategoryService>();
-        var itemService = IPlatformApplication.Current?.Services.GetService<IItemService>();
+  public DetailPage(Item item)
+  {
+    InitializeComponent();
 
-        if (itemService is null || storeService is null)
-            throw new NullReferenceException("ItemService or StoreService is null");
+    if (IPlatformApplication.Current?.Services.GetService<IServiceProvider>() is not { } sp)
+      throw new NullReferenceException("ServiceProvider is null");
 
-        BindingContext = new DetailViewModel(
-            observableItem,
-            observableList,
-            storeService,
-            itemService
-        );
-    }
+    BindingContext = new DetailViewModel(item, sp);
+  }
 
-    private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)
-    {
-        if (sender is not Stepper)
-            return;
+  private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)
+  {
+    if (sender is not Stepper)
+      return;
 
-        QuantityProperty.Text = e.NewValue.ToString(CultureInfo.CurrentCulture);
-    }
+    QuantityProperty.Text = e.NewValue.ToString(CultureInfo.CurrentCulture);
+  }
 
-    private void IsImportantSwitch_OnToggled(object? sender, ToggledEventArgs toggledEventArgs)
-    {
-        if (sender is not Switch toggle)
-            return;
+  private void IsImportantSwitch_OnToggled(object? sender, ToggledEventArgs _)
+  {
+    if (sender is not Switch toggle)
+      return;
 
-        IsImportantProperty.Text = toggle.IsToggled ? "Yes" : "No";
-    }
+    IsImportantProperty.Text = toggle.IsToggled ? "Yes" : "No";
+  }
 }

@@ -1,79 +1,89 @@
-﻿using Listem.Shared.Contracts;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace Listem.Mobile.Models;
 
+[SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class User
 {
-    public string? EmailAddress { get; private init; }
-    public string? AccessToken { get; private set; }
-    public string? RefreshToken { get; private set; }
-    private DateTime TokenExpiresAt { get; set; } = DateTime.Now;
-    public bool IsTokenExpired => TokenExpiresAt <= DateTime.Now;
-    public bool IsRegistered => EmailAddress != null;
-    public bool IsSignedIn => IsTokenExpired == false;
-    public Status Status
+  public string? Id { get; set; }
+  public string? EmailAddress { get; set; }
+  public string? AccessToken { get; set; }
+  public string? RefreshToken { get; set; }
+  public DateTime TokenExpiresAt { get; set; } = DateTime.Now;
+  public bool IsTokenExpired => TokenExpiresAt <= DateTime.Now;
+  public bool ShouldRefreshToken => TokenExpiresAt <= DateTime.Now.AddDays(7);
+  public bool IsRegistered => EmailAddress != null;
+  public bool IsSignedIn => IsTokenExpired == false;
+  public Status Status
+  {
+    get
     {
-        get
-        {
-            return IsSignedIn switch
-            {
-                true => Status.SignedIn,
-                false when IsRegistered => Status.NotSignedInButRegistered,
-                _ => Status.NotSignedInAndNotRegistered
-            };
-        }
+      return IsSignedIn switch
+      {
+        true => Status.SignedIn,
+        false when IsRegistered => Status.NotSignedInButRegistered,
+        _ => Status.NotSignedInAndNotRegistered
+      };
     }
+  }
 
-    public static User From(StoredUser storedUser)
+  public void SignUp(string email)
+  {
+    EmailAddress = email;
+    AccessToken = null;
+    RefreshToken = null;
+    TokenExpiresAt = DateTime.Now;
+  }
+
+  public void Refresh(Realms.Sync.User realmUser)
+  {
+    EmailAddress = realmUser.Profile.Email;
+    Id = realmUser.Id;
+    AccessToken = realmUser.AccessToken;
+    RefreshToken = realmUser.RefreshToken;
+    TokenExpiresAt = DateTime.Now.AddDays(30);
+  }
+
+  public void SignIn(Realms.Sync.User realmUser)
+  {
+    if (realmUser.Profile.Email != null && realmUser.Profile.Email != EmailAddress)
     {
-        return new User
-        {
-            EmailAddress = storedUser.EmailAddress,
-            AccessToken = storedUser.AccessToken,
-            RefreshToken = storedUser.RefreshToken,
-            TokenExpiresAt = storedUser.TokenExpiresAt
-        };
+      Id = realmUser.Id;
+      EmailAddress = realmUser.Profile.Email;
     }
+    AccessToken = realmUser.AccessToken;
+    RefreshToken = realmUser.RefreshToken;
+    TokenExpiresAt = DateTime.Now.AddDays(30);
+  }
 
-    public static User WithEmail(string emailAddress)
-    {
-        return new User { EmailAddress = emailAddress };
-    }
+  public void SignOut()
+  {
+    AccessToken = null;
+    RefreshToken = null;
+    TokenExpiresAt = DateTime.Now;
+  }
 
-    public void SignIn(UserLoginResponse? loginResponse)
-    {
-        if (EmailAddress == null)
-            throw new InvalidOperationException("Cannot sign in a user without an email address");
+  public override string ToString()
+  {
+    var at = ExtractPayload(AccessToken);
+    var rt = ExtractPayload(RefreshToken);
+    return $"[User] _id: {Id ?? "null"}, email: {EmailAddress ?? "null"}, status: {Status}, valid token: {!IsTokenExpired}, valid until: {TokenExpiresAt}), access token: {at ?? "null"}, refresh token: {rt ?? "null"}";
+  }
 
-        AccessToken = loginResponse?.AccessToken;
-        RefreshToken = loginResponse?.RefreshToken;
-        TokenExpiresAt = DateTime.Now.AddSeconds(loginResponse?.ExpiresIn ?? -1);
-    }
+  // Extracts the payload from a JWT token so that header and signature aren't logged.
+  private static string? ExtractPayload(string? token)
+  {
+    if (token is null)
+      return null;
 
-    public void SignOut()
-    {
-        AccessToken = null;
-        RefreshToken = null;
-        TokenExpiresAt = DateTime.Now;
-    }
-
-    public override string ToString()
-    {
-        return $"[User] Email: {EmailAddress ?? "null"}, signed in: {IsSignedIn}, access token: {AccessToken?[..10] ?? "null"} (valid={!IsTokenExpired}, {TokenExpiresAt}), refresh token: {RefreshToken?[..10] ?? "null"}";
-    }
+    var parts = token.Split(".");
+    return parts.Length != 3 ? token : parts[1];
+  }
 }
 
 public enum Status
 {
-    NotSignedInAndNotRegistered,
-    NotSignedInButRegistered,
-    SignedIn
-}
-
-public class StoredUser
-{
-    public string? EmailAddress { get; init; }
-    public string? AccessToken { get; init; }
-    public string? RefreshToken { get; init; }
-    public DateTime TokenExpiresAt { get; init; }
+  NotSignedInAndNotRegistered,
+  NotSignedInButRegistered,
+  SignedIn
 }

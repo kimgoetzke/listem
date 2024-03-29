@@ -10,7 +10,7 @@
     <Style TargetType="Button" x:Key="GradientButton">
         <Setter Property="Margin" Value="5" />
         <Setter Property="CornerRadius" Value="10" />
-        <Setter Property="FontFamily" Value="{OnPlatform WinUI=MulishSemiBold, Default=Bold}" />
+        <Setter Property="FontFamily" Value="{OnPlatform WinUI=MulishSemiBold, Default=MulishBold}" />
         <Setter Property="FontAttributes" Value="{OnPlatform WinUI=None, Default=Bold}" />
         <Setter Property="WidthRequest" Value="{OnPlatform WinUI=200, Default=100}" />
         <Setter Property="MaximumWidthRequest" Value="200" />
@@ -179,7 +179,7 @@
     <!-- Spans -->
     <Style TargetType="Span" x:Key="Highlight">
         <Setter Property="TextColor" Value="{DynamicResource TextHighlightColor}" />
-        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontFamily" Value="MulishBold" />
         <Setter Property="TextTransform" Value="Uppercase" />
     </Style>
     <Style TargetType="Span" x:Key="StandardSpan">

@@ -1,17 +1,22 @@
 using Listem.Mobile.Models;
+using MongoDB.Bson;
 
 namespace Listem.Mobile.Services;
 
 public interface IItemService
 {
-    Task<List<ObservableItem>> GetAllByListIdAsync(string listId);
-    Task CreateOrUpdateAsync(ObservableItem observableItem);
-    Task DeleteAsync(ObservableItem observableItem);
-    Task DeleteAllByListIdAsync(string listId);
-    Task UpdateAllToDefaultCategoryAsync(string listId);
-    Task UpdateAllToCategoryAsync(string categoryName, string listId);
+  Task CreateAsync(Item item);
+  Task UpdateAsync(
+    Item item,
+    string? name = null,
+    string? ownedBy = null,
+    ISet<string>? sharedWith = null,
+    Category? category = null,
+    int? quantity = null,
+    bool? isImportant = null
+  );
+  Task DeleteAsync(Item item);
+  Task DeleteAllInListAsync(List list);
+  Task ResetAllToDefaultCategoryAsync(List list);
+  Task ResetSelectedToDefaultCategoryAsync(List list, Category category);
 }
-
-public interface IApiItemService : IItemService;
-
-public interface ILocalItemService : IItemService;

@@ -4,9 +4,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Listem.Mobile.Models"
              xmlns:viewModel="clr-namespace:Listem.Mobile.ViewModel"
+             xmlns:controls="clr-namespace:Listem.Mobile.Views.Controls"
              x:Class="Listem.Mobile.Views.Controls.ListSummaryControl">
 
-    <CollectionView ItemsSource="{Binding Lists}"
+    <CollectionView ItemsSource="{Binding ObservableLists}"
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
                     SelectionMode="None"
@@ -19,7 +20,7 @@
 
         <!-- Content: Box -->
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:ObservableList}">
+            <DataTemplate x:DataType="{x:Type models:List}">
                 <FlexLayout>
 
                     <!-- Box -->
@@ -36,7 +37,7 @@
                         </Frame.GestureRecognizers>
 
                         <!-- Box: List summary -->
-                        <Grid RowDefinitions="Auto, *, Auto">
+                        <Grid RowDefinitions="Auto, Auto, *, Auto">
 
                             <!-- List summary: Title and edit button -->
                             <Grid Grid.Row="0" ColumnDefinitions="*, Auto" HorizontalOptions="Fill">
@@ -55,14 +56,34 @@
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="Start"
-                                             WidthRequest="40"
-                                             HeightRequest="40" />
+                                             WidthRequest="32"
+                                             HeightRequest="32" />
                             </Grid>
 
+                            <HorizontalStackLayout Grid.Row="1" Spacing="5">
+                                <controls:Tag TagColor="{DynamicResource AccentBright}"
+                                              Text="Shared"
+                                              IsVisible="{Binding IsShared}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                              CommandParameter="{Binding .}" />
+                                <controls:Tag TagColor="{DynamicResource Neutral}"
+                                              Text="Collaborator"
+                                              IsVisible="{Binding IsSharedWithMe}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                              CommandParameter="{Binding .}" />
+                                <controls:Tag TagColor="{DynamicResource AccentDark}"
+                                              TextColor="{DynamicResource TextColorInverted}"
+                                              Text="Owner"
+                                              IsVisible="{Binding IsSharedByMe}"
+                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                              CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+
                             <!-- List summary: Items inside the list -->
-                            <CollectionView Grid.Row="1" ItemsSource="{Binding Items}"
+                            <CollectionView Grid.Row="2"
+                                            ItemsSource="{Binding Items}"
                                             VerticalOptions="Fill"
-                                            Margin="0,5,0,0"
+                                            Margin="0,15,0,0"
                                             BackgroundColor="Transparent"
                                             SelectionMode="None">
 
@@ -74,17 +95,25 @@
 
                                 <!-- Items inside the list: Content -->
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate x:DataType="{x:Type models:ObservableItem}">
-                                        <HorizontalStackLayout HorizontalOptions="Start" Padding="0" Margin="0">
+                                    <DataTemplate x:DataType="{x:Type models:Item}">
+                                        <HorizontalStackLayout HorizontalOptions="Fill" Padding="0" Margin="0"
+                                                               HeightRequest="30"
+                                                               VerticalOptions="Fill">
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer
-                                                    Command="{Binding Source={x:Reference ParentCollectionView}, Path=SelectedItem}"
-                                                    CommandParameter="{Binding .}" />
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                                    CommandParameter="{Binding Path=List}" />
                                             </HorizontalStackLayout.GestureRecognizers>
-                                            <CheckBox Scale="0.8" IsEnabled="False" />
-                                            <Label Text="{Binding Title}"
+                                            <CheckBox Scale="0.8" IsEnabled="False" Margin="-13,0,0,0" />
+                                            <Label Text="{Binding Name}"
                                                    VerticalOptions="Center"
-                                                   TextColor="{DynamicResource TextColor}" />
+                                                   TextColor="{DynamicResource TextColor}">
+                                                <Label.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
+                                                        CommandParameter="{Binding Path=List}" />
+                                                </Label.GestureRecognizers>
+                                            </Label>
                                         </HorizontalStackLayout>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
@@ -110,24 +139,34 @@
                             </CollectionView>
 
                             <!-- Box: Gradients transparent to white drawn over the CollectionView -->
-                            <BoxView Grid.Row="1"
+                            <BoxView Grid.Row="2"
                                      FlexLayout.Grow="1"
                                      Style="{DynamicResource LeftTransparentToRightWhite}" />
 
-                            <BoxView Grid.Row="1"
+                            <BoxView Grid.Row="2"
                                      FlexLayout.Grow="1"
                                      Style="{DynamicResource TopTransparentToBottomWhite}" />
 
                             <!-- Box: Bottom bar with list options -->
-                            <Grid Grid.Row="2" HorizontalOptions="Fill">
+                            <Grid Grid.Row="3" HorizontalOptions="Fill">
                                 <ImageButton Source="bin_secondary_margin.png"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=RemoveListCommand}"
                                              CommandParameter="{Binding .}"
+                                             IsVisible="{Binding IsMine}"
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="End"
                                              WidthRequest="40"
                                              HeightRequest="40" />
+                                <ImageButton Source="exit_secondary_margin.png"
+                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=ExitListCommand}"
+                                             CommandParameter="{Binding .}"
+                                             IsVisible="{Binding IsSharedWithMe}"
+                                             Aspect="AspectFit"
+                                             HorizontalOptions="End"
+                                             VerticalOptions="End"
+                                             WidthRequest="36"
+                                             HeightRequest="36" />
                             </Grid>
 
                         </Grid>

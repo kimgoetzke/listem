@@ -7,210 +7,195 @@ using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
+using Microsoft.Extensions.Logging;
+using Realms;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class MainViewModel : ObservableObject
+public partial class MainViewModel : BaseViewModel
 {
-    [ObservableProperty]
-    private ObservableCollection<ObservableList> _lists = [];
+  [ObservableProperty]
+  private IQueryable<List> _lists = null!;
 
-    [ObservableProperty]
-    private ObservableList _newList;
+  [ObservableProperty]
+  private ObservableCollection<List> _observableLists = [];
 
-    [ObservableProperty]
-    private ObservableCollection<ObservableTheme> _themes = [];
+  [ObservableProperty]
+  private ObservableCollection<ObservableTheme> _themes = [];
 
-    [ObservableProperty]
-    private ObservableTheme _currentTheme;
+  [ObservableProperty]
+  private ObservableTheme _currentTheme;
 
-    [ObservableProperty]
-    private string? _currentUserEmail;
+  [ObservableProperty]
+  private string? _currentUserEmail;
 
-    [ObservableProperty]
-    private bool _isUserSignedIn;
+  [ObservableProperty]
+  private bool _isUserSignedIn;
 
-    private readonly AuthService _authService;
-    private readonly IListService _listService;
-    private readonly IItemService _itemService;
+  private readonly IServiceProvider _serviceProvider;
+  private readonly IListService _listService;
+  private readonly IItemService _itemService;
+  private readonly ILogger _logger;
+  private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
-    public MainViewModel(IServiceProvider serviceProvider)
-    {
-        _listService = serviceProvider.GetService<IListService>()!;
-        _itemService = serviceProvider.GetService<IItemService>()!;
-        _authService = serviceProvider.GetService<AuthService>()!;
-        NewList = new ObservableList();
-        Lists = [];
-        Themes = ThemeHandler.GetAllThemesAsCollection();
-        CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
+  public MainViewModel(IServiceProvider serviceProvider)
+  {
+    IsBusy = true;
+    _serviceProvider = serviceProvider;
+    _listService = serviceProvider.GetService<IListService>()!;
+    _itemService = serviceProvider.GetService<IItemService>()!;
+    _logger = serviceProvider.GetService<ILogger<MainViewModel>>()!;
+    GetSortedLists();
+    Themes = ThemeHandler.GetAllThemesAsCollection();
+    CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
 
-        WeakReferenceMessenger.Default.Register<ItemRemovedFromListMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log(
-                    $"Received message: Removing '{m.Value.Item.Title}' from {m.Value.ListId}"
-                );
-                Lists.First(l => l.Id == m.Value.ListId).Items.Remove(m.Value.Item);
-            }
+    WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
+      this,
+      (_, m) =>
+      {
+        _logger.Info(
+          "[MainViewModel] Received message: Current user status has changed to: {User}",
+          m.Value
         );
+        CurrentUserEmail = m.Value.EmailAddress;
+        IsUserSignedIn = m.Value.IsSignedIn;
+      }
+    );
+    IsBusy = false;
+  }
 
-        WeakReferenceMessenger.Default.Register<ItemAddedToListMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log($"Received message: Adding '{m.Value.Item.Title}' to {m.Value.ListId}");
-                Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
-            }
-        );
+  // TODO: Implement sorting and filtering
+  private void GetSortedLists()
+  {
+    Lists = _realm.All<List>().OrderByDescending(l => l.UpdatedOn);
+    UpdateObservableLists();
+  }
 
-        WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
-            this,
-            (_, m) =>
-            {
-                Logger.Log(
-                    $"[MainViewModel] Received message: Current user status has changed to: {m.Value}"
-                );
-                CurrentUserEmail = m.Value.EmailAddress;
-                IsUserSignedIn = m.Value.IsSignedIn;
-            }
-        );
-    }
-
-    public async Task InitialiseUser()
+  // Pretty nasty but the UI doesn't update when changes are made to the Realm collection, so this is
+  // an attempt to make sure the list summaries are always reflecting the current state of the Realm.
+  // Could possibly remove the Lists property entirely but need to test if that would work.
+  private void UpdateObservableLists()
+  {
+    ObservableLists.Clear();
+    foreach (var list in Lists)
     {
-        if (!_authService.IsOnline())
-        {
-            Notifier.ShowToast("No internet connection - you're in offline mode");
-        }
-        var currentUser = await _authService.GetCurrentUser();
-        CurrentUserEmail = currentUser.EmailAddress;
-        IsUserSignedIn = currentUser.IsSignedIn;
-        Logger.Log($"Updated current user's email to: {CurrentUserEmail}");
+      ObservableLists.Add(list);
     }
+  }
 
-    public async Task LoadLists()
+  public void InitialiseUser()
+  {
+    var currentUser = RealmService.User;
+    CurrentUserEmail = currentUser.EmailAddress;
+    IsUserSignedIn = currentUser.IsSignedIn;
+  }
+
+  public void TriggerListPropertyChange()
+  {
+    OnPropertyChanged(nameof(Lists));
+    UpdateObservableLists();
+  }
+
+  [RelayCommand]
+  private async Task AddList(string name)
+  {
+    if (name.Length == 0)
+      return;
+
+    var newList = new List
     {
-        Logger.Log("Loading lists from database");
-        var lists = await _listService.GetAllAsync();
-        foreach (var list in lists)
-        {
-            var items = await _itemService.GetAllByListIdAsync(list.Id!);
-            foreach (var item in items)
-            {
-                list.Items.Add(item);
-            }
+      Name = StringProcessor.TrimAndCapitalise(name),
+      OwnedBy = RealmService.User.Id!,
+      ListType = ListType.Standard.ToString(),
+      UpdatedOn = DateTime.Now
+    };
+    await _listService.CreateAsync(newList);
+    GetSortedLists();
+  }
 
-            Lists.Add(list);
-        }
-        SortLists();
-    }
-
-    [RelayCommand]
-    private async Task AddList(string name)
+  [RelayCommand]
+  private async Task RemoveList(List list)
+  {
+    if (!await IsDeletionConfirmedByUser(list.Name))
     {
-        if (name.Length == 0)
-            return;
-
-        NewList = new ObservableList
-        {
-            Name = name,
-            AddedOn = DateTime.Now,
-            UpdatedOn = DateTime.Now
-        };
-
-        NewList.Name = StringProcessor.TrimAndCapitalise(NewList.Name);
-        await AddNewList(NewList);
-
-        NewList = new ObservableList();
-        OnPropertyChanged(nameof(NewList));
-        OnPropertyChanged(nameof(Lists));
+      _logger.Info("Cancelled action to delete: {List}", list.ToLog());
+      return;
     }
 
-    private async Task AddNewList(ObservableList newList)
+    IsBusy = true;
+    await _itemService.DeleteAllInListAsync(list);
+    await _listService.DeleteAsync(list);
+    IsBusy = false;
+  }
+
+  private static async Task<bool> IsDeletionConfirmedByUser(string listName)
+  {
+    return await Shell.Current.DisplayAlert(
+      "Delete list",
+      $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?",
+      "Yes",
+      "No"
+    );
+  }
+
+  [RelayCommand]
+  private async Task ExitList(List list)
+  {
+    if (
+      !await Notifier.ShowConfirmationAlertAsync(
+        "Exit list",
+        "You don't own this list but you can remove yourself from this list without deleting it for the owner. Do you want to continue?"
+      )
+    )
     {
-        await _listService.CreateOrUpdateAsync(newList);
-        Lists.Add(newList);
-        Notifier.ShowToast($"Added: {newList.Name}");
-        Logger.Log($"Added list: {newList.ToLoggableString()}");
-        SortLists();
+      _logger.Info("Cancelled action to exit list: {List}", list.ToLog());
+      return;
     }
 
-    private void SortLists()
-    {
-        Lists = new ObservableCollection<ObservableList>(Lists.OrderBy(l => l.UpdatedOn).Reverse());
-        OnPropertyChanged(nameof(Lists));
-    }
+    IsBusy = true;
+    var id = list.SharedWith.First(id => id == RealmService.User.Id);
+    await _listService.RevokeAccess(list, id);
+    IsBusy = false;
+  }
 
-    [RelayCommand]
-    private async Task RemoveList(ObservableList list)
-    {
-        var isConfirmed = await IsDeletionConfirmedByUser(list.Name);
+  [RelayCommand]
+  private Task SetTheme(ObservableTheme? theme)
+  {
+    if (theme == null)
+      return Task.CompletedTask;
 
-        if (!isConfirmed)
-        {
-            Logger.Log($"Cancelled action to delete: {list.ToLoggableString()}");
-            return;
-        }
+    _logger.Info("Changing theme to: {Theme}", theme);
+    ThemeHandler.SetTheme(theme.Name);
+    CurrentTheme = theme;
+    OnPropertyChanged(nameof(CurrentTheme));
+    return Task.CompletedTask;
+  }
 
-        Logger.Log($"Removing list: {list.ToLoggableString()}");
-        await _listService.DeleteAsync(list);
-        Lists.Remove(list);
-    }
+  [RelayCommand]
+  private async Task BackToStartPage()
+  {
+    IsBusy = true;
+    await RealmService.SignOutAsync();
+    await Shell.Current.Navigation.PopToRootAsync();
+    IsUserSignedIn = false;
+    IsBusy = false;
+  }
 
-    private static async Task<bool> IsDeletionConfirmedByUser(string listName)
-    {
-        return await Shell.Current.DisplayAlert(
-            "Delete list",
-            $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?",
-            "Yes",
-            "No"
-        );
-    }
+  [RelayCommand]
+  private async Task TapList(List list)
+  {
+    IsBusy = true;
+    _logger.Info("Opening list: {List}", list.ToLog());
+    await Shell.Current.Navigation.PushAsync(new ListPage(list, _serviceProvider));
+    IsBusy = false;
+  }
 
-    [RelayCommand]
-    private Task SetTheme(ObservableTheme? theme)
-    {
-        if (theme == null)
-            return Task.CompletedTask;
-
-        Logger.Log($"Changing theme to: {theme}");
-        ThemeHandler.SetTheme(theme.Name);
-        CurrentTheme = theme;
-        OnPropertyChanged(nameof(CurrentTheme));
-        return Task.CompletedTask;
-    }
-
-    // ReSharper disable once UnusedMember.Local
-    private static async Task<bool> IsRestartConfirmed()
-    {
-        return await Shell.Current.DisplayAlert(
-            "Restart required",
-            $"For the theme change to take full effect, you'll need to restart the application. Would you like to close the application now or later?",
-            "Now",
-            "Later"
-        );
-    }
-
-    [RelayCommand]
-    private async Task BackToStartPage()
-    {
-        _authService.SignOut();
-        IsUserSignedIn = false;
-        await Shell.Current.Navigation.PopToRootAsync();
-    }
-
-    [RelayCommand]
-    private static async Task TapList(ObservableList list)
-    {
-        Logger.Log($"Opening list: {list.ToLoggableString()}");
-        await Shell.Current.Navigation.PushAsync(new ListPage(list));
-    }
-
-    [RelayCommand]
-    private static async Task EditList(ObservableList list)
-    {
-        Logger.Log($"Editing list: {list.ToLoggableString()}");
-        await Shell.Current.Navigation.PushModalAsync(new EditListPage(list));
-    }
+  [RelayCommand]
+  private async Task EditList(List list)
+  {
+    IsBusy = true;
+    _logger.Info("Editing list: {List}", list.ToLog());
+    await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
+    IsBusy = false;
+  }
 }

@@ -19,7 +19,7 @@
             <Grid Margin="0, 15, 0,0">
                 <BoxView VerticalOptions="End" HeightRequest="25"></BoxView>
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
-                             Command="{Binding BackCommand}"
+                             Command="{Binding SaveAndBackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="15, 0" />
                 <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
                        VerticalOptions="Center" />
@@ -38,7 +38,7 @@
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding ObservableItem.Title, Mode=TwoWay}" />
+                    <Entry Text="{Binding Item.Name, Mode=TwoWay}" />
                 </Frame>
             </Grid>
 
@@ -53,8 +53,8 @@
                             <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
                             <Picker Grid.Column="1"
                                     Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select category'}"
-                                    SelectedItem="{Binding CurrentCategory, Mode=TwoWay}"
                                     ItemsSource="{Binding Categories}"
+                                    SelectedItem="{Binding CurrentCategory}"
                                     TextColor="{DynamicResource TextColor}"
                                     TitleColor="{DynamicResource PickerTitleColor}"
                                     MinimumWidthRequest="400" MaximumWidthRequest="850"
@@ -70,10 +70,10 @@
                 <HorizontalStackLayout Grid.Column="0" Padding="5">
                     <Label Text="Important: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="IsImportantProperty"
-                           Text="{Binding ObservableItem.IsImportant, Converter={StaticResource BoolToTextConverter}}"
+                           Text="{Binding Item.IsImportant, Converter={StaticResource BoolToTextConverter}}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
-                <Switch IsToggled="{Binding ObservableItem.IsImportant, Mode=TwoWay}"
+                <Switch IsToggled="{Binding Item.IsImportant, Mode=TwoWay}"
                         Grid.Column="1"
                         VerticalOptions="Center"
                         Toggled="IsImportantSwitch_OnToggled"
@@ -90,10 +90,10 @@
                 <HorizontalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
                     <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="QuantityProperty"
-                           Text="{Binding ObservableItem.Quantity}"
+                           Text="{Binding Item.Quantity}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
-                <Stepper Value="{Binding ObservableItem.Quantity}"
+                <Stepper Value="{Binding Item.Quantity}"
                          Grid.Column="1"
                          Minimum="1" Maximum="99" Increment="1"
                          VerticalOptions="Center"
@@ -104,13 +104,8 @@
             <!-- Added on -->
             <HorizontalStackLayout Padding="0, 5, 0, 40" Margin="5" VerticalOptions="Center">
                 <Label Text="Added on: " Style="{DynamicResource ItemProperty}" />
-                <Label Text="{Binding ObservableItem.AddedOn}" Style="{DynamicResource ItemProperty}" />
+                <Label Text="{Binding Item.Id.CreationTime}" Style="{DynamicResource ItemProperty}" />
             </HorizontalStackLayout>
-
-            <!-- Save button -->
-            <Button Text="Save"
-                    Style="{DynamicResource GradientButton}"
-                    Command="{Binding SaveAndBackCommand}" />
 
         </VerticalStackLayout>
 
