@@ -107,20 +107,25 @@ public partial class EditListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private async Task Share(string userName)
+  private async Task Share(string email)
   {
-    if (string.IsNullOrWhiteSpace(userName))
+    if (string.IsNullOrWhiteSpace(email))
       return;
 
-    userName = userName.ToLower();
-    if (await _listService.ShareWith(List, userName))
+    email = email.ToLower();
+    if (email == RealmService.User.EmailAddress)
     {
-      Notifier.ShowToast($"Shared list with: {userName}");
+      Notifier.ShowToast("Cannot share list with yourself");
+      return;
+    }
+    if (await _listService.ShareWith(List, email))
+    {
+      Notifier.ShowToast($"Shared list with: {email}");
       OnPropertyChanged(nameof(List));
       OnPropertyChanged(nameof(IsShared));
       return;
     }
-    Notifier.ShowToast($"Cannot share list with '{userName}' - user not found");
+    Notifier.ShowToast($"Cannot share list with '{email}' - user not found");
   }
 
   [RelayCommand]
