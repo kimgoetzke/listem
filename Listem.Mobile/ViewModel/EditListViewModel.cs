@@ -104,15 +104,23 @@ public partial class EditListViewModel : BaseViewModel
       return;
 
     userName = userName.ToLower();
-    await _listService.ShareWith(List, userName);
-    Notifier.ShowToast($"Shared list with: {userName}");
+    if (await _listService.ShareWith(List, userName))
+    {
+      Notifier.ShowToast($"Shared list with: {userName}");
+      OnPropertyChanged(nameof(List));
+      OnPropertyChanged(nameof(IsShared));
+      return;
+    }
+    Notifier.ShowToast($"Cannot share list with '{userName}' - user not found");
   }
 
   [RelayCommand]
   private async Task RevokeAccess(string id)
   {
     await _listService.RevokeAccess(List, id);
-    Notifier.ShowToast($"Revoked access of: {id}");
+    OnPropertyChanged(nameof(List));
+    OnPropertyChanged(nameof(IsShared));
+    Notifier.ShowToast($"Revoked access for: {id}");
   }
 
   [RelayCommand]
@@ -127,6 +135,8 @@ public partial class EditListViewModel : BaseViewModel
       return;
 
     await _listService.UpdateAsync(List, sharedWith: new HashSet<string>());
+    OnPropertyChanged(nameof(List));
+    OnPropertyChanged(nameof(IsShared));
     Notifier.ShowToast("List is now private");
   }
 
