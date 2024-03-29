@@ -21,6 +21,7 @@ Listem.sln.DotSettings.user
 /Listem.Mobile/atlasConfig.json
 /Listem.Mobile/FodyWeavers.xsd
 /Listem.Mobile/bin/
+/Listem.Mobile/listem.keystore
 # Shared
 /Listem.Shared/obj/
 /Listem.Shared/bin/

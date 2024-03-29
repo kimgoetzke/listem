@@ -4,8 +4,7 @@ This repository contains an Android application and the relevant backend. The fi
 list Android app written in C# using .NET 8 MAUI, the CommunityToolkit, and MongoDB Atlas with Realm and Flexible Sync.
 
 > [!IMPORTANT]  
-> This project is a work in progress and actively being worked on. While the backend has been connected, there is no
-> data sync when switching between online and offline modes. The app is also configured for localhost only.
+> This project is a work in progress and still actively being worked on.
 
 The goals were to 1) learn something about .NET MAUI and Android app development by building on
 my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) which I had
@@ -63,6 +62,17 @@ This assumes that the Android SDK is installed and the `ANDROID_HOME` environmen
 
 APK file can then be found in `ShoppingList\bin\Release\net8.0-android\publish\` and installed directly on any Android
 phone.
+
+### How to publish the app to the Google Play Store
+
+1. Create a keystore
+   with `keytool -genkey -v -keystore listem.keystore -alias listem -keyalg RSA -keysize 2048 -validity 10000` and set
+   the password as environment variable `ANDROID_PASS` 
+2. Publish and sign the app:
+    ```shell
+    dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME /p:AndroidSigningKeyPass=$env:ANDROID_PASS /p:AndroidSigningStorePass=$env:ANDROID_PASS
+    ```
+3. Follow the usual steps to upload to the Google Play Console e.g. see [Microsoft - Publish a .NET MAUI app for Android](https://learn.microsoft.com/en-us/dotnet/maui/android/deployment/?view=net-maui-8.0)
 
 ### How to run UI tests
 
