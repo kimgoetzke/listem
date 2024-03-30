@@ -19,7 +19,7 @@
 
         <!-- Content -->
         <VerticalStackLayout Grid.Row="1"
-                             Padding="20,0 ,20,150"
+                             Padding="20,0 ,20,40"
                              BackgroundColor="{DynamicResource BackgroundColor}"
                              MinimumWidthRequest="400" MaximumWidthRequest="850"
                              VerticalOptions="Center"
