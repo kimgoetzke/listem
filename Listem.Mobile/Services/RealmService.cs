@@ -195,7 +195,8 @@ public static class RealmService
   private static (string queryName, IQueryable<T> query) Query<T>(Realm realm)
     where T : IRealmObject, IShareable
   {
-    var query = realm.All<T>().Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", User.Id, User.Id);
+    var userId = User.Id ?? _app.CurrentUser?.Id;
+    var query = realm.All<T>().Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", userId, userId);
     return (typeof(T).Name + "Query", query);
   }
 

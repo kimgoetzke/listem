@@ -37,7 +37,6 @@ public class User
 
   public void Refresh(Realms.Sync.User realmUser)
   {
-    EmailAddress = realmUser.Profile.Email;
     Id = realmUser.Id;
     AccessToken = realmUser.AccessToken;
     RefreshToken = realmUser.RefreshToken;
@@ -48,9 +47,9 @@ public class User
   {
     if (realmUser.Profile.Email != null && realmUser.Profile.Email != EmailAddress)
     {
-      Id = realmUser.Id;
       EmailAddress = realmUser.Profile.Email;
     }
+    Id = realmUser.Id;
     AccessToken = realmUser.AccessToken;
     RefreshToken = realmUser.RefreshToken;
     TokenExpiresAt = DateTime.Now.AddDays(30);
