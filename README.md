@@ -37,10 +37,6 @@ addition, I wanted to 3) create a fully deployable application.
 - Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
 
-### Demo
-
-![Demo GIF](./assets/demo.gif)
-
 ### How to configure your environment for development
 
 1. Set environment variables for builds and running tests
