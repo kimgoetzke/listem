@@ -134,6 +134,10 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
       Quantity = quantity,
       IsImportant = isImportant
     };
+    foreach (var id in list.SharedWith)
+    {
+      item.SharedWith.Add(id);
+    }
     itemCandidates.Add(item);
     itemCount++;
   }

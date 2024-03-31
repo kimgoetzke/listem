@@ -70,10 +70,12 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       foreach (var item in list.Items)
       {
         item.SharedWith.Add(id);
+        item.UpdatedOn = DateTimeOffset.Now;
+        logger.Info("Shared: '{Item}' with {User}", item.ToLog(), id);
       }
       list.UpdatedOn = DateTimeOffset.Now;
     });
-    logger.Info("Shared: {List} with {User}", list.ToLog(), email);
+    logger.Info("Shared: '{List}' with {User}", list.ToLog(), id);
     return true;
   }
 
@@ -85,6 +87,8 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       foreach (var item in list.Items)
       {
         item.SharedWith.Remove(id);
+        item.UpdatedOn = DateTimeOffset.Now;
+        logger.Info("Removed access of user '{User}' from {Item}", item.ToLog(), id);
       }
       list.UpdatedOn = DateTimeOffset.Now;
     });

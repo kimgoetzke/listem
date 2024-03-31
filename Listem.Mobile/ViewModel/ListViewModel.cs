@@ -70,6 +70,10 @@ public partial class ListViewModel : BaseViewModel
       IsImportant = NewItemIsImportant,
       UpdatedOn = DateTime.Now
     };
+    foreach (var id in CurrentList.SharedWith)
+    {
+      newItem.SharedWith.Add(id);
+    }
 
     await _itemService.CreateAsync(newItem);
     Notifier.ShowToast($"Added: {newItem.Name}");
