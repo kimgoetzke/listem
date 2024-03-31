@@ -156,6 +156,7 @@ public partial class MainViewModel : BaseViewModel
     IsBusy = true;
     var id = list.SharedWith.First(id => id == RealmService.User.Id);
     await _listService.RevokeAccess(list, id);
+    UpdateObservableLists();
     IsBusy = false;
   }
 
