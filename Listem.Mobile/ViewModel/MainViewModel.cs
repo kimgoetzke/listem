@@ -125,6 +125,7 @@ public partial class MainViewModel : BaseViewModel
     IsBusy = true;
     await _itemService.DeleteAllInListAsync(list);
     await _listService.DeleteAsync(list);
+    UpdateObservableLists();
     IsBusy = false;
   }
 
