@@ -110,13 +110,7 @@ public partial class MainPage
   }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-  private void SignUpOrSignInButton_OnClicked(object? sender, EventArgs e)
-  {
-    CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
-    _viewModel.BackToStartPageCommand.Execute(null);
-  }
-
-  private void SignOutButton_OnClicked(object? sender, EventArgs e)
+  private void SignUpInOrOutButton_OnClicked(object? sender, EventArgs e)
   {
     CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
     _viewModel.BackToStartPageCommand.Execute(null);
