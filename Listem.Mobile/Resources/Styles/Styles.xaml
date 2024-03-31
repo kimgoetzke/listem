@@ -256,19 +256,20 @@
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="TopGray150ToBottomTransparentBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="Transparent" Offset="1.0" />
-        <GradientStop Color="{DynamicResource Gray150}" Offset="0.1" />
+        <!-- The below should be Grey15  -->
+        <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0.1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="TopTransparentToBottomWhiteBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="Transparent" Offset="0.9" />
-        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+        <GradientStop Color="{DynamicResource BackgroundColorAccent}" Offset="1.0" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush1" StartPoint="0.9,0" EndPoint="1,0">
         <GradientStop Color="Transparent" Offset="0.1" />
-        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+        <GradientStop Color="{DynamicResource BackgroundColorAccent}" Offset="1.0" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush2" StartPoint="0.8,0" EndPoint="1,0">
         <GradientStop Color="Transparent" Offset="0.1" />
-        <GradientStop Color="{DynamicResource White}" Offset="1.0" />
+        <GradientStop Color="{DynamicResource BackgroundColorAccent}" Offset="1.0" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="LeftToRightTestBrush" StartPoint="0.9,0" EndPoint="1,0">
         <GradientStop Color="Magenta" Offset="0.1" />
@@ -348,7 +349,7 @@
     <Style TargetType="Frame" x:Key="EntryFrame">
         <Setter Property="HasShadow" Value="False" />
         <Setter Property="BorderColor" Value="Transparent" />
-        <Setter Property="BackgroundColor" Value="{DynamicResource Gray100}" />
+        <Setter Property="BackgroundColor" Value="{DynamicResource BackgroundColor}" />
         <Setter Property="Margin" Value="0, 10" />
         <Setter Property="Padding" Value="10, 0" />
         <Setter Property="VerticalOptions" Value="Fill" />

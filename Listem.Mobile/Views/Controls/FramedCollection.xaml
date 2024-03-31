@@ -47,7 +47,7 @@
                                    VerticalOptions="Fill"
                                    HorizontalOptions="Fill"
                                    BorderColor="Transparent"
-                                   BackgroundColor="{DynamicResource White}">
+                                   BackgroundColor="{DynamicResource BackgroundColorAccent}">
 
                                 <Frame.Triggers>
                                     <DataTrigger TargetType="Frame"

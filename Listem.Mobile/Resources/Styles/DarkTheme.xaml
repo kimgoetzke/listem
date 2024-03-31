@@ -30,13 +30,13 @@
     <Color x:Key="SubHeadlineColor">#D8D8D8</Color>
     <Color x:Key="TextColor">#D8D8D8</Color>
     <Color x:Key="TextColorVariant">#EFF3F6</Color>
-    <Color x:Key="TextColorInverted">White</Color>
+    <Color x:Key="TextColorInverted">#0E3C53</Color>
     <Color x:Key="TextHighlightColor">#CE6E4B</Color>
     <Color x:Key="LightTextColor">#D8D8D8</Color>
     <Color x:Key="PlaceholderColor">#919191</Color>
     <Color x:Key="ButtonTextColor">White</Color>
     <Color x:Key="MenuHeaderColor">#F4F4F4</Color>
-    <Color x:Key="ItemPropertyColor">#0E3C53</Color>
+    <Color x:Key="ItemPropertyColor">#F4F4F4</Color>
     <Color x:Key="ThickLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="ThinLineSeparatorColor">#0E3C53</Color>
     <Color x:Key="CheckboxColor">#3CADD3</Color>
