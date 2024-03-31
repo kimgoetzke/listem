@@ -159,16 +159,16 @@ public partial class MainViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private Task SetTheme(ObservableTheme? theme)
+  private async Task SetTheme(ObservableTheme? theme)
   {
     if (theme == null)
-      return Task.CompletedTask;
+      return;
 
     _logger.Info("Changing theme to: {Theme}", theme);
     ThemeHandler.SetTheme(theme.Name);
     CurrentTheme = theme;
     OnPropertyChanged(nameof(CurrentTheme));
-    return Task.CompletedTask;
+    await Shell.Current.Navigation.PopToRootAsync();
   }
 
   [RelayCommand]

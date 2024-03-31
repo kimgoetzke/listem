@@ -11,7 +11,6 @@
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
                     SelectionMode="None"
-                    x:Name="ParentCollectionView"
                     x:DataType="viewModel:MainViewModel">
 
         <CollectionView.Header>

@@ -77,7 +77,7 @@ public partial class MainPage
   private async Task OpenSettings(CancellationTokenSource cancellationTokenSource)
   {
 #if __ANDROID__ || __IOS__
-    var statusBarColor = (Color)Application.Current!.Resources["AccentBright"];
+    var statusBarColor = (Color)Application.Current!.Resources["MainPageBackStatusBarColour"];
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
     MainPageContent.CornerRadius = 20;

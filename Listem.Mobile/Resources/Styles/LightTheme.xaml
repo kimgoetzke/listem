@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- ReSharper disable InconsistentNaming -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -24,6 +25,7 @@
     <Color x:Key="Gray900">#1F1F1F</Color>
 
     <Color x:Key="StatusBarColor">#EFF3F6</Color>
+    <Color x:Key="MainPageBackStatusBarColour">#48F2D9</Color>
     <Color x:Key="BackgroundColor">#EFF3F6</Color>
     <Color x:Key="BackgroundColorAccent">White</Color>
     <Color x:Key="HeadlineColor">#0E3C53</Color>
