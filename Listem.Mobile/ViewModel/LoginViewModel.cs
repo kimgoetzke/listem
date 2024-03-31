@@ -76,8 +76,10 @@ public partial class LoginViewModel : BaseViewModel
     if (!IsUserSignedIn)
       return;
 
+    IsBusy = true;
     _logger.Info("User is signed in, redirecting now...");
     Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+    IsBusy = false;
   }
 
   [RelayCommand]

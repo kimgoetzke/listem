@@ -68,7 +68,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
     {
       _realm.RemoveRange(list.Items);
     });
-    logger.Info("Removed all items in list '{Name}' {Id}", list.Name, list.Id);
+    logger.Info("Removed all items in list {Name} {Id}", list.Name, list.Id);
   }
 
   public async Task ResetAllToDefaultCategoryAsync(List list)
