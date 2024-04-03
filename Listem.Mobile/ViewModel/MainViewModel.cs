@@ -68,6 +68,7 @@ public partial class MainViewModel : BaseViewModel
   private void GetSortedLists()
   {
     Lists = _realm.All<List>().OrderByDescending(l => l.UpdatedOn);
+    OnPropertyChanged(nameof(Lists));
     UpdateObservableLists();
   }
 
@@ -125,6 +126,7 @@ public partial class MainViewModel : BaseViewModel
     IsBusy = true;
     await _itemService.DeleteAllInListAsync(list);
     await _listService.DeleteAsync(list);
+    OnPropertyChanged(nameof(Lists));
     UpdateObservableLists();
     IsBusy = false;
   }
@@ -145,7 +147,7 @@ public partial class MainViewModel : BaseViewModel
     if (
       !await Notifier.ShowConfirmationAlertAsync(
         "Exit list",
-        "You don't own this list but you can remove yourself from this list without deleting it for the owner. Do you want to continue?"
+        "You don't own this list but you can remove yourself from it without deleting it for the owner. Do you want to continue?"
       )
     )
     {
@@ -155,8 +157,18 @@ public partial class MainViewModel : BaseViewModel
 
     IsBusy = true;
     var id = list.SharedWith.First(id => id == RealmService.User.Id);
-    await _listService.RevokeAccess(list, id);
-    UpdateObservableLists();
+    if (await _listService.RevokeAccess(list, id))
+    {
+      ObservableLists.Remove(list);
+    }
+    else
+    {
+      await Notifier.ShowAlertAsync(
+        "Failed leave shared list",
+        "An error occurred while trying to remove yourself from this shared list. Please try again and contact the developer if this issue persists.",
+        "OK"
+      );
+    }
     IsBusy = false;
   }
 

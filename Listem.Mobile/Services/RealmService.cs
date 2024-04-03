@@ -250,4 +250,11 @@ public static class RealmService
     Logger.Info("Resolved {Id} to {Email} from known user", id, user?.Email);
     return user?.Email ?? "Unknown user";
   }
+
+  public static async Task<bool> RevokeAccess(string listId, string userId)
+  {
+    var result = await _app.CurrentUser!.Functions.CallAsync("revokeMyAccess", listId, userId);
+    Logger.Info("Function 'revokeMyAccess' responded with: {Response}", result);
+    return result.AsNullableBoolean ?? false;
+  }
 }

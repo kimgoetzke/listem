@@ -14,5 +14,5 @@ public interface IListService
   );
   Task DeleteAsync(List list);
   Task<bool> ShareWith(List list, string email);
-  Task RevokeAccess(List list, string id);
+  Task<bool> RevokeAccess(List list, string id);
 }

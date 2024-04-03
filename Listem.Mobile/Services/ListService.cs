@@ -67,31 +67,29 @@ public class ListService(ILogger<CategoryService> logger) : IListService
     await _realm.WriteAsync(() =>
     {
       list.SharedWith.Add(id);
+      list.UpdatedOn = DateTimeOffset.Now;
       foreach (var item in list.Items)
       {
         item.SharedWith.Add(id);
         item.UpdatedOn = DateTimeOffset.Now;
         logger.Info("Shared: '{Item}' with {User}", item.ToLog(), id);
       }
-      list.UpdatedOn = DateTimeOffset.Now;
     });
     logger.Info("Shared: '{List}' with {User}", list.ToLog(), id);
     return true;
   }
 
-  public async Task RevokeAccess(List list, string id)
+  public async Task<bool> RevokeAccess(List list, string id)
   {
-    await _realm.WriteAsync(() =>
-    {
-      list.SharedWith.Remove(id);
-      foreach (var item in list.Items)
-      {
-        item.SharedWith.Remove(id);
-        item.UpdatedOn = DateTimeOffset.Now;
-        logger.Info("Removed access of user '{User}' from {Item}", item.ToLog(), id);
-      }
-      list.UpdatedOn = DateTimeOffset.Now;
-    });
-    logger.Info("Removed access of user '{User}' from {List}", id, list.Name);
+    // Currently handled using serverless function because caller will, by definition, lack permission
+    // to write to a document if they are no longer shared with it.
+    var result = await RealmService.RevokeAccess(list.Id.ToString(), id);
+    logger.Info(
+      "{Result} access of user {User} from {List}",
+      result ? "Removed" : "Failed to remove",
+      id,
+      list.ToLog()
+    );
+    return result;
   }
 }
