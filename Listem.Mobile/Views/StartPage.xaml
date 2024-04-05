@@ -70,7 +70,10 @@
             <BoxView Margin="10" />
 
             <!-- Content: Sign in button -->
-            <Button Style="{DynamicResource GradientButton}" WidthRequest="220" Margin="0, 0, 0, 30"
+            <Button Style="{DynamicResource GradientButton}"
+                    AutomationId="SignInButton"
+                    x:Name="SignInButton"
+                    WidthRequest="220" Margin="0, 0, 0, 30"
                     Text="Sign up or sign in" Command="{Binding GoToSignInCommand}">
                 <Button.Triggers>
                     <DataTrigger TargetType="Button"

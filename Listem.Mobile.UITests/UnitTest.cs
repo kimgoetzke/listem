@@ -9,7 +9,7 @@ public class UnitTest : BaseTest
         var isInstalled = App.IsAppInstalled(AppName);
         Console.WriteLine($"[XXX] {AppName} is installed: {isInstalled}");
         await Task.Delay(TimeSpan.FromSeconds(5));
-        FindUiElement("MenuButton");
+        FindUiElement("SignInButton");
         TakeScreenshot(nameof(CanStartApp));
     }
 

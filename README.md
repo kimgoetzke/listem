@@ -41,8 +41,9 @@ addition, I wanted to 3) create a fully deployable application.
 
 1. Set environment variables for builds and running tests
     1. `ANDROID_HOME` - the absolute path of the Android SDK
-    2. `SHOPPING_LIST_DEBUG_APK` - the absolute path of the debug APK, used by UI tests only
-    3. `SHOPPING_LIST_RELEASE_APK` - the absolute path of the release APK, used by UI tests only
+    2. `LISTEM_DEBUG_APK` - the absolute path of the debug APK, used by UI tests only
+    3. `LISTEM_RELEASE_APK` - the absolute path of the release APK, used by UI tests only
+    4. `ANDROID_PASS` - the password for the keystore used to sign the APK
 2. Run `dotnet restore` in the base directory to restore all dependencies
 
 ### How to build the APK
@@ -63,12 +64,13 @@ phone.
 
 1. Create a keystore
    with `keytool -genkey -v -keystore listem.keystore -alias listem -keyalg RSA -keysize 2048 -validity 10000` and set
-   the password as environment variable `ANDROID_PASS` 
+   the password as environment variable `ANDROID_PASS`
 2. Publish and sign the app:
     ```shell
     dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME /p:AndroidSigningKeyPass=$env:ANDROID_PASS /p:AndroidSigningStorePass=$env:ANDROID_PASS
     ```
-3. Follow the usual steps to upload to the Google Play Console e.g. see [Microsoft - Publish a .NET MAUI app for Android](https://learn.microsoft.com/en-us/dotnet/maui/android/deployment/?view=net-maui-8.0)
+3. Follow the usual steps to upload to the Google Play Console e.g.
+   see [Microsoft - Publish a .NET MAUI app for Android](https://learn.microsoft.com/en-us/dotnet/maui/android/deployment/?view=net-maui-8.0)
 
 ### How to run UI tests
 
@@ -77,6 +79,11 @@ phone.
 > only way to make the app start during tests is to first install the APK on the device and then run the tests. If the
 > APK is ever installed by Appium, the device needs to be wiped and the APK installed again without Appium for the tests
 > to run.
+
+Prerequisites:
+
+1. Install Appium, e.g. with `npm i -g appium`
+2. Install an Appium Android driver: `appium driver install uiautomator2`
 
 To run the tests:
 
