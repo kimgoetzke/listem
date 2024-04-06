@@ -18,7 +18,7 @@ public class AppiumSetup
     public void RunBeforeAnyTests()
     {
         AppiumServerHelper.StartAppiumLocalServer();
-        var apk = Environment.GetEnvironmentVariable("LISTEM_RELEASE_APK");
+        var apk = Environment.GetEnvironmentVariable("LISTEM_DEBUG_APK");
         var androidOptions = new AppiumOptions
         {
             AutomationName = AutomationName.AndroidUIAutomator2,
@@ -34,12 +34,13 @@ public class AppiumSetup
         // androidOptions.AddAdditionalAppiumOption("appium:appWaitActivity", "crc644cb8d77eec54dc0d.MainActivity");
         // androidOptions.AddAdditionalAppiumOption("appium:forceAppLaunch", true);
         _driver = new AndroidDriver(androidOptions);
-        _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
     }
 
     [OneTimeTearDown]
     public void RunAfterAnyTests()
     {
+        // var result = _driver?.TerminateApp(AppName);
+        // Console.WriteLine($"[XXX] [{AppName}] Terminated app: {result}");
         _driver?.Quit();
         AppiumServerHelper.DisposeAppiumLocalServer();
     }
