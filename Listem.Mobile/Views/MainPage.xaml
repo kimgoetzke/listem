@@ -48,6 +48,7 @@
                         WidthRequest="175"
                         Margin="25,10,0,20"
                         Text="Sign up, in or out"
+                        AutomationId="SignUpInOrOutButton"
                         Clicked="SignUpInOrOutButton_OnClicked">
                     <Button.Triggers>
                         <DataTrigger TargetType="Button"
@@ -69,8 +70,7 @@
                        Padding="25,30,20,10" />
 
                 <!-- Themes -->
-                <CollectionView x:Name="ThemeCollectionView"
-                                SelectedItem="{Binding CurrentTheme}"
+                <CollectionView SelectedItem="{Binding CurrentTheme}"
                                 ItemsSource="{Binding Themes}"
                                 VerticalScrollBarVisibility="Never"
                                 SelectionMode="Single"
@@ -130,6 +130,7 @@
 
                 <!-- Content: Menu button -->
                 <ImageButton x:Name="MenuButton"
+                             AutomationId="MenuButton"
                              Clicked="MenuButton_OnTap"
                              Source="menu_neutral.png"
                              Aspect="AspectFit"
@@ -150,7 +151,7 @@
 
                 <!-- Content: Add button -->
                 <Grid Grid.Row="3">
-                    <ImageButton x:Name="AddListButton"
+                    <ImageButton AutomationId="AddListButton"
                                  Clicked="AddListButton_OnClicked"
                                  Source="plus_white.png"
                                  Style="{StaticResource FancyImageButton}"

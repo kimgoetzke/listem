@@ -97,13 +97,14 @@
 
                                     <!-- Left aligned stack: Checkbox -->
                                     <CheckBox x:Name="DoneBox"
+                                              AutomationId="{Binding Name, StringFormat='DoneBox_{0}'}"
                                               IsChecked="False" Scale="1.2"
                                               CheckedChanged="CheckBox_OnCheckChanged"
                                               BindingContext="{Binding .}" />
 
                                     <!-- Left aligned stack: Item name -->
                                     <Label Text="{Binding Name}"
-                                           AutomationId="{Binding Id}"
+                                           AutomationId="{Binding Name, StringFormat='Label_{0}'}"
                                            HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                            HorizontalOptions="Start"
                                            VerticalTextAlignment="Center">
@@ -159,6 +160,7 @@
                                                   TextColor="{DynamicResource TextColorInverted}"
                                                   BackgroundColor="{DynamicResource BackgroundColorAccent}"
                                                   VerticalOptions="Center"
+                                                  AutomationId="{Binding Name, StringFormat='CategoryTag_{0}'}"
                                                   Text="{Binding Category.Name}">
                                         <controls:Tag.Triggers>
                                             <DataTrigger TargetType="controls:Tag"
@@ -173,6 +175,7 @@
                                     <!-- Note: Must be in a Grid as adding a BackgroundColor to the Image makes it ignore its vertical alignment -->
                                     <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}">
                                         <Image x:Name="PriorityIcon"
+                                               AutomationId="{Binding Name, StringFormat='IsImportantIcon_{0}'}"
                                                Source="important_accentbright.png"
                                                Scale="0.5"
                                                IsVisible="False"

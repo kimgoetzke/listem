@@ -18,6 +18,7 @@
                   RowDefinitions="55">
                 <Entry Grid.Column="0"
                        x:Name="StickyEntryField"
+                       AutomationId="StickyEntryField"
                        x:DataType="controls:StickyEntry"
                        BindingContext="{Binding .}"
                        ReturnCommand="{Binding SubmitInputCommand}"

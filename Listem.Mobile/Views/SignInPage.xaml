@@ -40,6 +40,7 @@
                               HorizontalOptions="Fill" ColumnSpacing="5">
                             <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding UserEmail}"
+                                   AutomationId="EmailEntry"
                                    Placeholder="Enter your email address" />
                         </Grid>
                     </Frame>
@@ -55,6 +56,7 @@
                             <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding Password}"
                                    x:Name="PasswordEntry"
+                                   AutomationId="PasswordEntry"
                                    Placeholder="Enter your password" IsPassword="True" />
                         </Grid>
                     </Frame>
@@ -70,7 +72,9 @@
                 </Label>
 
                 <!-- Content: Sign in button -->
-                <Button Style="{DynamicResource GradientButton}" Text="Sign in" WidthRequest="130"
+                <Button Style="{DynamicResource GradientButton}"
+                        AutomationId="SignInButton"
+                        Text="Sign in" WidthRequest="130"
                         Command="{Binding SignInCommand}"
                         CommandParameter="{Binding Source={x:Reference PasswordEntry}}" />
 

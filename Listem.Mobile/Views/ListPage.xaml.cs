@@ -236,8 +236,7 @@ public partial class ListPage
       Margin = new Thickness(10, 0),
       Padding = new Thickness(10, 0),
       HasShadow = false,
-      BackgroundColor = (Color)Application.Current!.Resources["BackgroundColor"],
-      AutomationId = "ListPageCategoryFrame"
+      BackgroundColor = (Color)Application.Current!.Resources["BackgroundColor"]
     };
   }
 
@@ -252,8 +251,7 @@ public partial class ListPage
       Margin = new Thickness(10, 0),
       Padding = new Thickness(10, 0),
       HasShadow = false,
-      BackgroundColor = (Color)Application.Current!.Resources["BackgroundColor"],
-      AutomationId = "ListPageEntryFrame"
+      BackgroundColor = (Color)Application.Current!.Resources["BackgroundColor"]
     };
   }
 
