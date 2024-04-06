@@ -244,6 +244,7 @@ public static class RealmService
     return id.ToString();
   }
 
+  // TODO: Implement this and show the user's email address in the UI instead of the user id
   public static string ResolveToUserEmail(string id)
   {
     var user = KnownUsers.FirstOrDefault(u => u.Id == id);
