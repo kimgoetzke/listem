@@ -190,26 +190,22 @@ public partial class MainViewModel : BaseViewModel
   {
     IsBusy = true;
     await RealmService.SignOutAsync();
-    await Shell.Current.Navigation.PopToRootAsync();
     IsUserSignedIn = false;
     IsBusy = false;
+    await Shell.Current.Navigation.PopToRootAsync();
   }
 
   [RelayCommand]
   private async Task TapList(List list)
   {
-    IsBusy = true;
     _logger.Info("Opening list: {List}", list.ToLog());
     await Shell.Current.Navigation.PushAsync(new ListPage(list, _serviceProvider));
-    IsBusy = false;
   }
 
   [RelayCommand]
   private async Task EditList(List list)
   {
-    IsBusy = true;
     _logger.Info("Editing list: {List}", list.ToLog());
     await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
-    IsBusy = false;
   }
 }
