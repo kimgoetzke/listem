@@ -41,7 +41,7 @@
 
             <!-- Content: Account info text -->
             <Label Text="You have an account with:"
-                   Padding="10"
+                   Padding="10, 0,10,0"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center">
                 <Label.Triggers>
@@ -67,12 +67,11 @@
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center" />
 
-            <BoxView Margin="10" />
+            <BoxView Margin="15" />
 
             <!-- Content: Sign in button -->
             <Button Style="{DynamicResource GradientButton}"
                     AutomationId="SignInButton"
-                    x:Name="SignInButton"
                     WidthRequest="220" Margin="0, 0, 0, 30"
                     Text="Sign up or sign in" Command="{Binding GoToSignInCommand}">
                 <Button.Triggers>
