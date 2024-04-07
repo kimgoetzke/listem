@@ -16,6 +16,7 @@
                          BackgroundColor="{DynamicResource BackgroundColorAccent}">
                 </BoxView>
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
+                             AutomationId="BackButton"
                              Command="{Binding SaveAndBackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="20, 0" />
                 <Label Text="List settings" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
@@ -34,6 +35,7 @@
                     <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                     <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
                         <Entry Text="{Binding CurrentName}"
+                               AutomationId="ListNameEntry"
                                Unfocused="OnEntryUnfocused" />
                     </Frame>
                 </Grid>
@@ -48,7 +50,7 @@
                               HorizontalOptions="Fill" ColumnSpacing="5">
                             <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
                             <Picker Grid.Column="1"
-                                    x:Name="ListTypePicker"
+                                    AutomationId="ListTypePicker"
                                     Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select type'}"
                                     ItemsSource="{Binding ListTypes}"
                                     SelectedItem="{Binding CurrentListType, Mode=TwoWay}"
@@ -68,6 +70,7 @@
                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="0" Padding="5, 10">
                     <Button Grid.Column="0"
                             x:Name="AddCategoryButton"
+                            AutomationId="AddCategoryButton"
                             Text="Add new"
                             Margin="0"
                             Style="{DynamicResource SimpleButton}"
@@ -75,6 +78,7 @@
                             Clicked="AddCategoryButton_OnClicked" />
                     <Button Grid.Column="2"
                             Text="Reset all"
+                            AutomationId="ResetCategoriesButton"
                             Margin="0"
                             Style="{DynamicResource SimpleButton}"
                             VerticalOptions="Fill"
@@ -97,12 +101,14 @@
                       IsVisible="{Binding List.IsMine}">
                     <Button Grid.Column="0"
                             Text="Share"
+                            AutomationId="ShareButton"
                             Margin="0"
                             Style="{DynamicResource SimpleButton}"
                             VerticalOptions="Start"
                             Clicked="ShareWithButton_OnClicked" />
                     <Button Grid.Column="2"
                             Text="Unshare"
+                            AutomationId="UnshareButton"
                             IsVisible="{Binding IsShared}"
                             Margin="0"
                             Style="{DynamicResource SimpleButton}"

@@ -19,6 +19,7 @@
               ColumnDefinitions="Auto, *, Auto, Auto">
             <ImageButton Grid.Column="0" 
                          Source="left_primary.png" 
+                         AutomationId="BackButton"
                          Command="{Binding GoBackCommand}"
                          Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
             <Label Grid.Column="0" Grid.ColumnSpan="3"

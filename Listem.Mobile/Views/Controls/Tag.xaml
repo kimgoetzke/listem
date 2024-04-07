@@ -11,6 +11,7 @@
            BorderColor="Transparent"
            BackgroundColor="{Binding TagColor, Source={x:Reference TagContentView}}">
         <Label Text="{Binding Text, Source={x:Reference TagContentView}}"
+               AutomationId="TagLabel"
                TextColor="{Binding TextColor, Source={x:Reference TagContentView}}"
                FontSize="{DynamicResource FontSizeXS}"
                Padding="3, 0"

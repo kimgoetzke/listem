@@ -124,6 +124,7 @@
 
                                     <!-- Left aligned stack: Quantity label -->
                                     <Label x:Name="QuantityLabel"
+                                           AutomationId="{Binding Name, StringFormat='QuantityLabel_{0}'}"
                                            HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                            IsVisible="False"
                                            HorizontalOptions="Start"

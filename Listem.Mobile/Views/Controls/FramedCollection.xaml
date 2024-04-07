@@ -31,6 +31,7 @@
                                            HeightRequest="75"
                                            WidthRequest="75">
                                         <Image Source="bin_white.png"
+                                               AutomationId="BinIcon"
                                                Aspect="AspectFit"
                                                WidthRequest="25"
                                                HeightRequest="25"
@@ -59,6 +60,7 @@
 
                                 <VerticalStackLayout Padding="5, 5" HorizontalOptions="Fill">
                                     <Label Text="{Binding .}"
+                                           AutomationId="{Binding ., StringFormat='CollectionItem_{0}'}"
                                            HeightRequest="25"
                                            FontSize="{DynamicResource FontSizeM}"
                                            VerticalTextAlignment="Center"
