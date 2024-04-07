@@ -27,12 +27,13 @@ public static class RealmService
     if (_serviceInitialised)
       return true;
 
-    await InitialiseSyncApp();
+    await CreateRealm();
     return await InitialiseUser();
   }
 
-  private static async Task InitialiseSyncApp()
+  private static async Task CreateRealm()
   {
+    Logger.Info("Creating Realm...");
     var config = await JsonProcessor.NotNull(
       () => JsonProcessor.FromFile<AtlasConfig>("atlasConfig.json")
     );
@@ -130,8 +131,8 @@ public static class RealmService
     User.SignOut();
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
-    _mainThreadRealm?.Dispose();
-    _mainThreadRealm = null;
+    DisposeRealm();
+    await CreateRealm();
   }
 
   private static Realm GetRealm()
@@ -257,5 +258,12 @@ public static class RealmService
     var result = await _app.CurrentUser!.Functions.CallAsync("revokeMyAccess", listId, userId);
     Logger.Info("Function 'revokeMyAccess' responded with: {Response}", result);
     return result.AsNullableBoolean ?? false;
+  }
+
+  public static void DisposeRealm()
+  {
+    Logger.Info("Disposing Realm...");
+    _mainThreadRealm?.Dispose();
+    _mainThreadRealm = null;
   }
 }
