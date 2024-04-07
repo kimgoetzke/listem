@@ -15,7 +15,7 @@ using CommunityToolkit.Maui.Core.Platform;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class LoginViewModel : BaseViewModel
+public partial class AuthViewModel : BaseViewModel
 {
   [ObservableProperty]
   private bool _isUserRegistered;
@@ -36,12 +36,12 @@ public partial class LoginViewModel : BaseViewModel
   private string? _passwordConfirmed;
 
   private readonly IServiceProvider _serviceProvider;
-  private readonly ILogger<LoginViewModel> _logger;
+  private readonly ILogger<AuthViewModel> _logger;
 
-  public LoginViewModel(IServiceProvider serviceProvider)
+  public AuthViewModel(IServiceProvider serviceProvider)
   {
     _serviceProvider = serviceProvider;
-    _logger = serviceProvider.GetService<ILogger<LoginViewModel>>()!;
+    _logger = serviceProvider.GetService<ILogger<AuthViewModel>>()!;
     Initialise();
   }
 

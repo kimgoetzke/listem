@@ -7,6 +7,6 @@ public partial class SignInPage
   public SignInPage(IServiceProvider serviceProvider)
   {
     InitializeComponent();
-    BindingContext = serviceProvider.GetService<LoginViewModel>();
+    BindingContext = serviceProvider.GetService<AuthViewModel>();
   }
 }

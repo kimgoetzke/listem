@@ -5,7 +5,7 @@
              x:Class="Listem.Mobile.Views.StartPage"
              xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:DataType="viewmodel:LoginViewModel"
+             x:DataType="viewmodel:AuthViewModel"
              Shell.NavBarIsVisible="False">
 
     <!-- The color has to be static for some reason. It will be white if any DynamicResource is used. -->

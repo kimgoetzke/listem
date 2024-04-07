@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Listem.Mobile.Views.SignUpPage"
              xmlns:viewmodel="clr-namespace:Listem.Mobile.ViewModel"
-             x:DataType="viewmodel:LoginViewModel"
+             x:DataType="viewmodel:AuthViewModel"
              Shell.NavBarIsVisible="False">
 
     <Grid RowDefinitions="Auto, *">

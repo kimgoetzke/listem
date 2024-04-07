@@ -5,12 +5,12 @@ namespace Listem.Mobile.Views;
 
 public partial class StartPage
 {
-  private readonly LoginViewModel _viewModel;
+  private readonly AuthViewModel _viewModel;
 
   public StartPage(IServiceProvider serviceProvider)
   {
     InitializeComponent();
-    _viewModel = serviceProvider.GetService<LoginViewModel>()!;
+    _viewModel = serviceProvider.GetService<AuthViewModel>()!;
     _viewModel.PropertyChanged += ViewModel_PropertyChanged;
     BindingContext = _viewModel;
   }
