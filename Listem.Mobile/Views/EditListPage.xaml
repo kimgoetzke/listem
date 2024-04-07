@@ -90,6 +90,7 @@
                 <!-- Manage categories CollectionView -->
                 <controls:FramedCollection ItemsSource="{Binding Categories}"
                                            DataType="{x:Type x:String}"
+                                           AutomationId="CategoriesCollectionView"
                                            SwipeCommand="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RemoveCategoryCommand}" />
 
                 <!-- Collaborate title -->
@@ -121,10 +122,11 @@
                 <Label Padding="5, 10, 5,0" TextColor="{DynamicResource TextColor}"
                        Text="You don't own this list. Only the owner of a list can add or remove collaborators."
                        FontSize="{DynamicResource FontSizeS}"
-                       IsVisible="{Binding List.IsSharedWithMe}"/>
+                       IsVisible="{Binding List.IsSharedWithMe}" />
                 <controls:FramedCollection ItemsSource="{Binding List.SharedWith}"
                                            DataType="{x:Type x:String}"
                                            IsVisible="{Binding List.IsMine}"
+                                           AutomationId="CollaboratorsCollectionView"
                                            SwipeCommand="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RevokeAccessCommand}" />
 
                 <BoxView Margin="10" />
