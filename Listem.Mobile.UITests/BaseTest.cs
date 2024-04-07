@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using System.Diagnostics.CodeAnalysis;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Windows;
 using OpenQA.Selenium.Support.UI;
@@ -7,72 +8,147 @@ namespace Listem.Mobile.UITests;
 
 public abstract class BaseTest
 {
-    protected static AppiumDriver App => AppiumSetup.AppiumDriver;
-    protected static string AppName => AppiumSetup.AppName;
-    private readonly string _date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+  protected static AppiumDriver App => AppiumSetup.AppiumDriver;
+  protected static string AppName => AppiumSetup.AppName;
+  private readonly string _date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+  private const int DefaultWaitSec = 2;
+  private const int DefaultIntervalMs = 500;
 
-    protected static WebDriverWait Wait(int seconds = 2, int interval = 500)
+  protected static WebDriverWait Wait(
+    int seconds = DefaultWaitSec,
+    int interval = DefaultIntervalMs
+  )
+  {
+    return new WebDriverWait(App, TimeSpan.FromSeconds(seconds))
     {
-        return new WebDriverWait(App, TimeSpan.FromSeconds(seconds))
-        {
-            PollingInterval = TimeSpan.FromMilliseconds(interval)
-        };
-    }
+      PollingInterval = TimeSpan.FromMilliseconds(interval)
+    };
+  }
 
-    protected static AppiumElement Element(string id)
-    {
-        return App.FindElement(Id(id));
-    }
+  protected static AppiumElement Element(string id)
+  {
+    return App.FindElement(Id(id));
+  }
 
-    protected static AppiumElement ElementXPath(string id)
-    {
-        return App.FindElement(By.XPath(id));
-    }
+  protected static AppiumElement ElementXPath(string id)
+  {
+    return App.FindElement(By.XPath(id));
+  }
 
-    protected static By Id(string id)
-    {
-        return App is WindowsDriver ? MobileBy.AccessibilityId(id) : MobileBy.Id(id);
-    }
+  protected static By Id(string id)
+  {
+    return App is WindowsDriver ? MobileBy.AccessibilityId(id) : MobileBy.Id(id);
+  }
 
-    protected static AppiumElement? AwaitElement(string id, int seconds = 2)
-    {
-        return Wait(seconds)
-            .Until(_ =>
-            {
-                var label = Element(id);
-                return label.Displayed ? label : null;
-            });
-    }
+  protected static string DropDownItemName(string name)
+  {
+    return $"//android.widget.TextView[@resource-id=\"android:id/text1\" and @text=\"{name}\"]";
+  }
 
-    protected static AppiumElement? AwaitElementXPath(string id, int seconds = 2)
-    {
-        return Wait(seconds)
-            .Until(_ =>
-            {
-                var label = ElementXPath(id);
-                return label.Displayed ? label : null;
-            });
-    }
+  protected static string StepperIncrease()
+  {
+    return "//android.widget.Button[@content-desc=\"+\"]";
+  }
 
-    protected static void LogDisplayStatus(string id)
-    {
-        try
-        {
-            Element(id);
-        }
-        catch (Exception _)
-        {
-            Console.WriteLine($"[XXX] Element '{id}' not found");
-            return;
-        }
-        Console.WriteLine($"[XXX] Element '{id}' is displayed");
-    }
+  protected static string StepperDecrease()
+  {
+    return "//android.widget.Button[@content-desc=\"\u2212\"]";
+  }
 
-    protected void TakeScreenshot(string name)
+  protected static string YesButton()
+  {
+    return "//android.widget.Button[@resource-id=\"android:id/button1\"]";
+  }
+
+  protected static string NoButton()
+  {
+    return "//android.widget.Button[@resource-id=\"android:id/button2\"]";
+  }
+
+  protected static AppiumElement? AwaitElement(
+    string id,
+    int seconds = DefaultWaitSec,
+    int interval = DefaultIntervalMs
+  )
+  {
+    return Wait(seconds, interval)
+      .Until(_ =>
+      {
+        var label = Element(id);
+        return label.Displayed ? label : null;
+      });
+  }
+
+  protected static AppiumElement? AwaitElementXPath(
+    string id,
+    int seconds = DefaultWaitSec,
+    int interval = DefaultIntervalMs
+  )
+  {
+    return Wait(seconds, interval)
+      .Until(_ =>
+      {
+        var label = ElementXPath(id);
+        return label.Displayed ? label : null;
+      });
+  }
+
+  protected static AppiumElement? OptionalElement(string id)
+  {
+    try
     {
-        App.GetScreenshot().SaveAsFile($"{_date}-{name}.png");
-        Console.WriteLine(
-            $@"[XXX] Took screenshot: Listem.Mobile.UITests\bin\Debug\net8.0\{_date}-{name}.png"
-        );
+      return Element(id);
     }
+    catch (Exception)
+    {
+      return null;
+    }
+  }
+
+  protected void TakeScreenshot(string name)
+  {
+    App.GetScreenshot().SaveAsFile($"{_date}-{name}.png");
+    Console.WriteLine(
+      $@"[XXX] Took screenshot: Listem.Mobile.UITests\bin\Debug\net8.0\{_date}-{name}.png"
+    );
+  }
+
+  // MainPage:
+  // Always available:
+  // LogDisplayStatus("MenuButton");
+  // LogDisplayStatus("AddListButton");
+  // Available for each list:
+  // LogDisplayStatus("ListTitle_" + listName);
+  // LogDisplayStatus("SharedTag_" + listName);
+  // LogDisplayStatus("CollaboratorTag_" + listName);
+  // LogDisplayStatus("OwnerTag_" + listName);
+  // LogDisplayStatus("EditList_" + listName);
+  // LogDisplayStatus("EmptyListLabel_" + listName);
+  // LogDisplayStatus("DeleteButton_" + listName);
+  // LogDisplayStatus("ExitButton_" + listName);
+
+  // ListPage:
+  // Always available:
+  // LogDisplayStatus("ListPageCategoryPicker");
+  // LogDisplayStatus("ListPageAddButton");
+  // LogDisplayStatus("ListPageEntryField");
+  // LogDisplayStatus("ListPageQuantityStepper");
+  // LogDisplayStatus("ListPageIsImportantSwitch");
+  // Once item is added:
+  // LogDisplayStatus("DoneBox_" + itemName);
+
+  [SuppressMessage("ReSharper", "UnusedMember.Global")]
+  protected static void LogDisplayStatus(string id)
+  {
+    try
+    {
+      Element(id);
+    }
+    catch (Exception)
+    {
+      Console.WriteLine($"[XXX] Element '{id}' not found");
+      return;
+    }
+    Console.WriteLine($"[XXX] Element '{id}' is displayed");
+  }
 }
