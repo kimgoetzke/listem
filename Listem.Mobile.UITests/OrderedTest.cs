@@ -5,8 +5,6 @@ namespace Listem.Mobile.UITests;
 [TestFixture]
 public class OrderedTest : BaseTest
 {
-  private TestHelper TestHelper => new();
-
   [Test]
   [Order(1)]
   public void CanStartApp()
@@ -44,7 +42,7 @@ public class OrderedTest : BaseTest
   }
 
   [Test]
-  [Order(10)]
+  [Order(11)]
   public void CanNavigateFromMainPageToEditListPage()
   {
     var currentList = TestData.Lists[0];
@@ -53,7 +51,7 @@ public class OrderedTest : BaseTest
   }
 
   [Test]
-  [Order(11)]
+  [Order(12)]
   public void CanConfigureList()
   {
     var currentList = TestData.Lists[0];
@@ -77,6 +75,8 @@ public class OrderedTest : BaseTest
     listName = Element("ListNameEntry");
     listName.Clear();
     listName.SendKeys(currentList.Name);
+    TakeScreenshot(nameof(CanConfigureList));
+    Element("BackButton").Click();
   }
 
   [Test]
