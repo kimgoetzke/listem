@@ -1,4 +1,5 @@
-﻿using static Listem.Mobile.UITests.TestHelper;
+﻿using static Listem.Mobile.UITests.AutomationIdModel;
+using static Listem.Mobile.UITests.TestHelper;
 
 namespace Listem.Mobile.UITests;
 
@@ -9,9 +10,8 @@ public class OrderedTest : BaseTest
   [Order(1)]
   public void CanStartApp()
   {
-    var isInstalled = App.IsAppInstalled(AppName);
-    Console.WriteLine($"[XXX] {AppName} is installed: {isInstalled}");
-    Wait(15).Until(_ => Element("SignInButton"));
+    Console.WriteLine($"[XXX] {AppName} is installed: {App.IsAppInstalled(AppName)}");
+    Wait(15).Until(_ => Element(StartPage.SignInButton).Displayed);
     TakeScreenshot(nameof(CanStartApp));
   }
 
@@ -19,12 +19,13 @@ public class OrderedTest : BaseTest
   [Order(2)]
   public void CanSignIn()
   {
-    Element("SignInButton").Click();
-    Wait().Until(_ => Element("EmailEntry").Displayed);
-    Element("EmailEntry").SendKeys("someone@example");
-    Element("PasswordEntry").SendKeys("Password1!");
-    Element("SignInButton").Click();
-    Wait(8).Until(_ => Element("MenuButton").Displayed);
+    var currentUser = TestData.Users[0];
+    Element(StartPage.SignInButton).Click();
+    Wait().Until(_ => Element(SignInPage.SignInButton).Displayed);
+    Element(SignInPage.EmailEntry).SendKeys(currentUser.Email);
+    Element(SignInPage.PasswordEntry).SendKeys(currentUser.Password);
+    Element(SignInPage.SignInButton).Click();
+    Wait(8).Until(_ => Element(MainPage.MenuButton).Displayed);
     TakeScreenshot(nameof(CanSignIn));
   }
 
@@ -33,11 +34,11 @@ public class OrderedTest : BaseTest
   public void CanCreateList()
   {
     var currentList = TestData.Lists[0];
-    Wait().Until(_ => Element("AddListButton").Displayed);
-    Element("AddListButton").Click();
-    Element("StickyEntryField").SendKeys(currentList.Name);
-    Element("StickyEntrySubmit").Click();
-    Wait().Until(_ => Element("ListTitle_" + currentList.Name).Displayed);
+    Wait().Until(_ => Element(MainPage.AddListButton).Displayed);
+    Element(MainPage.AddListButton).Click();
+    Element(StickyEntry.EntryField).SendKeys(currentList.Name);
+    Element(StickyEntry.SubmitButton).Click();
+    Wait().Until(_ => Element(MainPage.List.ListTitle + currentList.Name).Displayed);
     TakeScreenshot(nameof(CanCreateList));
   }
 
@@ -46,45 +47,40 @@ public class OrderedTest : BaseTest
   public void CanNavigateFromMainPageToEditListPage()
   {
     var currentList = TestData.Lists[0];
-    Element("EditList_" + currentList.Name).Click();
-    Wait().Until(_ => Element("ListNameEntry").Displayed);
+    Element(MainPage.List.EditButton + currentList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.ListNameEntry).Displayed);
   }
 
   [Test]
   [Order(12)]
   public void CanConfigureList()
   {
+    const string listNamePrefix = "Edited";
     var currentList = TestData.Lists[0];
-    var listName = Element("ListNameEntry");
+    UpdateListSettings(listNamePrefix, currentList);
+    Element(EditListPage.BackButton).Click(); // Go back so that the settings are saved, then navigate back
+    AwaitElement(MainPage.List.EditButton + listNamePrefix + currentList.Name)!.Click();
+    AssertThatListIsUpdated(listNamePrefix, currentList);
+    var listName = AwaitElement(EditListPage.ListNameEntry)!;
     listName.Clear();
-    listName.SendKeys("Edited" + currentList.Name);
-    Element("ListTypePicker").Click();
-    AwaitElementXPath(DropDownItemName(currentList.ListType))?.Click();
-    currentList.Categories.ForEach(category =>
-    {
-      Element("AddCategoryButton").Click();
-      Element("StickyEntryField").SendKeys(category);
-      Element("StickyEntrySubmit").Click();
-    });
-    Element("BackButton").Click();
-    var editedListName = AwaitElement("EditList_Edited" + currentList.Name)!;
-    editedListName.Click();
-
-    // TODO: Add assertions here
-
-    listName = Element("ListNameEntry");
-    listName.Clear();
-    listName.SendKeys(currentList.Name);
+    listName.SendKeys(currentList.Name); // Reset list name for the further tests and go back
     TakeScreenshot(nameof(CanConfigureList));
-    Element("BackButton").Click();
+  }
+
+  [Test]
+  [Order(11)]
+  public void CanNavigateFromEditListPageToMainPage()
+  {
+    Element(EditListPage.BackButton).Click();
+    Wait().Until(_ => Element(MainPage.MenuButton).Displayed);
   }
 
   [Test]
   [Order(19)]
   public void CanNavigateFromMainPageToListPage()
   {
-    Element("ListTitle_" + TestData.Lists[0].Name).Click();
-    Wait(5).Until(_ => Element("ListPageAddButton").Displayed);
+    Element(MainPage.List.ListTitle + TestData.Lists[0].Name).Click();
+    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
     TakeScreenshot(nameof(CanCreateList));
   }
 
@@ -107,14 +103,14 @@ public class OrderedTest : BaseTest
   public void CanRemoveItems_TickAndLeaveList()
   {
     var currentList = TestData.Lists[0];
-    Element("DoneBox_" + currentList.Items[0].Name).Click();
-    Element("DoneBox_" + currentList.Items[1].Name).Click();
-    Element("BackButton").Click();
-    Wait(5).Until(_ => Element("MenuButton").Displayed);
-    Element("ListTitle_" + currentList.Name).Click();
-    Wait(5).Until(_ => Element("ListPageAddButton").Displayed);
-    var item0 = OptionalElement("Label_" + currentList.Items[0].Name);
-    var item1 = OptionalElement("Label_" + currentList.Items[1].Name);
+    Element(ListPage.Item.DoneBox + currentList.Items[0].Name).Click();
+    Element(ListPage.Item.DoneBox + currentList.Items[1].Name).Click();
+    Element(ListPage.BackButton).Click();
+    Wait(5).Until(_ => Element(MainPage.MenuButton).Displayed);
+    Element(MainPage.List.ListTitle + currentList.Name).Click();
+    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
+    var item0 = OptionalElement(ListPage.Item.Label + currentList.Items[0].Name);
+    var item1 = OptionalElement(ListPage.Item.Label + currentList.Items[1].Name);
     Assert.Multiple(() =>
     {
       Assert.That(item0, Is.Null);
@@ -138,10 +134,10 @@ public class OrderedTest : BaseTest
 
   [Test]
   [Order(29)]
-  public void CanGoBackToMainPage()
+  public void CanNavigateFromListPageToMainPage()
   {
-    Element("BackButton").Click();
-    Wait(5).Until(_ => Element("MenuButton").Displayed);
+    Element(ListPage.BackButton).Click();
+    Wait(5).Until(_ => Element(MainPage.MenuButton).Displayed);
   }
 
   [Test]
@@ -149,15 +145,15 @@ public class OrderedTest : BaseTest
   public void CanDeleteList()
   {
     var currentList = TestData.Lists[0];
-    Element("DeleteButton_" + currentList.Name).Click();
+    Element(MainPage.List.DeleteButton + currentList.Name).Click();
     var no = ElementXPath(NoButton());
     no.Click();
-    Assert.That(OptionalElement("ListTitle_" + currentList.Name), Is.Not.Null);
+    Assert.That(OptionalElement(MainPage.List.ListTitle + currentList.Name), Is.Not.Null);
 
-    Element("DeleteButton_" + currentList.Name).Click();
+    Element(MainPage.List.DeleteButton + currentList.Name).Click();
     var yes = ElementXPath(YesButton());
     yes.Click();
-    Assert.That(OptionalElement("ListTitle_" + currentList.Name), Is.Null);
+    Assert.That(OptionalElement(MainPage.List.ListTitle + currentList.Name), Is.Null);
   }
 
   [Test]
@@ -165,10 +161,10 @@ public class OrderedTest : BaseTest
   [Ignore("Temporarily disabled")]
   public void CanSignOutFromMainPage()
   {
-    Wait().Until(_ => Element("MenuButton").Displayed);
-    Element("MenuButton").Click();
-    Element("SignUpInOrOutButton").Click();
-    Wait(5).Until(_ => Element("SignInButton"));
+    Wait().Until(_ => Element(MainPage.MenuButton).Displayed);
+    Element(MainPage.MenuButton).Click();
+    Element(MainPage.Menu.SignOutButton).Click();
+    Wait(5).Until(_ => Element(StartPage.SignInButton));
     TakeScreenshot(nameof(CanSignOutFromMainPage));
   }
 }

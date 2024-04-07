@@ -1,7 +1,26 @@
-﻿namespace Listem.Mobile.UITests;
+﻿using static Listem.Mobile.UITests.AutomationIdModel;
 
-public class TestHelper : BaseTest
+namespace Listem.Mobile.UITests;
+
+public abstract class TestHelper : BaseTest
 {
+  // ------------------------------ Act ------------------------------
+
+  public static void UpdateListSettings(string listNamePrefix, TestData.TestList currentList)
+  {
+    var listName = Element(EditListPage.ListNameEntry);
+    listName.Clear();
+    listName.SendKeys(listNamePrefix + currentList.Name);
+    Element(EditListPage.ListTypePicker).Click();
+    AwaitElementXPath(DropDownItemName(currentList.ListType))?.Click();
+    currentList.Categories.ForEach(category =>
+    {
+      Element(EditListPage.AddCategoryButton).Click();
+      Element(StickyEntry.EntryField).SendKeys(category);
+      Element(StickyEntry.SubmitButton).Click();
+    });
+  }
+
   public static void AddItemToList(
     string itemName,
     string categoryName,
@@ -10,10 +29,10 @@ public class TestHelper : BaseTest
   )
   {
     // Name
-    Element("ListPageEntryField").SendKeys(itemName);
+    Element(ListPage.EntryField).SendKeys(itemName);
 
     // Category
-    var categoryPicker = Element("ListPageCategoryPicker");
+    var categoryPicker = Element(ListPage.CategoryPicker);
     categoryPicker.Click();
     AwaitElementXPath(DropDownItemName(categoryName))?.Click();
 
@@ -27,14 +46,37 @@ public class TestHelper : BaseTest
     }
 
     // Importance
-    var isImportantSwitch = Element("ListPageIsImportantSwitch");
+    var isImportantSwitch = Element(ListPage.IsImportantSwitch);
     if (isImportantSwitch.GetAttribute("checked").Equals("false") && isImportant)
     {
       isImportantSwitch.Click();
     }
 
-    Element("ListPageAddButton").Click();
+    Element(ListPage.AddButton).Click();
     Assert.That(categoryPicker.Text, Is.EqualTo(categoryName));
+  }
+
+  // ------------------------------ Assert ------------------------------
+
+  public static void AssertThatListIsUpdated(string prefix, TestData.TestList currentList)
+  {
+    var listName = AwaitElement(EditListPage.ListNameEntry)!;
+    var listCategory = Element(EditListPage.ListTypePicker);
+
+    Assert.Multiple(() =>
+    {
+      Assert.That(listName.Text, Is.EqualTo(prefix + currentList.Name));
+      Assert.That(listCategory.Text, Is.EqualTo(TestData.Lists[0].ListType));
+
+      TestData
+        .Lists[0]
+        .Categories.ForEach(category =>
+        {
+          var swipeItem = Element(EditListPage.Categories.Label + category);
+          Assert.That(swipeItem.Displayed);
+          Assert.That(swipeItem.Text, Is.EqualTo(category));
+        });
+    });
   }
 
   public static void AssertThatItemIsCreated(
@@ -44,10 +86,10 @@ public class TestHelper : BaseTest
     bool isImportant
   )
   {
-    var label = AwaitElement("Label_" + itemName);
-    var categoryTag = OptionalElement("CategoryTag_" + itemName);
-    var quantityLabel = OptionalElement("QuantityLabel_" + itemName);
-    var isImportantIcon = OptionalElement("IsImportantIcon_" + itemName);
+    var label = AwaitElement(ListPage.Item.Label + itemName);
+    var categoryTag = OptionalElement(ListPage.Item.CategoryTag + itemName);
+    var quantityLabel = OptionalElement(ListPage.Item.QuantityLabel + itemName);
+    var isImportantIcon = OptionalElement(ListPage.Item.IsImportantIcon + itemName);
 
     Assert.Multiple(() =>
     {
@@ -55,10 +97,10 @@ public class TestHelper : BaseTest
       Assert.That(label?.Text, Is.EqualTo(itemName));
 
       // Category
-      if (categoryName != TestData.DefaultCategoryName)
+      if (categoryName != DefaultCategoryName)
       {
         Assert.That(categoryTag!.Displayed, Is.True);
-        Assert.That(categoryTag.FindElement(Id("TagLabel"))!.Text, Is.EqualTo(categoryName));
+        Assert.That(categoryTag.FindElement(Id(Tag.Label))!.Text, Is.EqualTo(categoryName));
       }
       else
       {

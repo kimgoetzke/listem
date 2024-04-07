@@ -113,30 +113,6 @@ public abstract class BaseTest
     );
   }
 
-  // MainPage:
-  // Always available:
-  // LogDisplayStatus("MenuButton");
-  // LogDisplayStatus("AddListButton");
-  // Available for each list:
-  // LogDisplayStatus("ListTitle_" + listName);
-  // LogDisplayStatus("SharedTag_" + listName);
-  // LogDisplayStatus("CollaboratorTag_" + listName);
-  // LogDisplayStatus("OwnerTag_" + listName);
-  // LogDisplayStatus("EditList_" + listName);
-  // LogDisplayStatus("EmptyListLabel_" + listName);
-  // LogDisplayStatus("DeleteButton_" + listName);
-  // LogDisplayStatus("ExitButton_" + listName);
-
-  // ListPage:
-  // Always available:
-  // LogDisplayStatus("ListPageCategoryPicker");
-  // LogDisplayStatus("ListPageAddButton");
-  // LogDisplayStatus("ListPageEntryField");
-  // LogDisplayStatus("ListPageQuantityStepper");
-  // LogDisplayStatus("ListPageIsImportantSwitch");
-  // Once item is added:
-  // LogDisplayStatus("DoneBox_" + itemName);
-
   [SuppressMessage("ReSharper", "UnusedMember.Global")]
   protected static void LogDisplayStatus(string id)
   {
