@@ -52,7 +52,10 @@ public partial class AuthViewModel : BaseViewModel
       this,
       (_, m) =>
       {
-        _logger.Info("Received message: Current user status has changed to: {User}", m.Value);
+        _logger.Info(
+          "[AuthViewModel] Received message: Current user status has changed to: {User}",
+          m.Value
+        );
         UpdateUser(m.Value);
       }
     );
