@@ -4,133 +4,177 @@ namespace Listem.Mobile.UITests;
 
 public abstract class TestHelper : BaseTest
 {
-  // ------------------------------ Act ------------------------------
-
-  public static void UpdateListSettings(string listNamePrefix, TestData.TestList currentList)
+  public static class Act
   {
-    var listName = Element(EditListPage.ListNameEntry);
-    listName.Clear();
-    listName.SendKeys(listNamePrefix + currentList.Name);
-    Element(EditListPage.ListTypePicker).Click();
-    AwaitElementXPath(DropDownItemName(currentList.ListType))?.Click();
-    currentList.Categories.ForEach(category =>
+    public static void NavigateBackAndAwait(string elementId)
     {
-      Element(EditListPage.AddCategoryButton).Click();
-      Element(StickyEntry.EntryField).SendKeys(category);
-      Element(StickyEntry.SubmitButton).Click();
-    });
-  }
+      Element("BackButton").Click();
+      Wait().Until(_ => Element(elementId).Displayed);
+    }
 
-  public static void AddItemToList(
-    string itemName,
-    string categoryName,
-    int quantity,
-    bool isImportant
-  )
-  {
-    // Name
-    Element(ListPage.EntryField).SendKeys(itemName);
-
-    // Category
-    var categoryPicker = Element(ListPage.CategoryPicker);
-    categoryPicker.Click();
-    AwaitElementXPath(DropDownItemName(categoryName))?.Click();
-
-    // Quantity
-    if (quantity > 1)
+    public static class OnEditListPage
     {
-      for (var i = 1; i < quantity; i++)
+      public static void ChangeListName(string name, string prefix = "")
       {
-        AwaitElementXPath(StepperIncrease())!.Click();
+        var listName = Element(EditListPage.ListNameEntry);
+        listName.Clear();
+        listName.SendKeys(prefix + name);
       }
-    }
 
-    // Importance
-    var isImportantSwitch = Element(ListPage.IsImportantSwitch);
-    if (isImportantSwitch.GetAttribute("checked").Equals("false") && isImportant)
-    {
-      isImportantSwitch.Click();
-    }
+      public static void ChangeListType(string listType)
+      {
+        Element(EditListPage.ListTypePicker).Click();
+        AwaitElementXPath(DropDownItemName(listType))?.Click();
+      }
 
-    Element(ListPage.AddButton).Click();
-    Assert.That(categoryPicker.Text, Is.EqualTo(categoryName));
-  }
-
-  // ------------------------------ Assert ------------------------------
-
-  public static void AssertThatListIsUpdated(string prefix, TestData.TestList currentList)
-  {
-    var listName = AwaitElement(EditListPage.ListNameEntry)!;
-    var listCategory = Element(EditListPage.ListTypePicker);
-
-    Assert.Multiple(() =>
-    {
-      Assert.That(listName.Text, Is.EqualTo(prefix + currentList.Name));
-      Assert.That(listCategory.Text, Is.EqualTo(TestData.Lists[0].ListType));
-
-      TestData
-        .Lists[0]
-        .Categories.ForEach(category =>
+      public static void AddListCategories(List<string> categories)
+      {
+        categories.ForEach(category =>
         {
-          var swipeItem = Element(EditListPage.Categories.Label + category);
-          Assert.That(swipeItem.Displayed);
-          Assert.That(swipeItem.Text, Is.EqualTo(category));
+          Element(EditListPage.AddCategoryButton).Click();
+          Element(StickyEntry.EntryField).SendKeys(category);
+          Element(StickyEntry.SubmitButton).Click();
         });
-    });
+      }
+    }
+
+    public static class OnListPage
+    {
+      public static void AddItemToList(
+        string itemName,
+        string categoryName,
+        int quantity,
+        bool isImportant
+      )
+      {
+        // Name
+        Element(ListPage.EntryField).SendKeys(itemName);
+
+        // Category
+        var categoryPicker = Element(ListPage.CategoryPicker);
+        categoryPicker.Click();
+        AwaitElementXPath(DropDownItemName(categoryName))?.Click();
+
+        // Quantity
+        if (quantity > 1)
+        {
+          for (var i = 1; i < quantity; i++)
+          {
+            AwaitElementXPath(StepperIncrease())!.Click();
+          }
+        }
+
+        // Importance
+        var isImportantSwitch = Element(ListPage.IsImportantSwitch);
+        if (isImportantSwitch.GetAttribute("checked").Equals("false") && isImportant)
+        {
+          isImportantSwitch.Click();
+        }
+
+        Element(ListPage.AddButton).Click();
+        Assert.That(categoryPicker.Text, Is.EqualTo(categoryName));
+      }
+    }
   }
 
-  public static void AssertThatItemIsCreated(
-    string itemName,
-    string categoryName,
-    int quantity,
-    bool isImportant
-  )
+  public static class AssertThat
   {
-    var label = AwaitElement(ListPage.Item.Label + itemName);
-    var categoryTag = OptionalElement(ListPage.Item.CategoryTag + itemName);
-    var quantityLabel = OptionalElement(ListPage.Item.QuantityLabel + itemName);
-    var isImportantIcon = OptionalElement(ListPage.Item.IsImportantIcon + itemName);
-
-    Assert.Multiple(() =>
+    public static class OnEditListPage
     {
-      // Name
-      Assert.That(label?.Text, Is.EqualTo(itemName));
-
-      // Category
-      if (categoryName != DefaultCategoryName)
+      public static void Categories(bool areVisible, List<string> categories)
       {
-        Assert.That(categoryTag!.Displayed, Is.True);
-        Assert.That(categoryTag.FindElement(Id(Tag.Label))!.Text, Is.EqualTo(categoryName));
-      }
-      else
-      {
-        Assert.That(categoryTag, Is.Null);
-      }
-
-      // Quantity
-      switch (quantity)
-      {
-        case > 1:
+        Assert.Multiple(() =>
         {
-          Assert.That(quantityLabel!.Text, Is.EqualTo($" ({quantity.ToString()})"));
-          break;
-        }
-        case 1:
-        {
-          Assert.That(quantityLabel, Is.Null);
-          break;
-        }
+          categories.ForEach(category =>
+          {
+            var swipeItem = OptionalElement(EditListPage.Categories.Label + category);
+            if (areVisible)
+            {
+              Assert.That(swipeItem, Is.Not.Null);
+              Assert.That(swipeItem!.Text, Is.EqualTo(category));
+            }
+            else
+            {
+              Assert.That(swipeItem, Is.Null);
+            }
+          });
+        });
       }
 
-      // Importance
-      if (isImportant)
+      public static void List(bool isShared, TestData.TestUser user)
       {
-        Assert.That(isImportantIcon!.Displayed, Is.True);
+        Assert.Multiple(() =>
+        {
+          if (isShared)
+          {
+            Assert.That(AwaitElement(EditListPage.UnshareButton)!.Displayed, Is.True);
+            Assert.That(Element(EditListPage.Collaborators.Label + user.id).Displayed, Is.True);
+          }
+          else
+          {
+            Assert.That(OptionalElement(EditListPage.UnshareButton), Is.Null);
+            Assert.That(OptionalElement(EditListPage.Collaborators.Label + user.id), Is.Null);
+          }
+        });
       }
-      else
+    }
+
+    public static class OnListPage
+    {
+      public static void ItemIsCreated(
+        string itemName,
+        string categoryName,
+        int quantity,
+        bool isImportant
+      )
       {
-        Assert.That(isImportantIcon, Is.Null);
+        var label = AwaitElement(ListPage.Item.Label + itemName);
+        var categoryTag = OptionalElement(ListPage.Item.CategoryTag + itemName);
+        var quantityLabel = OptionalElement(ListPage.Item.QuantityLabel + itemName);
+        var isImportantIcon = OptionalElement(ListPage.Item.IsImportantIcon + itemName);
+
+        Assert.Multiple(() =>
+        {
+          // Name
+          Assert.That(label?.Text, Is.EqualTo(itemName));
+
+          // Category
+          if (categoryName != DefaultCategoryName)
+          {
+            Assert.That(categoryTag!.Displayed, Is.True);
+            Assert.That(categoryTag.FindElement(Id(Tag.Label))!.Text, Is.EqualTo(categoryName));
+          }
+          else
+          {
+            Assert.That(categoryTag, Is.Null);
+          }
+
+          // Quantity
+          switch (quantity)
+          {
+            case > 1:
+            {
+              Assert.That(quantityLabel!.Text, Is.EqualTo($" ({quantity.ToString()})"));
+              break;
+            }
+            case 1:
+            {
+              Assert.That(quantityLabel, Is.Null);
+              break;
+            }
+          }
+
+          // Importance
+          if (isImportant)
+          {
+            Assert.That(isImportantIcon!.Displayed, Is.True);
+          }
+          else
+          {
+            Assert.That(isImportantIcon, Is.Null);
+          }
+        });
       }
-    });
+    }
   }
 }

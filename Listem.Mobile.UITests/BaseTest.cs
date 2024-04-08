@@ -109,7 +109,7 @@ public abstract class BaseTest
   {
     App.GetScreenshot().SaveAsFile($"{_date}-{name}.png");
     Console.WriteLine(
-      $@"[XXX] Took screenshot: Listem.Mobile.UITests\bin\Debug\net8.0\{_date}-{name}.png"
+      $@"[XXX] Took screenshot and saved as: Listem.Mobile.UITests\bin\Debug\net8.0\{_date}-{name}.png"
     );
   }
 

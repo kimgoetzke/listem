@@ -37,9 +37,13 @@ public abstract class TestData
       )
     ];
 
-  public static List<TestUser> Users { get; } = [new TestUser("someone@example", "Password1!")];
+  public static List<TestUser> Users { get; } =
+    [
+      new TestUser("someone@example", "Password1!", "660666262693a806a425b3c6"),
+      new TestUser("function1@example", "Password1!", "6605ba964a5285f9ee1af6eb")
+    ];
 
-  public record TestUser(string Email, string Password);
+  public record TestUser(string Email, string Password, string id);
 
   public record TestList(
     string Name,
