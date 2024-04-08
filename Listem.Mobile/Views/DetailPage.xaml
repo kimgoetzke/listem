@@ -16,10 +16,11 @@
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0">
             <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
-                   BackgroundColor="{DynamicResource BackgroundColorAccent}"/>
+                   BackgroundColor="{DynamicResource BackgroundColorAccent}" />
             <Grid Margin="0, 15, 0,0">
                 <BoxView VerticalOptions="End" HeightRequest="25" />
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
+                             AutomationId="BackButton"
                              Command="{Binding SaveAndBackCommand}"
                              HorizontalOptions="Start" VerticalOptions="Center" Margin="15, 0" />
                 <Label Text="Edit item" Style="{DynamicResource SubHeadline}" HorizontalOptions="Center"
@@ -39,7 +40,8 @@
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding Item.Name, Mode=TwoWay}" />
+                    <Entry Text="{Binding Item.Name, Mode=TwoWay}"
+                           AutomationId="ItemNameEntry" />
                 </Frame>
             </Grid>
 
@@ -53,6 +55,7 @@
                               HorizontalOptions="Fill" ColumnSpacing="5">
                             <Image Source="search_tertiary.png" HeightRequest="14" WidthRequest="14" />
                             <Picker Grid.Column="1"
+                                    AutomationId="CategoryPicker"
                                     Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select category'}"
                                     ItemsSource="{Binding Categories}"
                                     SelectedItem="{Binding CurrentCategory}"
@@ -75,6 +78,7 @@
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
                 <Switch IsToggled="{Binding Item.IsImportant, Mode=TwoWay}"
+                        AutomationId="IsImportantSwitch"
                         Grid.Column="1"
                         VerticalOptions="Center"
                         Toggled="IsImportantSwitch_OnToggled"
@@ -82,7 +86,7 @@
             </Grid>
 
             <!-- Quantity -->
-            <Grid x:Name="QuantityGrid" RowDefinitions="1*" ColumnDefinitions=".5*, .5*" IsVisible="False">
+            <Grid RowDefinitions="1*" ColumnDefinitions=".5*, .5*" IsVisible="False">
                 <Grid.Triggers>
                     <DataTrigger TargetType="Grid" Binding="{Binding ListType}" Value="Shopping">
                         <Setter Property="IsVisible" Value="True" />
@@ -96,6 +100,7 @@
                 </HorizontalStackLayout>
                 <Stepper Value="{Binding Item.Quantity}"
                          Grid.Column="1"
+                         AutomationId="QuantityStepper"
                          Minimum="1" Maximum="99" Increment="1"
                          VerticalOptions="Center"
                          ValueChanged="QuantityStepper_OnValueChanged"
