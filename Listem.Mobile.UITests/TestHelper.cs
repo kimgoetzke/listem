@@ -24,7 +24,7 @@ public abstract class TestHelper : BaseTest
       public static void ChangeListType(string listType)
       {
         Element(EditListPage.ListTypePicker).Click();
-        AwaitElementXPath(DropDownItemName(listType))?.Click();
+        AwaitElementXPath(Alert.DropDownItem(listType))?.Click();
       }
 
       public static void AddListCategories(List<string> categories)
@@ -48,19 +48,19 @@ public abstract class TestHelper : BaseTest
       )
       {
         // Name
-        Element(ListPage.EntryField).SendKeys(itemName);
+        Element(ListPage.NameEntry).SendKeys(itemName);
 
         // Category
         var categoryPicker = Element(ListPage.CategoryPicker);
         categoryPicker.Click();
-        AwaitElementXPath(DropDownItemName(categoryName))?.Click();
+        AwaitElementXPath(Alert.DropDownItem(categoryName))?.Click();
 
         // Quantity
         if (quantity > 1)
         {
           for (var i = 1; i < quantity; i++)
           {
-            AwaitElementXPath(StepperIncrease())!.Click();
+            AwaitElementXPath(Stepper.Increase)!.Click();
           }
         }
 
@@ -73,6 +73,31 @@ public abstract class TestHelper : BaseTest
 
         Element(ListPage.AddButton).Click();
         Assert.That(categoryPicker.Text, Is.EqualTo(categoryName));
+      }
+    }
+
+    public static class OnDetailPage
+    {
+      public static void ChangeItemName(string name, string prefix = "")
+      {
+        var itemName = Element(DetailPage.NameEntry);
+        itemName.Clear();
+        itemName.SendKeys(prefix + name);
+      }
+
+      public static void ChangeItemCategory(string category)
+      {
+        Element(DetailPage.CategoryPicker).Click();
+        AwaitElementXPath(Alert.DropDownItem(category))?.Click();
+      }
+
+      public static void SetItemIsImportant(bool isImportant)
+      {
+        var element = Element(DetailPage.IsImportantSwitch);
+        if (!element.GetAttribute("checked").ToLower().Equals(isImportant.ToString().ToLower()))
+        {
+          element.Click();
+        }
       }
     }
   }
@@ -129,7 +154,7 @@ public abstract class TestHelper : BaseTest
       )
       {
         var label = AwaitElement(ListPage.Item.Label + itemName);
-        var categoryTag = OptionalElement(ListPage.Item.CategoryTag + itemName);
+
         var quantityLabel = OptionalElement(ListPage.Item.QuantityLabel + itemName);
         var isImportantIcon = OptionalElement(ListPage.Item.IsImportantIcon + itemName);
 
@@ -139,15 +164,7 @@ public abstract class TestHelper : BaseTest
           Assert.That(label?.Text, Is.EqualTo(itemName));
 
           // Category
-          if (categoryName != DefaultCategoryName)
-          {
-            Assert.That(categoryTag!.Displayed, Is.True);
-            Assert.That(categoryTag.FindElement(Id(Tag.Label))!.Text, Is.EqualTo(categoryName));
-          }
-          else
-          {
-            Assert.That(categoryTag, Is.Null);
-          }
+          CategoryTagIsCorrect(itemName, categoryName);
 
           // Quantity
           switch (quantity)
@@ -174,6 +191,35 @@ public abstract class TestHelper : BaseTest
             Assert.That(isImportantIcon, Is.Null);
           }
         });
+      }
+
+      public static void CategoryTagIsCorrect(string itemName, string categoryName)
+      {
+        var categoryTag = OptionalElement(ListPage.Item.CategoryTag + itemName);
+        if (categoryName != DefaultCategoryName)
+        {
+          Assert.Multiple(() =>
+          {
+            Assert.That(categoryTag!.Displayed, Is.True);
+            Assert.That(categoryTag.FindElement(Id(Tag.Label))!.Text, Is.EqualTo(categoryName));
+          });
+        }
+        else
+        {
+          Assert.That(categoryTag, Is.Null);
+        }
+      }
+    }
+
+    public static class OnDetailPage
+    {
+      public static void ItemIsImportant(bool isImportant)
+      {
+        var isImportantSwitch = Element(DetailPage.IsImportantSwitch);
+        Assert.That(
+          isImportantSwitch.GetAttribute("checked").ToLower(),
+          Is.EqualTo(isImportant.ToString().ToLower())
+        );
       }
     }
   }

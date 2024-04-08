@@ -94,7 +94,7 @@ public class OrderedTest : BaseTest
     var resetButton = Element(EditListPage.ResetCategoriesButton);
     Assert.That(resetButton.Displayed, Is.True);
     resetButton.Click();
-    ElementXPath(YesButton()).Click();
+    ElementXPath(Alert.Yes).Click();
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _currentList.Name).Click();
     AssertThat.OnEditListPage.Categories(false, _currentList.Categories);
@@ -135,7 +135,7 @@ public class OrderedTest : BaseTest
     var unshareButton = Element(EditListPage.UnshareButton);
     Assert.That(unshareButton.Displayed, Is.True);
     unshareButton.Click();
-    ElementXPath(YesButton()).Click();
+    ElementXPath(Alert.Yes).Click();
     AssertThat.OnEditListPage.List(false, otherUser);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _currentList.Name).Click();
@@ -170,8 +170,7 @@ public class OrderedTest : BaseTest
   {
     Element(ListPage.Item.DoneBox + _currentList.Items[0].Name).Click();
     Element(ListPage.Item.DoneBox + _currentList.Items[1].Name).Click();
-    Element(ListPage.BackButton).Click();
-    Wait(5).Until(_ => Element(MainPage.MenuButton).Displayed);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.ListTitle + _currentList.Name).Click();
     Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
     var item0 = OptionalElement(ListPage.Item.Label + _currentList.Items[0].Name);
@@ -201,7 +200,57 @@ public class OrderedTest : BaseTest
   [Order(39)]
   public void CanNavigateToDetailPage()
   {
-    // TODO: Add DetailPage tests
+    Element(ListPage.Item.Label + _currentList.Items[5].Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
+  }
+
+  [Test]
+  [Order(40)]
+  public void CanEditItemName()
+  {
+    const string itemNamePrefix = "Edited";
+    var currentItemName = _currentList.Items[5].Name;
+    Act.OnDetailPage.ChangeItemName(currentItemName, itemNamePrefix);
+    Act.NavigateBackAndAwait(ListPage.AddButton);
+    Element(ListPage.Item.Label + itemNamePrefix + currentItemName).Click();
+    var itemNameEntry = Element(DetailPage.NameEntry);
+    Assert.That(itemNameEntry.Text, Is.EqualTo(itemNamePrefix + currentItemName));
+    Act.OnDetailPage.ChangeItemName(currentItemName);
+  }
+
+  [Test]
+  [Order(41)]
+  public void CanEditItemCategory()
+  {
+    var currentItem = _currentList.Items[5];
+    Act.OnDetailPage.ChangeItemCategory(_currentList.Categories[0]);
+    Assert.That(Element(DetailPage.CategoryPicker).Text, Is.EqualTo(_currentList.Categories[0]));
+    Act.NavigateBackAndAwait(ListPage.AddButton);
+    AssertThat.OnListPage.CategoryTagIsCorrect(currentItem.Name, _currentList.Categories[0]);
+    Element(ListPage.Item.Label + currentItem.Name).Click();
+    Assert.That(Element(DetailPage.CategoryPicker).Text, Is.EqualTo(_currentList.Categories[0]));
+    Act.OnDetailPage.ChangeItemCategory(currentItem.Category);
+  }
+
+  [Test]
+  [Order(42)]
+  public void CanEditItemImportance()
+  {
+    var currentItem = _currentList.Items[5];
+    Act.OnDetailPage.SetItemIsImportant(!currentItem.IsImportant);
+    Act.NavigateBackAndAwait(ListPage.AddButton);
+    // TODO: Assert that the item is marked as important
+    Element(ListPage.Item.Label + currentItem.Name).Click();
+    AssertThat.OnDetailPage.ItemIsImportant(!currentItem.IsImportant);
+    Act.OnDetailPage.SetItemIsImportant(currentItem.IsImportant);
+    AssertThat.OnDetailPage.ItemIsImportant(currentItem.IsImportant);
+  }
+
+  [Test]
+  [Order(43)]
+  public void CanEditItemQuantity()
+  {
+    // TODO: Write this test
   }
 
   // TODO: Add switching user tests with adding and removing shared items
@@ -221,12 +270,12 @@ public class OrderedTest : BaseTest
   public void CanDeleteList()
   {
     Element(MainPage.List.DeleteButton + _currentList.Name).Click();
-    var no = ElementXPath(NoButton());
+    var no = ElementXPath(Alert.No);
     no.Click();
     Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Not.Null);
 
     Element(MainPage.List.DeleteButton + _currentList.Name).Click();
-    var yes = ElementXPath(YesButton());
+    var yes = ElementXPath(Alert.Yes);
     yes.Click();
     Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Null);
   }

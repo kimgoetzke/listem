@@ -40,31 +40,6 @@ public abstract class BaseTest
     return App is WindowsDriver ? MobileBy.AccessibilityId(id) : MobileBy.Id(id);
   }
 
-  protected static string DropDownItemName(string name)
-  {
-    return $"//android.widget.TextView[@resource-id=\"android:id/text1\" and @text=\"{name}\"]";
-  }
-
-  protected static string StepperIncrease()
-  {
-    return "//android.widget.Button[@content-desc=\"+\"]";
-  }
-
-  protected static string StepperDecrease()
-  {
-    return "//android.widget.Button[@content-desc=\"\u2212\"]";
-  }
-
-  protected static string YesButton()
-  {
-    return "//android.widget.Button[@resource-id=\"android:id/button1\"]";
-  }
-
-  protected static string NoButton()
-  {
-    return "//android.widget.Button[@resource-id=\"android:id/button2\"]";
-  }
-
   protected static AppiumElement? AwaitElement(
     string id,
     int seconds = DefaultWaitSec,

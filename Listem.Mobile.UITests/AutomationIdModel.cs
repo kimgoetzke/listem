@@ -69,9 +69,9 @@ public static class AutomationIdModel
   public static class ListPage
   {
     public const string BackButton = "BackButton";
+    public const string NameEntry = "ListPageEntryField";
     public const string CategoryPicker = "ListPageCategoryPicker";
     public const string AddButton = "ListPageAddButton";
-    public const string EntryField = "ListPageEntryField";
     public const string QuantityStepper = "ListPageQuantityStepper";
     public const string IsImportantSwitch = "ListPageIsImportantSwitch";
 
@@ -85,6 +85,15 @@ public static class AutomationIdModel
     }
   }
 
+  public static class DetailPage
+  {
+    public const string BackButton = "BackButton";
+    public const string NameEntry = "ItemNameEntry";
+    public const string CategoryPicker = "CategoryPicker";
+    public const string IsImportantSwitch = "IsImportantSwitch";
+    public const string QuantityStepper = "QuantityStepper";
+  }
+
   public static class StickyEntry
   {
     public const string EntryField = "StickyEntryField";
@@ -95,5 +104,22 @@ public static class AutomationIdModel
   public static class Tag
   {
     public const string Label = "TagLabel";
+  }
+
+  public static class Stepper
+  {
+    public const string Increase = "//android.widget.Button[@content-desc=\"+\"]";
+    public const string Decrease = "//android.widget.Button[@content-desc=\"\u2212\"]";
+  }
+
+  public static class Alert
+  {
+    public const string Yes = "//android.widget.Button[@resource-id=\"android:id/button1\"]";
+    public const string No = "//android.widget.Button[@resource-id=\"android:id/button2\"]";
+
+    public static string DropDownItem(string name)
+    {
+      return $"//android.widget.TextView[@resource-id=\"android:id/text1\" and @text=\"{name}\"]";
+    }
   }
 }
