@@ -41,7 +41,7 @@ public static class AutomationIdModel
 
     public static class Menu
     {
-      public const string SignOutButton = "SignOutButton";
+      public const string SignOutButton = "SignUpInOrOutButton";
     }
   }
 
@@ -75,6 +75,12 @@ public static class AutomationIdModel
     public const string QuantityStepper = "ListPageQuantityStepper";
     public const string IsImportantSwitch = "ListPageIsImportantSwitch";
 
+    public static class Stepper
+    {
+      public const string Increase = "//android.widget.Button[@content-desc=\"+\"]";
+      public const string Decrease = "//android.widget.Button[@content-desc=\"\u2212\"]";
+    }
+
     public static class Item
     {
       public const string Label = "Label_";
@@ -92,6 +98,11 @@ public static class AutomationIdModel
     public const string CategoryPicker = "CategoryPicker";
     public const string IsImportantSwitch = "IsImportantSwitch";
     public const string QuantityStepper = "QuantityStepper";
+    public const string IncreaseQuantityButton =
+      "(//android.widget.Button[@content-desc=\"+\"])[2]";
+    public const string DecreaseQuantityButton =
+      "(//android.widget.Button[@content-desc=\"\u2212\"])[2]";
+    public const string QuantityLabel = "QuantityLabel";
   }
 
   public static class StickyEntry
@@ -104,12 +115,6 @@ public static class AutomationIdModel
   public static class Tag
   {
     public const string Label = "TagLabel";
-  }
-
-  public static class Stepper
-  {
-    public const string Increase = "//android.widget.Button[@content-desc=\"+\"]";
-    public const string Decrease = "//android.widget.Button[@content-desc=\"\u2212\"]";
   }
 
   public static class Alert

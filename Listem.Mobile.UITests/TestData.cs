@@ -19,6 +19,12 @@ public abstract class TestData
       new TestItem("Item-1", "Category-2", 1, false)
     ];
 
+  private static List<TestUser> Users { get; } =
+    [
+      new TestUser("someone@example", "Password1!", "660666262693a806a425b3c6"),
+      new TestUser("function1@example", "Password1!", "6605ba964a5285f9ee1af6eb")
+    ];
+
   public static List<TestList> Lists { get; } =
     [
       new TestList(
@@ -26,31 +32,28 @@ public abstract class TestData
         List0Items,
         AutomationIdModel.ShoppingListType,
         ["Store-1", "Store-2"],
-        ["Collaborator-1"]
+        Users[0],
+        [Users[1]]
       ),
       new TestList(
         "List-1",
         List1Items,
         AutomationIdModel.DefaultListType,
         ["Category-3", "Category-4"],
-        ["Collaborator-2"]
+        Users[1],
+        [Users[0]]
       )
     ];
 
-  public static List<TestUser> Users { get; } =
-    [
-      new TestUser("someone@example", "Password1!", "660666262693a806a425b3c6"),
-      new TestUser("function1@example", "Password1!", "6605ba964a5285f9ee1af6eb")
-    ];
-
-  public record TestUser(string Email, string Password, string id);
+  public record TestUser(string Email, string Password, string Id);
 
   public record TestList(
     string Name,
     List<TestItem> Items,
     string ListType,
     List<string> Categories,
-    List<string> Collaborators
+    TestUser Owner,
+    List<TestUser> Collaborators
   );
 
   public record TestItem(string Name, string Category, int Quantity, bool IsImportant);

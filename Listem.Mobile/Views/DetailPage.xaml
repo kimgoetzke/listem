@@ -95,6 +95,7 @@
                 <HorizontalStackLayout Grid.Column="0" Padding="5" VerticalOptions="Center">
                     <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="QuantityProperty"
+                           AutomationId="QuantityLabel"
                            Text="{Binding Item.Quantity}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
