@@ -68,7 +68,8 @@ public partial class ListViewModel : BaseViewModel
       Category = new Category { Name = CurrentCategory.Name },
       Quantity = NewItemQuantity,
       IsImportant = NewItemIsImportant,
-      UpdatedOn = DateTime.Now
+      UpdatedOn = DateTime.Now,
+      OwnedBy = CurrentList.OwnedBy
     };
     foreach (var id in CurrentList.SharedWith)
     {

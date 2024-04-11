@@ -132,7 +132,8 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
       List = list,
       Category = new Category { Name = category.Name },
       Quantity = quantity,
-      IsImportant = isImportant
+      IsImportant = isImportant,
+      OwnedBy = list.OwnedBy
     };
     foreach (var id in list.SharedWith)
     {
