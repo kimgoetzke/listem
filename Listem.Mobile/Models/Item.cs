@@ -33,6 +33,7 @@ public partial class Item : IRealmObject, IShareable
 
   public string ToLog()
   {
-    return $"[Item] '{Name}' {Id} in {List?.Name} (category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant})";
+    var sharedWith = SharedWith.Count > 0 ? string.Join(", ", SharedWith) : "";
+    return $"[Item] '{Name}' {Id} in '{List?.Name}', category: {Category?.Name}, quantity: {Quantity}, important: {IsImportant}, owned by: {OwnedBy}, shared with: {sharedWith}, last updated: {UpdatedOn}";
   }
 }
