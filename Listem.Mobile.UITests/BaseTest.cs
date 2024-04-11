@@ -8,22 +8,11 @@ namespace Listem.Mobile.UITests;
 
 public abstract class BaseTest
 {
-  protected static AppiumDriver App => AppiumSetup.AppiumDriver;
-  protected static string AppName => AppiumSetup.AppName;
+  protected static bool IsInstalled => App.IsAppInstalled(AppiumSetup.AppName);
+  private static AppiumDriver App => AppiumSetup.AppiumDriver;
   private readonly string _date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
   private const int DefaultWaitSec = 2;
   private const int DefaultIntervalMs = 500;
-
-  protected static WebDriverWait Wait(
-    int seconds = DefaultWaitSec,
-    int interval = DefaultIntervalMs
-  )
-  {
-    return new WebDriverWait(App, TimeSpan.FromSeconds(seconds))
-    {
-      PollingInterval = TimeSpan.FromMilliseconds(interval)
-    };
-  }
 
   protected static AppiumElement Element(string id)
   {
@@ -38,6 +27,17 @@ public abstract class BaseTest
   protected static By Id(string id)
   {
     return App is WindowsDriver ? MobileBy.AccessibilityId(id) : MobileBy.Id(id);
+  }
+
+  protected static WebDriverWait Wait(
+    int seconds = DefaultWaitSec,
+    int interval = DefaultIntervalMs
+  )
+  {
+    return new WebDriverWait(App, TimeSpan.FromSeconds(seconds))
+    {
+      PollingInterval = TimeSpan.FromMilliseconds(interval)
+    };
   }
 
   protected static AppiumElement? AwaitElement(

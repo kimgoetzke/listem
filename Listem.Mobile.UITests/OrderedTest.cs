@@ -14,7 +14,7 @@ public class OrderedTest : BaseTest
   [Order(1)]
   public void CanStartApp()
   {
-    Console.WriteLine($"[XXX] {AppName} is installed: {App.IsAppInstalled(AppName)}");
+    Console.WriteLine($"[XXX] {AppiumSetup.AppName} is installed: {IsInstalled}");
     Wait(15).Until(_ => Element(StartPage.SignInButton).Displayed);
     TakeScreenshot(nameof(CanStartApp));
   }
@@ -108,7 +108,6 @@ public class OrderedTest : BaseTest
 
   [Test]
   [Order(24)]
-  [Ignore("Disabled until I have implemented swiping")]
   public void CanEditListCategories_RemoveCategories()
   {
     // TODO: Add swipe-removing categories test
