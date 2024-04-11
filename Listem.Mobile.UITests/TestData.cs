@@ -14,9 +14,8 @@ public abstract class TestData
 
   private static List<TestItem> List1Items { get; } =
     [
-      new TestItem("Item-0", AutomationIdModel.DefaultCategoryName, 1, false),
-      new TestItem("Item-1", "Category-1", 1, false),
-      new TestItem("Item-1", "Category-2", 1, false)
+      new TestItem("OwnerItem", AutomationIdModel.DefaultCategoryName, 1, false),
+      new TestItem("CollaboratorItem", AutomationIdModel.DefaultCategoryName, 1, false)
     ];
 
   private static List<TestUser> Users { get; } =
@@ -39,7 +38,7 @@ public abstract class TestData
         "List-1",
         List1Items,
         AutomationIdModel.DefaultListType,
-        ["Category-3", "Category-4"],
+        [],
         Users[1],
         [Users[0]]
       )

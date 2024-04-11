@@ -66,10 +66,22 @@ public abstract class TestHelper : BaseTest
           Element(StickyEntry.SubmitButton).Click();
         });
       }
+
+      public static void ShareList(TestData.TestUser user)
+      {
+        Element(EditListPage.ShareButton).Click();
+        Element(StickyEntry.EntryField).SendKeys(user.Email);
+        Element(StickyEntry.SubmitButton).Click();
+      }
     }
 
     public static class OnListPage
     {
+      public static void AddItemToList(TestData.TestItem item)
+      {
+        AddItemToList(item.Name, item.Category, item.Quantity, item.IsImportant);
+      }
+
       public static void AddItemToList(
         string itemName,
         string categoryName,
@@ -224,6 +236,11 @@ public abstract class TestHelper : BaseTest
 
     public static class OnListPage
     {
+      public static void ItemIsCreated(TestData.TestItem item)
+      {
+        ItemIsCreated(item.Name, item.Category, item.Quantity, item.IsImportant);
+      }
+
       public static void ItemIsCreated(
         string itemName,
         string categoryName,
