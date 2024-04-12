@@ -55,19 +55,20 @@ public partial class MainPage
   {
     var cancellationTokenSource = new CancellationTokenSource();
     CloseSettings(cancellationTokenSource).SafeFireAndForget();
+    _isMenuOpen = false;
   }
 
-  private async void MenuButton_OnTap(object sender, EventArgs e)
+  private void MenuButton_OnTap(object? sender, EventArgs e)
   {
     var cancellationTokenSource = new CancellationTokenSource();
     if (!_isMenuOpen)
     {
-      await OpenSettings(cancellationTokenSource);
+      OpenSettings(cancellationTokenSource).SafeFireAndForget();
       _isMenuOpen = true;
       return;
     }
 
-    await CloseSettings(cancellationTokenSource);
+    CloseSettings(cancellationTokenSource).SafeFireAndForget();
     _isMenuOpen = false;
   }
 
