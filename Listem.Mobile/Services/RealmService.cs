@@ -33,12 +33,16 @@ public static class RealmService
 
   private static async Task CreateRealm()
   {
-    Logger.Info("Creating Realm...");
     var config = await JsonProcessor.NotNull(
       () => JsonProcessor.FromFile<AtlasConfig>("atlasConfig.json")
     );
     var appConfig = new AppConfiguration(config.AppId) { BaseUri = new Uri(config.BaseUrl) };
     _app = Realms.Sync.App.Create(appConfig);
+    Logger.Info(
+      "Realm created with user: {UserEmail} {UserId}",
+      _app.CurrentUser?.Profile.Email ?? "null",
+      _app.CurrentUser?.Id ?? ""
+    );
     _serviceInitialised = true;
   }
 
@@ -75,10 +79,11 @@ public static class RealmService
   public static Realm GetMainThreadRealm()
   {
     var realm = _mainThreadRealm ??= GetRealm();
+
     if (realm.Subscriptions.Count != 0)
       return realm;
 
-    Logger.Warn("No subscriptions in main thread realm - requesting now but cannot await sync");
+    Logger.Warn("Main thread realm has no subscriptions - requesting now but cannot await sync");
     SetSubscriptions(realm).SafeFireAndForget();
     return realm;
   }
@@ -115,12 +120,13 @@ public static class RealmService
 
   public static async Task SignInAsync(string email, string password)
   {
+    var users = _app.AllUsers.Where(u => u.State == UserState.LoggedIn).ToList();
+    Logger.Info("Currently logged in (active or inactive) users: {Users}", users.Select(u => u.Id));
     await _app.LogInAsync(Credentials.EmailPassword(email, password));
     User.SignIn(_app.CurrentUser!);
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
-    using var realm = GetRealm();
-    await realm.Subscriptions.WaitForSynchronizationAsync();
+    await SetSubscriptions(_mainThreadRealm ??= GetRealm());
   }
 
   public static async Task SignOutAsync()
@@ -131,13 +137,10 @@ public static class RealmService
     User.SignOut();
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
-    DisposeRealm();
-    await CreateRealm();
   }
 
   private static Realm GetRealm()
   {
-    var encryptionKey = EncryptionKey();
     var config = new FlexibleSyncConfiguration(_app.CurrentUser!)
     {
       PopulateInitialSubscriptions = realm =>
@@ -147,7 +150,7 @@ public static class RealmService
         var (iqName, itemQuery) = Query<Item>(realm);
         realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
       },
-      EncryptionKey = encryptionKey
+      EncryptionKey = EncryptionKey()
     };
     return Realm.GetInstance(config);
   }
@@ -156,19 +159,19 @@ public static class RealmService
   {
     if (ExistingEncryptionKey is not null)
     {
-      Logger.Info("Using existing encryption key");
+      Logger.Info("Using existing encryption key from device");
       return ExistingEncryptionKey;
     }
 
     var newEncryptionKey = new byte[64];
-    using var rng = RandomNumberGenerator.Create();
-    rng.GetBytes(newEncryptionKey);
+    using var generator = RandomNumberGenerator.Create();
+    generator.GetBytes(newEncryptionKey);
 
     SecureStorage
       .Default.SetAsync(Constants.LocalEncryptionKey, Convert.ToBase64String(newEncryptionKey))
       .SafeFireAndForget();
     ExistingEncryptionKey = newEncryptionKey;
-    Logger.Info("Using newly created encryption key");
+    Logger.Info("Using newly created encryption key and saving it to device");
     return newEncryptionKey;
   }
 
@@ -183,7 +186,7 @@ public static class RealmService
       var (iqName, itemQuery) = Query<Item>(realm);
       realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
     });
-    Logger.Info("Default subscriptions set, syncing now...");
+    Logger.Info("Default subscriptions set (again), syncing now...");
     if (realm.SyncSession.ConnectionState != ConnectionState.Disconnected)
     {
       await realm.Subscriptions.WaitForSynchronizationAsync();
@@ -201,12 +204,15 @@ public static class RealmService
     return (typeof(T).Name + "Query", query);
   }
 
-  private static void RemoveAllSubscriptions(Realm realm, bool removeNamed)
+  private static void RemoveAllSubscriptions(Realm realm, bool removeNamed, bool quietly = true)
   {
-    Logger.Info("Removing all subscriptions (removedNamed={Value})", removeNamed);
-    foreach (var subscription in realm.Subscriptions)
+    if (!quietly)
     {
-      Logger.Info("- {Name}: {Query}", subscription.Name!, subscription.Query);
+      Logger.Info("Removing all subscriptions (removedNamed={Value})", removeNamed);
+      foreach (var subscription in realm.Subscriptions)
+      {
+        Logger.Info("- {Name}: {Query}", subscription.Name!, subscription.Query);
+      }
     }
     realm.Subscriptions.Update(() =>
     {
