@@ -133,11 +133,9 @@ public partial class MainViewModel : BaseViewModel
 
   private static async Task<bool> IsDeletionConfirmedByUser(string listName)
   {
-    return await Shell.Current.DisplayAlert(
+    return await Notifier.ShowConfirmationAlertAsync(
       "Delete list",
-      $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?",
-      "Yes",
-      "No"
+      $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?"
     );
   }
 
