@@ -102,6 +102,7 @@ public class OrderedTest : BaseTest
     ElementXPath(Alert.Yes).Click();
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _currentList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.AddCategoryButton).Displayed);
     AssertThat.OnEditListPage.Categories(false, _currentList.Categories);
     Assert.That(OptionalElement(EditListPage.ResetCategoriesButton), Is.Null);
   }
@@ -316,6 +317,7 @@ public class OrderedTest : BaseTest
     Act.OnMainPage.CreateList(otherList.Name);
     AssertThat.OnMainPage.ListTagsAreCorrect(otherList.Name, false);
     Element(MainPage.List.ListTitle + otherList.Name).Click();
+    Wait().Until(_ => Element(ListPage.AddButton).Displayed);
     Act.OnListPage.AddItemToList(otherList.Items[0]);
     AssertThat.OnListPage.ItemIsCreated(otherList.Items[0]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
@@ -329,8 +331,9 @@ public class OrderedTest : BaseTest
   [Order(60)]
   public void CanCollaborate_SeeSharedList()
   {
+    // BUG: Need to swipe to see the shared list first
     var element = Element(MainPage.List.ListTitle + _currentList.Name);
-    Assert.That(element!.Displayed, Is.True);
+    Assert.That(element.Displayed, Is.True);
     AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, true);
     element.Click();
     _currentList.Items.ForEach(i =>
