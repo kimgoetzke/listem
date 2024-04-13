@@ -260,7 +260,7 @@
         <GradientStop Color="{DynamicResource BackgroundColor}" Offset="0.1" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="TopTransparentToBottomWhiteBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="Transparent" Offset="0.9" />
+        <GradientStop Color="Transparent" Offset="0.97" />
         <GradientStop Color="{DynamicResource BackgroundColorAccent}" Offset="1.0" />
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="LeftTransparentToRightWhiteBrush1" StartPoint="0.9,0" EndPoint="1,0">
