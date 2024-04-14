@@ -50,11 +50,13 @@ public static class RealmService
   {
     User = await JsonProcessor.FromSecureStorage<User>(Constants.User) ?? new User();
 
-    if (_app.CurrentUser?.RefreshToken != null)
+    if (User.IsSameAs(_app.CurrentUser) && _app.CurrentUser?.RefreshToken != null)
     {
       if (User.ShouldRefreshToken)
-        return await RefreshToken();
+        return await RefreshTokenAsync();
 
+      using var realm = GetRealm();
+      await realm.Subscriptions.WaitForSynchronizationAsync();
       WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
       return true;
     }
@@ -88,7 +90,7 @@ public static class RealmService
     return realm;
   }
 
-  private static async Task<bool> RefreshToken()
+  private static async Task<bool> RefreshTokenAsync()
   {
     try
     {
@@ -125,22 +127,37 @@ public static class RealmService
     await _app.LogInAsync(Credentials.EmailPassword(email, password));
     User.SignIn(_app.CurrentUser!);
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
+    using var realm = GetRealm();
+    await realm.Subscriptions.WaitForSynchronizationAsync();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
-    await SetSubscriptions(_mainThreadRealm ??= GetRealm());
   }
 
   public static async Task SignOutAsync()
   {
+    var tokenSource = new CancellationTokenSource();
+    var delayTask = Task.Delay(5000, tokenSource.Token);
+    var uploadTask = _mainThreadRealm!.SyncSession.WaitForUploadAsync(tokenSource.Token);
+    var completedTask = await Task.WhenAny(delayTask, uploadTask);
+    var message =
+      completedTask == delayTask
+        ? "Timed out after 5 seconds while uploading local changes to realm - data loss possible"
+        : "Successfully uploaded local changes to realm";
+    Logger.Log(completedTask == delayTask ? LogLevel.Warning : LogLevel.Information, message);
+    tokenSource.CancelAsync().SafeFireAndForget();
+
     if (_app.CurrentUser is not null)
       await _app.CurrentUser.LogOutAsync();
 
     User.SignOut();
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
+    DisposeRealm();
+    await CreateRealm();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
   }
 
   private static Realm GetRealm()
   {
+    Logger.Info("Getting Realm...");
     var config = new FlexibleSyncConfiguration(_app.CurrentUser!)
     {
       PopulateInitialSubscriptions = realm =>
@@ -159,7 +176,7 @@ public static class RealmService
   {
     if (ExistingEncryptionKey is not null)
     {
-      Logger.Info("Using existing encryption key from device");
+      Logger.Debug("Using existing encryption key from device");
       return ExistingEncryptionKey;
     }
 
@@ -171,7 +188,7 @@ public static class RealmService
       .Default.SetAsync(Constants.LocalEncryptionKey, Convert.ToBase64String(newEncryptionKey))
       .SafeFireAndForget();
     ExistingEncryptionKey = newEncryptionKey;
-    Logger.Info("Using newly created encryption key and saving it to device");
+    Logger.Debug("Using newly created encryption key and saving it to device");
     return newEncryptionKey;
   }
 
@@ -186,11 +203,18 @@ public static class RealmService
       var (iqName, itemQuery) = Query<Item>(realm);
       realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
     });
-    Logger.Info("Default subscriptions set (again), syncing now...");
-    if (realm.SyncSession.ConnectionState != ConnectionState.Disconnected)
+    foreach (var subscription in realm.Subscriptions)
     {
-      await realm.Subscriptions.WaitForSynchronizationAsync();
+      Logger.Info("Added subscription: {Name} {Query}", subscription.Name!, subscription.Query);
     }
+    var connectionState = realm.SyncSession.ConnectionState;
+    Logger.Info("New subscriptions set, sync session connection state: {State}", connectionState);
+    if (connectionState == ConnectionState.Disconnected)
+    {
+      Logger.Info("Can't sync because session is disconnected, user may be offline");
+      return;
+    }
+    await realm.Subscriptions.WaitForSynchronizationAsync();
   }
 
   // It does not appear to be possible to filter items by referring to the linked List object, see
@@ -219,16 +243,6 @@ public static class RealmService
       var count = realm.Subscriptions.RemoveAll(removeNamed);
       Logger.Info("Removed {Count} subscription(s)", count);
     });
-  }
-
-  [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Local")]
-  [SuppressMessage("ReSharper", "ClassNeverInstantiated.Local")]
-  [SuppressMessage("ReSharper", "UnusedMember.Local")]
-  private record AtlasConfig
-  {
-    public string AppId { get; init; } = null!;
-    public string BaseUrl { get; init; } = null!;
-    public string SecretKey { get; init; } = null!;
   }
 
   public static async Task<string?> ResolveToUserId(string email)
