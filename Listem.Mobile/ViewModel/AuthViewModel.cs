@@ -138,14 +138,16 @@ public partial class AuthViewModel : BaseViewModel
       await Shell.Current.Navigation.PopAsync();
       IsUserSignedIn = true;
       Password = null;
-      IsBusy = false;
     }
     catch (Exception ex)
     {
-      IsBusy = false;
       _logger.Info("Sign in failed: {Exception}", ex);
       await RealmService.SignOutAsync();
       await Notifier.ShowAlertAsync("Sign in failed", ex.Message, "OK");
+    }
+    finally
+    {
+      IsBusy = false;
     }
   }
 
