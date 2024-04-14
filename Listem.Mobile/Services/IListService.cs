@@ -12,6 +12,7 @@ public interface IListService
     ISet<string>? sharedWith = null,
     string? listType = null
   );
+  Task MarkAsUpdatedAsync(List list);
   Task DeleteAsync(List list);
   Task<bool> ShareWith(List list, string email);
   Task<bool> RevokeAccess(List list, string id);
