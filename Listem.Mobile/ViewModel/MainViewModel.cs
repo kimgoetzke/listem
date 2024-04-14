@@ -8,11 +8,10 @@ using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
 using Microsoft.Extensions.Logging;
-using Realms;
 
 namespace Listem.Mobile.ViewModel;
 
-public partial class MainViewModel : BaseViewModel
+public partial class MainViewModel : BaseViewModel, IDisposable
 {
   [ObservableProperty]
   private IQueryable<List> _lists = null!;
@@ -36,7 +35,6 @@ public partial class MainViewModel : BaseViewModel
   private readonly IListService _listService;
   private readonly IItemService _itemService;
   private readonly ILogger _logger;
-  private readonly Realm _realm = RealmService.GetMainThreadRealm();
 
   public MainViewModel(IServiceProvider serviceProvider)
   {
@@ -45,10 +43,10 @@ public partial class MainViewModel : BaseViewModel
     _listService = serviceProvider.GetService<IListService>()!;
     _itemService = serviceProvider.GetService<IItemService>()!;
     _logger = serviceProvider.GetService<ILogger<MainViewModel>>()!;
+    _logger.Debug("Initialising MainViewModel...");
     GetSortedLists();
     Themes = ThemeHandler.GetAllThemesAsCollection();
     CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
-
     WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
       this,
       (_, m) =>
@@ -67,7 +65,7 @@ public partial class MainViewModel : BaseViewModel
   // TODO: Implement sorting and filtering
   private void GetSortedLists()
   {
-    Lists = _realm.All<List>().OrderByDescending(l => l.UpdatedOn);
+    Lists = RealmService.GetMainThreadRealm().All<List>().OrderByDescending(l => l.UpdatedOn);
     OnPropertyChanged(nameof(Lists));
     UpdateObservableLists();
   }
@@ -191,6 +189,7 @@ public partial class MainViewModel : BaseViewModel
     IsUserSignedIn = false;
     IsBusy = false;
     await Shell.Current.Navigation.PopToRootAsync();
+    Dispose();
   }
 
   [RelayCommand]
@@ -205,5 +204,12 @@ public partial class MainViewModel : BaseViewModel
   {
     _logger.Info("Editing list: {List}", list.ToLog());
     await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
+  }
+
+  public void Dispose()
+  {
+    _logger.Debug("Disposing MainViewModel...");
+    WeakReferenceMessenger.Default.Unregister<UserStatusChangedMessage>(this);
+    GC.SuppressFinalize(this);
   }
 }
