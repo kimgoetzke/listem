@@ -58,6 +58,7 @@ public static class AutomationIdModel
     public static class Categories
     {
       public const string Label = "CollectionItem_";
+      public const string BinIcon = "BinIcon_";
     }
 
     public static class Collaborators
@@ -68,6 +69,7 @@ public static class AutomationIdModel
 
   public static class ListPage
   {
+    public const string ListName = "ListNameLabel";
     public const string BackButton = "BackButton";
     public const string NameEntry = "ListPageEntryField";
     public const string CategoryPicker = "ListPageCategoryPicker";
@@ -88,6 +90,7 @@ public static class AutomationIdModel
       public const string QuantityLabel = "QuantityLabel_";
       public const string IsImportantIcon = "IsImportantIcon_";
       public const string DoneBox = "DoneBox_";
+      public const string Frame = "Frame_";
     }
   }
 

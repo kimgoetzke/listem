@@ -1,4 +1,5 @@
-﻿using static Listem.Mobile.UITests.AutomationIdModel;
+﻿using OpenQA.Selenium.Interactions;
+using static Listem.Mobile.UITests.AutomationIdModel;
 
 namespace Listem.Mobile.UITests;
 
@@ -6,10 +7,15 @@ public abstract class TestHelper : BaseTest
 {
   public static class Act
   {
-    public static void NavigateBackAndAwait(string elementId)
+    public static void NavigateBackAndAwait(string elementId, int seconds = DefaultWaitSec)
     {
       Element("BackButton").Click();
-      Wait().Until(_ => Element(elementId).Displayed);
+      Wait(seconds).Until(_ => Element(elementId).Displayed);
+    }
+
+    public static void HideKeyboard()
+    {
+      AppiumSetup.AppiumDriver.HideKeyboard();
     }
 
     public static class OnStartPage
@@ -32,6 +38,19 @@ public abstract class TestHelper : BaseTest
         Element(MainPage.AddListButton).Click();
         Element(StickyEntry.EntryField).SendKeys(listName);
         Element(StickyEntry.SubmitButton).Click();
+      }
+
+      public static void SwipeRight(string elementId)
+      {
+        var windowSize = AppiumSetup.AppiumDriver.Manage().Window.Size;
+        var element = Element(elementId);
+        new Actions(AppiumSetup.AppiumDriver)
+          .MoveToElement(element)
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .ClickAndHold()
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .MoveToElement(element, -windowSize.Width / 2, 0)
+          .Perform();
       }
 
       public static void SignOut()
@@ -59,12 +78,29 @@ public abstract class TestHelper : BaseTest
 
       public static void AddListCategories(List<string> categories)
       {
-        categories.ForEach(category =>
-        {
-          Element(EditListPage.AddCategoryButton).Click();
-          Element(StickyEntry.EntryField).SendKeys(category);
-          Element(StickyEntry.SubmitButton).Click();
-        });
+        categories.ForEach(AddListCategory);
+      }
+
+      private static void AddListCategory(string category)
+      {
+        Element(EditListPage.AddCategoryButton).Click();
+        Element(StickyEntry.EntryField).SendKeys(category);
+        Element(StickyEntry.SubmitButton).Click();
+      }
+
+      public static void SwipeDeleteCategory(string category)
+      {
+        var windowSize = AppiumSetup.AppiumDriver.Manage().Window.Size;
+        var categoryLabel = Element(EditListPage.Categories.Label + category);
+        new Actions(AppiumSetup.AppiumDriver)
+          .MoveToElement(categoryLabel)
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .ClickAndHold()
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .MoveToElement(categoryLabel, -windowSize.Width / 2, 0)
+          .Perform();
+        Task.Delay(200);
+        Element(EditListPage.Categories.BinIcon + category).Click();
       }
 
       public static void ShareList(TestData.TestUser user)
@@ -115,6 +151,27 @@ public abstract class TestHelper : BaseTest
 
         Element(ListPage.AddButton).Click();
         Assert.That(categoryPicker.Text, Is.EqualTo(categoryName));
+      }
+
+      public static void SwipeDeleteItem(string itemName)
+      {
+        var windowSize = AppiumSetup.AppiumDriver.Manage().Window.Size;
+        var itemLabel = Element(ListPage.Item.Label + itemName);
+        var listName = Element(ListPage.ListName);
+        new Actions(AppiumSetup.AppiumDriver)
+          .MoveToElement(itemLabel)
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .ClickAndHold()
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .MoveToElement(itemLabel, windowSize.Width, 0)
+          .Perform();
+        Task.Delay(200);
+        new Actions(AppiumSetup.AppiumDriver)
+          .MoveToElement(listName)
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .Click()
+          .Pause(TimeSpan.FromMilliseconds(200))
+          .Perform();
       }
     }
 
@@ -208,6 +265,11 @@ public abstract class TestHelper : BaseTest
             }
           });
         });
+      }
+
+      public static void CategoryIsDeleted(string category)
+      {
+        Assert.That(OptionalElement(EditListPage.Categories.Label + category), Is.Null);
       }
 
       public static void List(bool isShared, TestData.TestUser user, bool ignoreButton = false)

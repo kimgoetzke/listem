@@ -25,7 +25,7 @@ public class AppiumSetup
       PlatformName = "Android",
       PlatformVersion = "14",
       DeviceName = "Android Emulator",
-      App = apk + "/io.kimgoetzke.listem-Signed.apk",
+      App = apk + "/io.kimgoetzke.listem-Signed.apk"
     };
     androidOptions.AddAdditionalAppiumOption("appPackage", AppName);
     androidOptions.AddAdditionalAppiumOption("appActivity", MainActivityName);

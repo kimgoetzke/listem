@@ -1,14 +1,13 @@
 ﻿using static Listem.Mobile.UITests.AutomationIdModel;
 using static Listem.Mobile.UITests.TestHelper;
 
-namespace Listem.Mobile.UITests;
+namespace Listem.Mobile.UITests.Tests;
 
 [TestFixture]
-public class OrderedTest : BaseTest
+public class OrderedBasicFeatureTest : BaseTest
 {
   private readonly TestData.TestList _currentList = TestData.Lists[0];
   private const string EditedPrefix = "Edited";
-  private const string NewPrefix = "New";
 
   [Test]
   [Order(1)]
@@ -45,7 +44,7 @@ public class OrderedTest : BaseTest
     Act.OnMainPage.CreateList(listName);
     Wait().Until(_ => Element(MainPage.List.ListTitle + listName).Displayed);
     Element(MainPage.List.DeleteButton + listName).Click();
-    ElementXPath(Alert.Yes).Click();
+    AwaitElementXPath(Alert.Yes)!.Click();
     Assert.That(OptionalElement(MainPage.List.ListTitle + listName), Is.Null);
   }
 
@@ -99,7 +98,7 @@ public class OrderedTest : BaseTest
     var resetButton = Element(EditListPage.ResetCategoriesButton);
     Assert.That(resetButton.Displayed, Is.True);
     resetButton.Click();
-    ElementXPath(Alert.Yes).Click();
+    AwaitElementXPath(Alert.Yes)!.Click();
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _currentList.Name).Click();
     Wait().Until(_ => Element(EditListPage.AddCategoryButton).Displayed);
@@ -111,7 +110,13 @@ public class OrderedTest : BaseTest
   [Order(24)]
   public void CanEditListCategories_RemoveCategories()
   {
-    // TODO: Add swipe-removing categories test
+    Act.OnEditListPage.AddListCategories(_currentList.Categories);
+    _currentList.Categories.ForEach(Act.OnEditListPage.SwipeDeleteCategory);
+    AssertThat.OnEditListPage.Categories(false, _currentList.Categories);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.EditButton + _currentList.Name).Click();
+    AwaitElement(EditListPage.ListNameEntry);
+    AssertThat.OnEditListPage.Categories(false, _currentList.Categories);
     Act.OnEditListPage.AddListCategories(_currentList.Categories);
   }
 
@@ -138,7 +143,7 @@ public class OrderedTest : BaseTest
     var unshareButton = Element(EditListPage.UnshareButton);
     Assert.That(unshareButton.Displayed, Is.True);
     unshareButton.Click();
-    ElementXPath(Alert.Yes).Click();
+    AwaitElementXPath(Alert.Yes)!.Click();
     AssertThat.OnEditListPage.List(false, collaborator);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _currentList.Name).Click();
@@ -189,31 +194,34 @@ public class OrderedTest : BaseTest
   {
     Element(ListPage.Item.DoneBox + _currentList.Items[0].Name).Click();
     Element(ListPage.Item.DoneBox + _currentList.Items[1].Name).Click();
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Act.NavigateBackAndAwait(MainPage.MenuButton, 5);
     Element(MainPage.List.ListTitle + _currentList.Name).Click();
     Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
     AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[0]);
     AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[1]);
     TakeScreenshot(nameof(CanRemoveItems_TickAndLeaveList));
     // Add items back to list for future tests
-    var i1 = _currentList.Items[0];
-    var i2 = _currentList.Items[1];
-    Act.OnListPage.AddItemToList(i1.Name, i1.Category, i1.Quantity, i1.IsImportant);
-    Act.OnListPage.AddItemToList(i2.Name, i2.Category, i2.Quantity, i2.IsImportant);
+    Act.OnListPage.AddItemToList(_currentList.Items[0]);
+    Act.OnListPage.AddItemToList(_currentList.Items[1]);
   }
 
   [Test]
   [Order(38)]
   public void CanRemoveItems_SwipeComplete()
   {
-    // TODO: Add swipe-to-complete test for items 2-3
-    // var item2 = OptionalElement("Label_" + TestData.Items[2].Name);
-    // var item3 = OptionalElement("Label_" + TestData.Items[3].Name);
-    // Assert.Multiple(() =>
-    // {
-    //   Assert.That(item2, Is.Null);
-    //   Assert.That(item3, Is.Null);
-    // });
+    Act.HideKeyboard();
+    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[2]);
+    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[3]);
+    Act.OnListPage.SwipeDeleteItem(_currentList.Items[2].Name);
+    Act.OnListPage.SwipeDeleteItem(_currentList.Items[3].Name);
+    AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[2]);
+    AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[3]);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.ListTitle + _currentList.Name).Click();
+    AwaitElement(ListPage.AddButton);
+    // Add items back to list for future tests
+    Act.OnListPage.AddItemToList(_currentList.Items[2]);
+    Act.OnListPage.AddItemToList(_currentList.Items[3]);
   }
 
   [Test]
@@ -292,213 +300,10 @@ public class OrderedTest : BaseTest
     TakeScreenshot(nameof(CanNavigateFromDetailPageToMainPage));
   }
 
-  [Test]
-  [Order(50)]
-  public void CanSignOutFromMainPage()
-  {
-    Wait().Until(_ => Element(MainPage.MenuButton).Displayed);
-    Act.OnMainPage.SignOut();
-    TakeScreenshot(nameof(CanSignOutFromMainPage));
-  }
-
-  [Test]
-  [Order(51)]
-  public void CanSignInWithDifferentUser()
-  {
-    Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
-    TakeScreenshot(nameof(CanSignInWithDifferentUser));
-  }
-
-  [Test]
-  [Order(52)]
-  public void CanWriteToRealmAfterChangingUser()
-  {
-    var otherList = TestData.Lists[1];
-    Act.OnMainPage.CreateList(otherList.Name);
-    AssertThat.OnMainPage.ListTagsAreCorrect(otherList.Name, false);
-    Element(MainPage.List.ListTitle + otherList.Name).Click();
-    Wait().Until(_ => Element(ListPage.AddButton).Displayed);
-    Act.OnListPage.AddItemToList(otherList.Items[0]);
-    AssertThat.OnListPage.ItemIsCreated(otherList.Items[0]);
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Element(MainPage.List.EditButton + otherList.Name).Click();
-    Act.OnEditListPage.ShareList(otherList.Collaborators[0]);
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-    AssertThat.OnMainPage.ListTagsAreCorrect(otherList.Name, true, true);
-  }
-
-  [Test]
-  [Order(60)]
-  public void CanCollaborate_SeeSharedList()
-  {
-    // BUG: Need to swipe to see the shared list first
-    var element = Element(MainPage.List.ListTitle + _currentList.Name);
-    Assert.That(element.Displayed, Is.True);
-    AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, true);
-    element.Click();
-    _currentList.Items.ForEach(i =>
-      AssertThat.OnListPage.ItemIsCreated(i.Name, i.Category, i.Quantity, i.IsImportant)
-    );
-  }
-
-  [Test]
-  [Order(61)]
-  public void CanCollaborate_DeleteItemsFromSharedList()
-  {
-    Element(ListPage.Item.DoneBox + _currentList.Items[4].Name).Click();
-    Element(ListPage.Item.DoneBox + _currentList.Items[5].Name).Click();
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Element(MainPage.List.ListTitle + _currentList.Name).Click();
-    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
-    AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[4]);
-    AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[5]);
-  }
-
-  [Test]
-  [Order(62)]
-  public void CanCollaborate_AddItemsToSharedList()
-  {
-    var i4 = _currentList.Items[4];
-    var i5 = _currentList.Items[5];
-    Act.OnListPage.AddItemToList(NewPrefix + i4.Name, i4.Category, i4.Quantity, i4.IsImportant);
-    Act.OnListPage.AddItemToList(NewPrefix + i5.Name, i5.Category, i5.Quantity, i5.IsImportant);
-    AssertThat.OnListPage.ItemIsCreated(
-      NewPrefix + i4.Name,
-      i4.Category,
-      i4.Quantity,
-      i4.IsImportant
-    );
-    AssertThat.OnListPage.ItemIsCreated(
-      NewPrefix + i5.Name,
-      i5.Category,
-      i5.Quantity,
-      i5.IsImportant
-    );
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-  }
-
-  [Test]
-  [Order(63)]
-  public void CanCollaborate_EditItemsOwnedBySomeoneElse()
-  {
-    var item = _currentList.Items[0];
-    Element(ListPage.Item.Label + item.Name).Click();
-    Act.OnDetailPage.ChangeItemName(item.Name, EditedPrefix);
-    Act.OnDetailPage.ChangeItemQuantity(2);
-    Act.OnDetailPage.SetItemIsImportant(true);
-    Act.OnDetailPage.ChangeItemCategory(_currentList.Categories[1]);
-    Act.NavigateBackAndAwait(ListPage.AddButton);
-    AssertThat.OnListPage.ItemIsCreated(
-      EditedPrefix + item.Name,
-      _currentList.Categories[1],
-      3,
-      true
-    );
-    Element(ListPage.Item.Label + EditedPrefix + item.Name).Click();
-    Act.OnDetailPage.ChangeItemName(item.Name);
-    Act.OnDetailPage.ChangeItemQuantity(-2);
-    Act.OnDetailPage.SetItemIsImportant(item.IsImportant);
-    Act.OnDetailPage.ChangeItemCategory(item.Category);
-    Act.NavigateBackAndAwait(ListPage.AddButton);
-  }
-
-  [Test]
-  [Order(64)]
-  public void CanCollaborate_ExitSharedList()
-  {
-    Element(MainPage.List.ExitButton + _currentList.Name).Click();
-    ElementXPath(Alert.Yes).Click();
-    var list = OptionalElement(MainPage.List.ListTitle + _currentList.Name);
-    Assert.That(list, Is.Null);
-  }
-
-  [Test]
-  [Order(65)]
-  public void CanCollaborate_CollaboratorItemsRemainOnListAfterExit()
-  {
-    Act.OnMainPage.SignOut();
-    Act.OnStartPage.SignIn(_currentList.Owner);
-    var element = AwaitElement(MainPage.List.ListTitle + _currentList.Name);
-    Assert.That(element!.Displayed, Is.True);
-    AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, false);
-    element.Click();
-    var i4 = _currentList.Items[4];
-    var i5 = _currentList.Items[5];
-    AssertThat.OnListPage.ItemIsCreated(
-      NewPrefix + i4.Name,
-      i4.Category,
-      i4.Quantity,
-      i4.IsImportant
-    );
-    AssertThat.OnListPage.ItemIsCreated(
-      NewPrefix + i5.Name,
-      i5.Category,
-      i5.Quantity,
-      i5.IsImportant
-    );
-  }
-
-  [Test]
-  [Order(66)]
-  public void CanCollaborate_OwnerCanEditCollaboratorsItems()
-  {
-    var i4 = _currentList.Items[4];
-    var i5 = _currentList.Items[5];
-    Element(ListPage.Item.Label + NewPrefix + i4.Name).Click();
-    Act.OnDetailPage.ChangeItemName(i4.Name);
-    Act.NavigateBackAndAwait(ListPage.AddButton);
-    Element(ListPage.Item.Label + NewPrefix + i5.Name).Click();
-    Act.OnDetailPage.ChangeItemName(i5.Name);
-    Act.NavigateBackAndAwait(ListPage.AddButton);
-    AssertThat.OnListPage.ItemIsCreated(i4.Name, i4.Category, i4.Quantity, i4.IsImportant);
-    AssertThat.OnListPage.ItemIsCreated(i5.Name, i5.Category, i5.Quantity, i5.IsImportant);
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-  }
-
-  [Test]
-  [Order(67)]
-  public void CanDeleteListAsOwner_SharedList()
-  {
-    var deleteButton = Element(MainPage.List.DeleteButton + _currentList.Name);
-    deleteButton.Click();
-    ElementXPath(Alert.No).Click();
-    Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Not.Null);
-    deleteButton.Click();
-    ElementXPath(Alert.Yes).Click();
-    Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Null);
-  }
-
-  [Test]
-  [Order(68)]
-  public void CanCollaborate_DeletedListDisappearsForCollaborator()
-  {
-    var otherList = TestData.Lists[1];
-
-    // Add item as collaborator
-    Element(MainPage.List.ListTitle + otherList.Name).Click();
-    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
-    Act.OnListPage.AddItemToList(otherList.Items[1]);
-    AssertThat.OnListPage.ItemIsCreated(otherList.Items[1]);
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-
-    // Change user and delete list
-    Act.OnMainPage.SignOut();
-    Act.OnStartPage.SignIn(otherList.Owner);
-    Assert.That(OptionalElement(MainPage.List.ListTitle + otherList.Name), Is.Not.Null);
-    Element(MainPage.List.DeleteButton + otherList.Name).Click();
-    ElementXPath(Alert.Yes).Click();
-    Assert.That(OptionalElement(MainPage.List.ListTitle + otherList.Name), Is.Null);
-
-    // Change user again and make sure list is gone
-    Act.OnMainPage.SignOut();
-    Act.OnStartPage.SignIn(otherList.Collaborators[0]);
-    Assert.That(OptionalElement(MainPage.List.ListTitle + otherList.Name), Is.Null);
-  }
-
   [OneTimeTearDown]
   public void CleanUp()
   {
-    // Act.OnMainPage.SignOut();
-    // Wait(5).Until(_ => Element(StartPage.SignInButton));
+    Act.OnMainPage.SignOut();
+    Wait(5).Until(_ => Element(StartPage.SignInButton));
   }
 }

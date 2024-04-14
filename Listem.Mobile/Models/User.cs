@@ -1,17 +1,21 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 
 namespace Listem.Mobile.Models;
 
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
 public class User
 {
+  private static ILogger Logger => LoggerProvider.CreateLogger("User");
   public string? Id { get; set; }
   public string? EmailAddress { get; set; }
   public string? AccessToken { get; set; }
   public string? RefreshToken { get; set; }
   public DateTime TokenExpiresAt { get; set; } = DateTime.Now;
   public bool IsTokenExpired => TokenExpiresAt <= DateTime.Now;
-  public bool ShouldRefreshToken => TokenExpiresAt <= DateTime.Now.AddDays(7);
+  public bool ShouldRefreshToken =>
+    RefreshToken != null && TokenExpiresAt <= DateTime.Now.AddDays(7);
   public bool IsRegistered => EmailAddress != null;
   public bool IsSignedIn => IsTokenExpired == false;
   public Status Status
@@ -60,6 +64,22 @@ public class User
     AccessToken = null;
     RefreshToken = null;
     TokenExpiresAt = DateTime.Now;
+  }
+
+  public bool IsSameAs(Realms.Sync.User? realmUser)
+  {
+    var result = false;
+
+    if (realmUser != null)
+      result = realmUser.Id == Id;
+
+    Logger.Info(
+      "User: Realm user is {Realm} vs Listem user is {Listem} => {Result}",
+      realmUser != null ? realmUser.Id : "null",
+      Id ?? "null",
+      result ? "Same user" : "Different users"
+    );
+    return result;
   }
 
   public override string ToString()
