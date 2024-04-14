@@ -2,7 +2,6 @@
 using AsyncAwaitBestPractices;
 using Listem.Mobile.Models;
 using Listem.Mobile.ViewModel;
-using Microsoft.Extensions.Logging;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif
@@ -20,12 +19,10 @@ public partial class ListPage
   private Button AddButton { get; set; } = null!;
 
   private readonly ListViewModel _viewModel;
-  private readonly ILogger<ListPage> _logger;
 
   public ListPage(List list, IServiceProvider serviceProvider)
   {
     InitializeComponent();
-    _logger = serviceProvider.GetService<ILogger<ListPage>>()!;
     _viewModel = new ListViewModel(list, serviceProvider);
     BindingContext = _viewModel;
     InitialiseMenuToAddItems();
@@ -39,9 +36,7 @@ public partial class ListPage
     CategoryPickerFrame = GetFrameForCategoryPicker();
     var isImportantGrid = GetImportantGrid();
     AddButton = GetAddButton();
-#if WINDOWS || __MACOS__
-    var menuGrid = CreateGridOnDesktop(isImportantGrid);
-#elif __IOS__ || __ANDROID__
+#if __IOS__ || __ANDROID__
     var menuGrid = CreateGridOnMobile(isImportantGrid);
 #endif
     PageContentGrid.Add(menuGrid, 0, 1);
@@ -63,11 +58,6 @@ public partial class ListPage
   protected override void OnDisappearing()
   {
     base.OnDisappearing();
-    _logger.Debug("Removing selected item(s), if applicable");
-    foreach (var item in _viewModel.ItemsToDelete)
-    {
-      _viewModel.RemoveItemCommand.ExecuteAsync(item).SafeFireAndForget();
-    }
 #if __ANDROID__ || __IOS__
     var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
