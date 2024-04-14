@@ -86,14 +86,17 @@ public class User
   {
     var at = ExtractPayload(AccessToken);
     var rt = ExtractPayload(RefreshToken);
-    return $"[User] _id: {Id ?? "null"}, email: {EmailAddress ?? "null"}, status: {Status}, valid token: {!IsTokenExpired}, valid until: {TokenExpiresAt}), access token: {at ?? "null"}, refresh token: {rt ?? "null"}";
+    return $"[User] _id: {Id ?? "null"}, email: {EmailAddress ?? "null"}, status: {Status}, valid token: {!IsTokenExpired}, valid until: {TokenExpiresAt}), access token: {at}, refresh token: {rt}";
   }
 
   // Extracts the payload from a JWT token so that header and signature aren't logged.
-  private static string? ExtractPayload(string? token)
+  private static string ExtractPayload(string? token)
   {
     if (token is null)
-      return null;
+      return "null";
+
+    if (Environment.GetEnvironmentVariable("LOG_JWT_PAYLOAD") != "enabled")
+      return "*****";
 
     var parts = token.Split(".");
     return parts.Length != 3 ? token : parts[1];
