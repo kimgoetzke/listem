@@ -86,6 +86,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
         item.UpdatedOn = DateTimeOffset.Now;
         count++;
       }
+      list.UpdatedOn = DateTimeOffset.Now;
     });
     logger.Info(
       "Updated all {Count} item(s) in list '{Name}' {Id} to use default category",
@@ -112,6 +113,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
         item.UpdatedOn = DateTimeOffset.Now;
         count++;
       }
+      list.UpdatedOn = DateTimeOffset.Now;
     });
     logger.Info(
       "Updated {Count} item(s) with category '{Category}' in list '{Name}' {Id} to use default category",
