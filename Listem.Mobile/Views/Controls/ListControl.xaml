@@ -74,6 +74,7 @@
                     <!-- List of added items: Contents of list -->
                     <Grid Padding="0" RowDefinitions="Auto, Auto" VerticalOptions="Fill">
                         <Frame HeightRequest="{DynamicResource StandardSwipeItemHeight}"
+                               AutomationId="{Binding Name, StringFormat='Frame_{0}'}"
                                Margin="20, 5"
                                Padding="0"
                                VerticalOptions="Fill"

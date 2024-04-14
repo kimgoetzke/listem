@@ -31,7 +31,7 @@
                                            HeightRequest="75"
                                            WidthRequest="75">
                                         <Image Source="bin_white.png"
-                                               AutomationId="BinIcon"
+                                               AutomationId="{Binding ., StringFormat='BinIcon_{0}'}"
                                                Aspect="AspectFit"
                                                WidthRequest="25"
                                                HeightRequest="25"

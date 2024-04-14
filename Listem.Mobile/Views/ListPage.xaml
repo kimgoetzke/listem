@@ -24,6 +24,7 @@
                          Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
             <Label Grid.Column="0" Grid.ColumnSpan="3"
                    Padding="20, 0"
+                   AutomationId="ListNameLabel"
                    Text="{Binding ProcessedObservableItemListName}"
                    VerticalTextAlignment="Center"
                    Style="{DynamicResource SubHeadline}" />
