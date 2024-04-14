@@ -1,20 +1,18 @@
 ﻿using Listem.Mobile.Models;
 using Microsoft.Extensions.Logging;
-using Realms;
 
 namespace Listem.Mobile.Services;
 
 public class ListService(ILogger<CategoryService> logger) : IListService
 {
-  private readonly Realm _realm = RealmService.GetMainThreadRealm();
-
   public async Task CreateAsync(List list)
   {
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
       list.IsDraft = false;
       list.Categories.Add(new Category { Name = Constants.DefaultCategoryName });
-      _realm.Add(list);
+      realm.Add(list);
       logger.Info("Added: {List}", list.ToLog());
     });
   }
@@ -27,12 +25,13 @@ public class ListService(ILogger<CategoryService> logger) : IListService
     string? listType = null
   )
   {
-    if (_realm.Find<List>(list.Id) == null)
+    var realm = RealmService.GetMainThreadRealm();
+    if (realm.Find<List>(list.Id) == null)
     {
       logger.Info("Not updated because it doesn't exist: {List}", list.ToLog());
       return;
     }
-    await _realm.WriteAsync(() =>
+    await realm.WriteAsync(() =>
     {
       list.Name = name ?? list.Name;
       list.OwnedBy = ownedBy ?? list.OwnedBy;
@@ -51,10 +50,21 @@ public class ListService(ILogger<CategoryService> logger) : IListService
     });
   }
 
+  public async Task MarkAsUpdatedAsync(List list)
+  {
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
+    {
+      list.UpdatedOn = DateTimeOffset.Now;
+      logger.Info("Marked as updated: {List}", list.ToLog());
+    });
+  }
+
   public async Task DeleteAsync(List list)
   {
     logger.Info("Removing: {List}", list.ToLog());
-    await _realm.WriteAsync(() => _realm.Remove(list));
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() => realm.Remove(list));
   }
 
   public async Task<bool> ShareWith(List list, string email)
@@ -64,7 +74,8 @@ public class ListService(ILogger<CategoryService> logger) : IListService
       logger.Info("Cannot share list with '{User}' - user not found", email);
       return false;
     }
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
       list.SharedWith.Add(id);
       list.UpdatedOn = DateTimeOffset.Now;
@@ -81,7 +92,7 @@ public class ListService(ILogger<CategoryService> logger) : IListService
 
   public async Task<bool> RevokeAccess(List list, string id)
   {
-    // Currently handled using serverless function because caller will, by definition, lack permission
+    // Handled using serverless function because caller will, by definition, lack permission
     // to write to a document if they are no longer shared with it.
     var result = await RealmService.RevokeAccess(list.Id.ToString(), id);
     logger.Info(

@@ -6,14 +6,13 @@ namespace Listem.Mobile.Services;
 
 public class ItemService(ILogger<CategoryService> logger) : IItemService
 {
-  private readonly Realm _realm = RealmService.GetMainThreadRealm();
-
   public async Task CreateAsync(Item item)
   {
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
       item.IsDraft = false;
-      _realm.Add(item);
+      realm.Add(item);
       logger.Info("Added: {Item}", item.ToLog());
     });
   }
@@ -28,9 +27,10 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
     bool? isImportant = null
   )
   {
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
-      if (_realm.Find<Item>(item.Id) == null)
+      if (realm.Find<Item>(item.Id) == null)
       {
         logger.Info("Not updated because it doesn't exist: {Item}", item.ToLog());
         return;
@@ -59,14 +59,16 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
   public async Task DeleteAsync(Item item)
   {
     logger.Info("Removing: {Item}", item.ToLog());
-    await _realm.WriteAsync(() => _realm.Remove(item));
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() => realm.Remove(item));
   }
 
   public async Task DeleteAllInListAsync(List list)
   {
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
-      _realm.RemoveRange(list.Items);
+      realm.RemoveRange(list.Items);
     });
     logger.Info("Removed all items in list {Name} {Id}", list.Name, list.Id);
   }
@@ -74,7 +76,8 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
   public async Task ResetAllToDefaultCategoryAsync(List list)
   {
     var count = 0;
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
       var defaultCategory = list.Categories.First(c => c.Name == Constants.DefaultCategoryName);
       foreach (var item in list.Items)
@@ -95,10 +98,11 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
   public async Task ResetSelectedToDefaultCategoryAsync(List list, Category category)
   {
     var count = 0;
-    await _realm.WriteAsync(() =>
+    var realm = RealmService.GetMainThreadRealm();
+    await realm.WriteAsync(() =>
     {
       var defaultCategory = list.Categories.First(c => c.Name == Constants.DefaultCategoryName);
-      var relevantItems = _realm
+      var relevantItems = realm
         .All<Item>()
         .Where(item => item.List == list)
         .Filter($"Category.Name == $0", category.Name);
