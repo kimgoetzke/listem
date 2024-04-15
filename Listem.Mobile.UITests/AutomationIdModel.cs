@@ -16,6 +16,15 @@ public static class AutomationIdModel
     public const string EmailEntry = "EmailEntry";
     public const string PasswordEntry = "PasswordEntry";
     public const string SignInButton = "SignInButton";
+    public const string SignUpButton = "SignUpButton";
+  }
+
+  public static class SignUpPage
+  {
+    public const string EmailEntry = "EmailEntry";
+    public const string PasswordEntry = "PasswordEntry";
+    public const string PasswordConfirmedEntry = "PasswordConfirmedEntry";
+    public const string SignUpButton = "SignUpButton";
   }
 
   public static class MainPage
@@ -77,6 +86,8 @@ public static class AutomationIdModel
     public const string AddButton = "ListPageAddButton";
     public const string QuantityStepper = "ListPageQuantityStepper";
     public const string IsImportantSwitch = "ListPageIsImportantSwitch";
+    public const string InsertFromClipboardButton = "InsertFromClipboardButton";
+    public const string CopyToClipboardButton = "CopyToClipboardButton";
 
     public static class Stepper
     {

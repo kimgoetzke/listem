@@ -10,7 +10,7 @@ public abstract class BaseTest
 {
   protected static bool IsInstalled => App.IsAppInstalled(AppiumSetup.AppName);
   private static AppiumDriver App => AppiumSetup.AppiumDriver;
-  private readonly string _date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
+  private readonly string _timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
   protected const int DefaultWaitSec = 2;
   private const int DefaultIntervalMs = 500;
 
@@ -83,7 +83,7 @@ public abstract class BaseTest
   protected void TakeScreenshot(string name, string? suffix = "")
   {
     suffix = string.IsNullOrEmpty(suffix) ? "" : $"-{suffix}";
-    var fileName = $"{_date}-{name}{suffix}.png";
+    var fileName = $"{_timestamp}-{name}{suffix}.png";
     App.GetScreenshot().SaveAsFile(fileName);
     Console.WriteLine(
       $@"[XXX] Took screenshot and saved as: Listem.Mobile.UITests\bin\Debug\net8.0\{fileName}"

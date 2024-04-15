@@ -5,7 +5,7 @@ namespace Listem.Mobile.UITests.Tests;
 
 public class CollaborationTest : BaseTest
 {
-  private readonly TestData.TestList _currentList = TestData.Lists[1];
+  private readonly TestData.TestList _testList = TestData.CollaborationList;
   private const string NewPrefix = "New";
 
   [Test]
@@ -16,81 +16,81 @@ public class CollaborationTest : BaseTest
     Wait(15).Until(_ => Element(StartPage.SignInButton).Displayed);
 
     // Can sign in as any user
-    Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
+    Act.OnStartPage.SignIn(_testList.Collaborators[0]);
     TakeScreenshot(nameof(BasicCollaborationTest), "LogInAsAnyone");
 
     // Can change user to owner user
     Act.OnMainPage.SignOut();
-    Act.OnStartPage.SignIn(_currentList.Owner);
+    Act.OnStartPage.SignIn(_testList.Owner);
     TakeScreenshot(nameof(BasicCollaborationTest), "LogInAsOwner");
 
     // Can write to realm after changing user
-    Act.OnMainPage.CreateList(_currentList.Name);
-    AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, false);
-    Element(MainPage.List.ListTitle + _currentList.Name).Click();
+    Act.OnMainPage.CreateList(_testList.Name);
+    AssertThat.OnMainPage.ListTagsAreCorrect(_testList.Name, false);
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
     Wait().Until(_ => Element(ListPage.AddButton).Displayed);
-    Act.OnListPage.AddItemToList(_currentList.Items[0]);
-    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[0]);
+    Act.OnListPage.AddItemToList(_testList.Items[0]);
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[0]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Element(MainPage.List.EditButton + _currentList.Name).Click();
-    Act.OnEditListPage.ShareList(_currentList.Collaborators[0]);
+    Element(MainPage.List.EditButton + _testList.Name).Click();
+    Act.OnEditListPage.ShareList(_testList.Collaborators[0]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
-    AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, true, true);
+    AssertThat.OnMainPage.ListTagsAreCorrect(_testList.Name, true, true);
 
     // Change user to collaborator
     Act.OnMainPage.SignOut();
     await Task.Delay(1000);
-    Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
+    Act.OnStartPage.SignIn(_testList.Collaborators[0]);
     await Task.Delay(1000);
     TakeScreenshot(nameof(BasicCollaborationTest), "ChangeToCollaborator");
 
     // Collaborator can see shared list
-    var list = AwaitElement(MainPage.List.ListTitle + _currentList.Name, 7);
+    var list = AwaitElement(MainPage.List.ListTitle + _testList.Name, 7);
     Assert.That(list!.Displayed, Is.True);
-    AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, true);
-    Element(MainPage.List.ListTitle + _currentList.Name).Click();
-    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[0]);
+    AssertThat.OnMainPage.ListTagsAreCorrect(_testList.Name, true);
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[0]);
 
     // Collaborator can add items to shared list
-    Act.OnListPage.AddItemToList(_currentList.Items[1]);
-    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[1]);
+    Act.OnListPage.AddItemToList(_testList.Items[1]);
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[1]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Element(MainPage.List.ListTitle + _currentList.Name).Click();
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
     Wait().Until(_ => Element(ListPage.AddButton).Displayed);
-    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[1]);
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[1]);
 
     // Collaborator can delete items from shared list
-    Act.OnListPage.SwipeDeleteItem(_currentList.Items[1].Name);
+    Act.OnListPage.SwipeDeleteItem(_testList.Items[1].Name);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Element(MainPage.List.ListTitle + _currentList.Name).Click();
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
     Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
-    AssertThat.OnListPage.ItemIsDeleted(_currentList.Items[1]);
-    Act.OnListPage.AddItemToList(_currentList.Items[1]);
+    AssertThat.OnListPage.ItemIsDeleted(_testList.Items[1]);
+    Act.OnListPage.AddItemToList(_testList.Items[1]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
 
     // Change user to owner
     Act.OnMainPage.SignOut();
-    Act.OnStartPage.SignIn(_currentList.Owner);
+    Act.OnStartPage.SignIn(_testList.Owner);
     TakeScreenshot(nameof(BasicCollaborationTest), "ChangeToOwner");
 
     // Owner can see collaborator's changes
-    Element(MainPage.List.ListTitle + _currentList.Name).Click();
-    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[0]);
-    AssertThat.OnListPage.ItemIsCreated(_currentList.Items[1]);
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[0]);
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[1]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
 
     // Owner can delete list
-    Element(MainPage.List.DeleteButton + _currentList.Name).Click();
+    Element(MainPage.List.DeleteButton + _testList.Name).Click();
     AwaitElementXPath(Alert.Yes)!.Click();
-    Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Null);
+    Assert.That(OptionalElement(MainPage.List.ListTitle + _testList.Name), Is.Null);
 
     // Change user to collaborator again
     Act.OnMainPage.SignOut();
-    Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
+    Act.OnStartPage.SignIn(_testList.Collaborators[0]);
     TakeScreenshot(nameof(BasicCollaborationTest), "ChangeToCollaborator");
 
     // Deleted list disappears for collaborator
-    Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Null);
+    Assert.That(OptionalElement(MainPage.List.ListTitle + _testList.Name), Is.Null);
   }
 
   // TODO: Implement the missing collaboration test cases
