@@ -24,6 +24,8 @@ public class ClipboardTest : BaseTest
   {
     // Create list and configure type & categories
     Act.OnMainPage.CreateList(_testList.Name);
+    AwaitElement(MainPage.List.EditButton + _testList.Name);
+    TakeScreenshot(nameof(CopyToAndPasteFromClipboardTest), "1-ListCreated");
     Element(MainPage.List.EditButton + _testList.Name).Click();
     AwaitElement(EditListPage.ListNameEntry);
     Act.OnEditListPage.AddListCategories(_testList.Categories);
@@ -33,7 +35,6 @@ public class ClipboardTest : BaseTest
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.ListTitle + _testList.Name).Click();
     AwaitElement(ListPage.AddButton);
-    TakeScreenshot(nameof(CopyToAndPasteFromClipboardTest), "1-ListCreated");
 
     // Add items
     _testList.Items.ForEach(item =>

@@ -42,6 +42,7 @@ public class UserTest : BaseTest
 
     // Create list
     Act.OnMainPage.CreateList(_testList.Name);
+    AwaitElement(MainPage.List.ListTitle + _testList.Name, 5);
     TakeScreenshot(nameof(RegisterAndDeleteUserTest), "2-CreatedList");
 
     // Navigate to ListPage
