@@ -35,12 +35,6 @@ public partial class MainPage
     base.OnAppearing();
     StickyEntry.SetVisibility(false);
     _viewModel.TriggerListPropertyChange();
-
-    if (!Settings.FirstRun)
-      return;
-
-    _logger.Info("First time running this application");
-    Settings.FirstRun = false;
   }
 
   private void AddListButton_OnClicked(object? sender, EventArgs e)
