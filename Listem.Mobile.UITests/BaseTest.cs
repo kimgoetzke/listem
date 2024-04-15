@@ -80,11 +80,13 @@ public abstract class BaseTest
     }
   }
 
-  protected void TakeScreenshot(string name)
+  protected void TakeScreenshot(string name, string? suffix = "")
   {
-    App.GetScreenshot().SaveAsFile($"{_date}-{name}.png");
+    suffix = string.IsNullOrEmpty(suffix) ? "" : $"-{suffix}";
+    var fileName = $"{_date}-{name}{suffix}.png";
+    App.GetScreenshot().SaveAsFile(fileName);
     Console.WriteLine(
-      $@"[XXX] Took screenshot and saved as: Listem.Mobile.UITests\bin\Debug\net8.0\{_date}-{name}.png"
+      $@"[XXX] Took screenshot and saved as: Listem.Mobile.UITests\bin\Debug\net8.0\{fileName}"
     );
   }
 

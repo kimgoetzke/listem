@@ -17,12 +17,12 @@ public class CollaborationTest : BaseTest
 
     // Can sign in as any user
     Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
-    TakeScreenshot(nameof(BasicCollaborationTest) + "-LogInAsAnyone");
+    TakeScreenshot(nameof(BasicCollaborationTest), "LogInAsAnyone");
 
     // Can change user to owner user
     Act.OnMainPage.SignOut();
     Act.OnStartPage.SignIn(_currentList.Owner);
-    TakeScreenshot(nameof(BasicCollaborationTest) + "-LogInAsOwner");
+    TakeScreenshot(nameof(BasicCollaborationTest), "LogInAsOwner");
 
     // Can write to realm after changing user
     Act.OnMainPage.CreateList(_currentList.Name);
@@ -42,7 +42,7 @@ public class CollaborationTest : BaseTest
     await Task.Delay(1000);
     Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
     await Task.Delay(1000);
-    TakeScreenshot(nameof(BasicCollaborationTest) + "-ChangeToCollaborator");
+    TakeScreenshot(nameof(BasicCollaborationTest), "ChangeToCollaborator");
 
     // Collaborator can see shared list
     var list = AwaitElement(MainPage.List.ListTitle + _currentList.Name, 7);
@@ -71,7 +71,7 @@ public class CollaborationTest : BaseTest
     // Change user to owner
     Act.OnMainPage.SignOut();
     Act.OnStartPage.SignIn(_currentList.Owner);
-    TakeScreenshot(nameof(BasicCollaborationTest) + "-ChangeToOwner");
+    TakeScreenshot(nameof(BasicCollaborationTest), "ChangeToOwner");
 
     // Owner can see collaborator's changes
     Element(MainPage.List.ListTitle + _currentList.Name).Click();
@@ -87,7 +87,7 @@ public class CollaborationTest : BaseTest
     // Change user to collaborator again
     Act.OnMainPage.SignOut();
     Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
-    TakeScreenshot(nameof(BasicCollaborationTest) + "-ChangeToCollaborator");
+    TakeScreenshot(nameof(BasicCollaborationTest), "ChangeToCollaborator");
 
     // Deleted list disappears for collaborator
     Assert.That(OptionalElement(MainPage.List.ListTitle + _currentList.Name), Is.Null);
@@ -95,7 +95,6 @@ public class CollaborationTest : BaseTest
 
   // TODO: Implement the missing collaboration test cases
   // [Test]
-  // [Order(63)]
   // public void CanCollaborate_EditItemsOwnedBySomeoneElse()
   // {
   //   var item = _currentList.Items[0];
@@ -120,7 +119,6 @@ public class CollaborationTest : BaseTest
   // }
   //
   // [Test]
-  // [Order(64)]
   // public void CanCollaborate_ExitSharedList()
   // {
   //   Element(MainPage.List.ExitButton + _currentList.Name).Click();
@@ -130,7 +128,6 @@ public class CollaborationTest : BaseTest
   // }
   //
   // [Test]
-  // [Order(65)]
   // public void CanCollaborate_CollaboratorItemsRemainOnListAfterExit()
   // {
   //   Act.OnMainPage.SignOut();
@@ -156,7 +153,6 @@ public class CollaborationTest : BaseTest
   // }
   //
   // [Test]
-  // [Order(66)]
   // public void CanCollaborate_OwnerCanEditCollaboratorsItems()
   // {
   //   var i4 = _currentList.Items[4];
