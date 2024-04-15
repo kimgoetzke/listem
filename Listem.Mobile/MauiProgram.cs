@@ -56,7 +56,7 @@ public static class MauiProgram
     builder.Services.AddSingleton<IListService, ListService>();
     builder.Services.AddSingleton<ICategoryService, CategoryService>();
     builder.Services.AddSingleton<IItemService, ItemService>();
-    builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
+    builder.Services.AddSingleton(Connectivity.Current);
     builder.Services.AddSingleton<IClipboardService, ClipboardService>();
 
 #if DEBUG
