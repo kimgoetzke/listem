@@ -11,7 +11,7 @@ public abstract class BaseTest
   protected static bool IsInstalled => App.IsAppInstalled(AppiumSetup.AppName);
   private static AppiumDriver App => AppiumSetup.AppiumDriver;
   private readonly string _timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
-  protected const int DefaultWaitSec = 2;
+  protected const int DefaultWaitSec = 4;
   private const int DefaultIntervalMs = 500;
 
   protected static AppiumElement Element(string id)

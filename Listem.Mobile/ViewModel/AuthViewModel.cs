@@ -131,7 +131,7 @@ public partial class AuthViewModel : BaseViewModel
     try
     {
       IsBusy = true;
-      UserEmail = UserEmail!.ToLower();
+      UserEmail = UserEmail!.ToLower().Trim();
       await RealmService.SignInAsync(UserEmail, Password!);
       HideKeyboard(view);
       await Shell.Current.Navigation.PopAsync();
@@ -152,10 +152,12 @@ public partial class AuthViewModel : BaseViewModel
 
   // TODO: Add password reset functionality (requires sending emails though)
   [RelayCommand]
-  private static Task ForgotPassword()
+  private static async Task ForgotPassword()
   {
-    Notifier.ShowToast("Sorry, not implemented yet");
-    return Task.CompletedTask;
+    await Notifier.ShowConfirmationAlertAsync(
+      "Password reset",
+      "Sorry, this feature has not implemented yet. Please contact the developer for assistance."
+    );
   }
 
   [RelayCommand]

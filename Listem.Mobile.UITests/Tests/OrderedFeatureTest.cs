@@ -196,7 +196,7 @@ public class OrderedFeatureTest : BaseTest
   {
     Element(ListPage.Item.DoneBox + _testList.Items[0].Name).Click();
     Element(ListPage.Item.DoneBox + _testList.Items[1].Name).Click();
-    Act.NavigateBackAndAwait(MainPage.MenuButton, 5);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.ListTitle + _testList.Name).Click();
     Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
     AssertThat.OnListPage.ItemIsDeleted(_testList.Items[0]);
