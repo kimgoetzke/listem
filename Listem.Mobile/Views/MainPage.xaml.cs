@@ -116,4 +116,10 @@ public partial class MainPage
     CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
     _viewModel.BackToStartPageCommand.Execute(null);
   }
+
+  private void DeleteMyAccount_OnClicked(object? sender, EventArgs e)
+  {
+    CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
+    _viewModel.DeleteMyAccountCommand.Execute(null);
+  }
 }

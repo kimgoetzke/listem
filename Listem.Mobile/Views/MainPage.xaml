@@ -46,7 +46,7 @@
                 <Button Style="{DynamicResource SimpleButton}"
                         HorizontalOptions="Start"
                         WidthRequest="175"
-                        Margin="25,10,0,20"
+                        Margin="25,10,0,10"
                         Text="Sign up, in or out"
                         AutomationId="SignUpInOrOutButton"
                         Clicked="SignUpInOrOutButton_OnClicked">
@@ -63,6 +63,13 @@
                         </DataTrigger>
                     </Button.Triggers>
                 </Button>
+                <Button Style="{DynamicResource SimpleButton}"
+                        HorizontalOptions="Start"
+                        WidthRequest="175"
+                        Margin="25,10,0,20"
+                        Text="Delete my account"
+                        AutomationId="DeleteAccountButton"
+                        Clicked="DeleteMyAccount_OnClicked"/>
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
                        HorizontalOptions="Start"

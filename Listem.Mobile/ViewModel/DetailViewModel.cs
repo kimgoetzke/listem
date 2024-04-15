@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
+using Microsoft.Extensions.Logging;
 using ListType = Listem.Mobile.Models.ListType;
 
 namespace Listem.Mobile.ViewModel;
@@ -23,6 +24,7 @@ public partial class DetailViewModel : BaseViewModel
   private readonly IItemService _itemService;
 
   public DetailViewModel(Item item, IServiceProvider serviceProvider)
+    : base(serviceProvider.GetService<ILogger<DetailViewModel>>()!)
   {
     _itemService = serviceProvider.GetService<IItemService>()!;
     Item = item;

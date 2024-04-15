@@ -39,15 +39,14 @@ public partial class ListViewModel : BaseViewModel
   private readonly IItemService _itemService;
   private readonly IListService _listService;
   private readonly IClipboardService _clipboardService;
-  private readonly ILogger<ListViewModel> _logger;
 
   public ListViewModel(List list, IServiceProvider serviceProvider)
+    : base(serviceProvider.GetService<ILogger<ListViewModel>>()!)
   {
     IsBusy = true;
     _itemService = serviceProvider.GetService<IItemService>()!;
     _listService = serviceProvider.GetService<IListService>()!;
     _clipboardService = serviceProvider.GetService<IClipboardService>()!;
-    _logger = serviceProvider.GetService<ILogger<ListViewModel>>()!;
     CurrentList = list;
     ItemsToDelete = [];
     Categories = CurrentList.Categories;
@@ -106,7 +105,7 @@ public partial class ListViewModel : BaseViewModel
   [RelayCommand]
   private async Task TapItem(Item item)
   {
-    _logger.Info("Opening item: {Item}", item.ToLog());
+    Logger.Info("Opening item: {Item}", item.ToLog());
     await Shell.Current.Navigation.PushModalAsync(new DetailPage(item));
   }
 
@@ -140,7 +139,7 @@ public partial class ListViewModel : BaseViewModel
     if (ItemsToDelete.Count == 0)
       return;
 
-    _logger.Debug("Removing selected item(s)");
+    Logger.Debug("Removing selected item(s)");
     foreach (var item in ItemsToDelete)
     {
       await RemoveItemCommand.ExecuteAsync(item);

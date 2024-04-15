@@ -34,16 +34,15 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   private readonly IServiceProvider _serviceProvider;
   private readonly IListService _listService;
   private readonly IItemService _itemService;
-  private readonly ILogger _logger;
 
   public MainViewModel(IServiceProvider serviceProvider)
+    : base(serviceProvider.GetService<ILogger<MainViewModel>>()!)
   {
     IsBusy = true;
     _serviceProvider = serviceProvider;
     _listService = serviceProvider.GetService<IListService>()!;
     _itemService = serviceProvider.GetService<IItemService>()!;
-    _logger = serviceProvider.GetService<ILogger<MainViewModel>>()!;
-    _logger.Debug("Initialising MainViewModel...");
+    Logger.Debug("Initialising MainViewModel...");
     GetSortedLists();
     Themes = ThemeHandler.GetAllThemesAsCollection();
     CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
@@ -51,7 +50,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
       this,
       (_, m) =>
       {
-        _logger.Info(
+        Logger.Info(
           "[MainViewModel] Received message: Current user status has changed to: {User}",
           m.Value
         );
@@ -117,16 +116,17 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   {
     if (!await IsDeletionConfirmedByUser(list.Name))
     {
-      _logger.Info("Cancelled action to delete: {List}", list.ToLog());
+      Logger.Info("Cancelled action to delete: {List}", list.ToLog());
       return;
     }
 
-    IsBusy = true;
-    await _itemService.DeleteAllInListAsync(list);
-    await _listService.DeleteAsync(list);
-    OnPropertyChanged(nameof(Lists));
-    UpdateObservableLists();
-    IsBusy = false;
+    await IsBusyWhile(async () =>
+    {
+      await _itemService.DeleteAllInListAsync(list);
+      await _listService.DeleteAsync(list);
+      OnPropertyChanged(nameof(Lists));
+      UpdateObservableLists();
+    });
   }
 
   private static async Task<bool> IsDeletionConfirmedByUser(string listName)
@@ -147,7 +147,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
       )
     )
     {
-      _logger.Info("Cancelled action to exit list: {List}", list.ToLog());
+      Logger.Info("Cancelled action to exit list: {List}", list.ToLog());
       return;
     }
 
@@ -174,7 +174,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     if (theme == null)
       return;
 
-    _logger.Info("Changing theme to: {Theme}", theme);
+    Logger.Info("Changing theme to: {Theme}", theme);
     ThemeHandler.SetTheme(theme.Name);
     CurrentTheme = theme;
     OnPropertyChanged(nameof(CurrentTheme));
@@ -184,31 +184,65 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   [RelayCommand]
   private async Task BackToStartPage()
   {
-    IsBusy = true;
-    await RealmService.SignOutAsync();
-    IsUserSignedIn = false;
-    IsBusy = false;
+    await IsBusyWhile(async () =>
+    {
+      await RealmService.SignOutAsync();
+    });
     await Shell.Current.Navigation.PopToRootAsync();
     Dispose();
   }
 
   [RelayCommand]
+  private async Task DeleteMyAccount()
+  {
+    if (
+      !await Notifier.ShowConfirmationAlertAsync(
+        "Delete account & all data",
+        "This will log you out, remove you from all lists shared with you (if any), and delete all your user data and lists (including lists you shared) permanently. This action cannot be undone. Are you sure?"
+      )
+    )
+      return;
+
+    await IsBusyWhile(async () =>
+    {
+      foreach (var list in Lists)
+      {
+        if (list.IsMine)
+        {
+          await _itemService.DeleteAllInListAsync(list);
+          await _listService.DeleteAsync(list);
+        }
+        else
+        {
+          await _listService.RevokeAccess(list, RealmService.User.Id!);
+        }
+      }
+      OnPropertyChanged(nameof(Lists));
+      UpdateObservableLists();
+      await RealmService.RemoveUserAsync();
+    });
+    await Shell.Current.Navigation.PopToRootAsync();
+  }
+
+  [RelayCommand]
   private async Task TapList(List list)
   {
-    _logger.Info("Opening list: {List}", list.ToLog());
-    await Shell.Current.Navigation.PushAsync(new ListPage(list, _serviceProvider));
+    Logger.Info("Opening list: {List}", list.ToLog());
+    var listPage = IsBusyWhile(() => new ListPage(list, _serviceProvider));
+    await Shell.Current.Navigation.PushAsync(listPage);
   }
 
   [RelayCommand]
   private async Task EditList(List list)
   {
-    _logger.Info("Editing list: {List}", list.ToLog());
-    await Shell.Current.Navigation.PushModalAsync(new EditListPage(list, _serviceProvider));
+    Logger.Info("Editing list: {List}", list.ToLog());
+    var editListPage = IsBusyWhile(() => new EditListPage(list, _serviceProvider));
+    await Shell.Current.Navigation.PushModalAsync(editListPage);
   }
 
   public void Dispose()
   {
-    _logger.Debug("Disposing MainViewModel...");
+    Logger.Debug("Disposing MainViewModel...");
     WeakReferenceMessenger.Default.Unregister<UserStatusChangedMessage>(this);
     GC.SuppressFinalize(this);
   }

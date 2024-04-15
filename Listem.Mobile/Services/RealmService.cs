@@ -38,11 +38,7 @@ public static class RealmService
     );
     var appConfig = new AppConfiguration(config.AppId) { BaseUri = new Uri(config.BaseUrl) };
     _app = Realms.Sync.App.Create(appConfig);
-    Logger.Info(
-      "Realm created with user: {UserEmail} {UserId}",
-      _app.CurrentUser?.Profile.Email ?? "null",
-      _app.CurrentUser?.Id ?? ""
-    );
+    Logger.Info("Realm created with user: {UserId}", _app.CurrentUser?.Id ?? "null");
     _serviceInitialised = true;
   }
 
@@ -97,7 +93,6 @@ public static class RealmService
       Logger.Info("Refreshing token for current user...");
       await _app.CurrentUser!.RefreshCustomDataAsync();
       using var realm = GetRealm();
-      // await SetSubscriptions(realm); // Only for development to update subscriptions on app launch
       await realm.Subscriptions.WaitForSynchronizationAsync();
       User.Refresh(_app.CurrentUser);
       JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
@@ -125,6 +120,7 @@ public static class RealmService
     var users = _app.AllUsers.Where(u => u.State == UserState.LoggedIn).ToList();
     Logger.Info("Currently logged in (active or inactive) users: {Users}", users.Select(u => u.Id));
     await _app.LogInAsync(Credentials.EmailPassword(email, password));
+    // await SetSubscriptions(realm); // Only for development to update subscriptions on app launch
     User.SignIn(_app.CurrentUser!);
     JsonProcessor.ToSecureStorage(Constants.User, User).SafeFireAndForget();
     using var realm = GetRealm();
@@ -134,16 +130,7 @@ public static class RealmService
 
   public static async Task SignOutAsync()
   {
-    var tokenSource = new CancellationTokenSource();
-    var delayTask = Task.Delay(5000, tokenSource.Token);
-    var uploadTask = _mainThreadRealm!.SyncSession.WaitForUploadAsync(tokenSource.Token);
-    var completedTask = await Task.WhenAny(delayTask, uploadTask);
-    var message =
-      completedTask == delayTask
-        ? "Timed out after 5 seconds while uploading local changes to realm - data loss possible"
-        : "Successfully uploaded local changes to realm";
-    Logger.Log(completedTask == delayTask ? LogLevel.Warning : LogLevel.Information, message);
-    tokenSource.CancelAsync().SafeFireAndForget();
+    await UploadLocalDataOrTimeOut();
 
     if (_app.CurrentUser is not null)
       await _app.CurrentUser.LogOutAsync();
@@ -153,6 +140,43 @@ public static class RealmService
     DisposeRealm();
     await CreateRealm();
     WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+  }
+
+  public static async Task RemoveUserAsync()
+  {
+    Logger.Warn("Removing user locally and from server...");
+    await _mainThreadRealm!.WriteAsync(() =>
+    {
+      var myCustomData = _mainThreadRealm.All<UserData>().First(u => u.Email == User.EmailAddress);
+      Logger.Info("Removing: {Data}", myCustomData.ToLog());
+      _mainThreadRealm.Remove(myCustomData);
+    });
+    await UploadLocalDataOrTimeOut();
+    await _app.DeleteUserFromServerAsync(_app.CurrentUser!);
+    User = new User();
+    SecureStorage.Default.Remove(Constants.User);
+    DisposeRealm();
+    await CreateRealm();
+    WeakReferenceMessenger.Default.Send(new UserStatusChangedMessage(User));
+  }
+
+  private static async Task UploadLocalDataOrTimeOut()
+  {
+    if (_mainThreadRealm is null)
+    {
+      Logger.Info("No realm to upload local changes from, skipping upload...");
+      return;
+    }
+    var tokenSource = new CancellationTokenSource();
+    var delayTask = Task.Delay(5000, tokenSource.Token);
+    var uploadTask = _mainThreadRealm.SyncSession.WaitForUploadAsync(tokenSource.Token);
+    var completedTask = await Task.WhenAny(delayTask, uploadTask);
+    var message =
+      completedTask == delayTask
+        ? "Timed out after 5 seconds while uploading local changes to realm - data loss possible"
+        : "Successfully uploaded local changes to realm";
+    Logger.Log(completedTask == delayTask ? LogLevel.Warning : LogLevel.Information, message);
+    tokenSource.CancelAsync().SafeFireAndForget();
   }
 
   private static Realm GetRealm()
@@ -166,6 +190,8 @@ public static class RealmService
         realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
         var (iqName, itemQuery) = Query<Item>(realm);
         realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
+        var (uqName, userDataQuery) = UserDataQuery(realm);
+        realm.Subscriptions.Add(userDataQuery, new SubscriptionOptions { Name = uqName });
       },
       EncryptionKey = EncryptionKey()
     };
@@ -202,6 +228,8 @@ public static class RealmService
       realm.Subscriptions.Add(listQuery, new SubscriptionOptions { Name = lqName });
       var (iqName, itemQuery) = Query<Item>(realm);
       realm.Subscriptions.Add(itemQuery, new SubscriptionOptions { Name = iqName });
+      var (uqName, userDataQuery) = UserDataQuery(realm);
+      realm.Subscriptions.Add(userDataQuery, new SubscriptionOptions { Name = uqName });
     });
     foreach (var subscription in realm.Subscriptions)
     {
@@ -226,6 +254,13 @@ public static class RealmService
     var userId = User.Id ?? _app.CurrentUser?.Id;
     var query = realm.All<T>().Filter("OwnedBy == $0 OR SharedWith CONTAINS $1", userId, userId);
     return (typeof(T).Name + "Query", query);
+  }
+
+  private static (string queryName, IQueryable<UserData> query) UserDataQuery(Realm realm)
+  {
+    var email = User.EmailAddress ?? _app.CurrentUser?.Profile.Email;
+    var query = realm.All<UserData>().Where(userData => userData.Email == email);
+    return ("UserDataQuery", query);
   }
 
   private static void RemoveAllSubscriptions(Realm realm, bool removeNamed, bool quietly = true)

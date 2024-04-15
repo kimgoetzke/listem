@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
+using Microsoft.Extensions.Logging;
 using ListType = Listem.Mobile.Models.ListType;
 
 namespace Listem.Mobile.ViewModel;
@@ -33,6 +34,7 @@ public partial class EditListViewModel : BaseViewModel
   private readonly IListService _listService;
 
   public EditListViewModel(List list, IServiceProvider serviceProvider)
+    : base(serviceProvider.GetService<ILogger<EditListViewModel>>()!)
   {
     _listService = serviceProvider.GetService<IListService>()!;
     _categoryService = serviceProvider.GetService<ICategoryService>()!;

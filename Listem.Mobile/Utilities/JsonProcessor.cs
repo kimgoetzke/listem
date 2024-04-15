@@ -4,7 +4,7 @@ namespace Listem.Mobile.Utilities;
 
 public static class JsonProcessor
 {
-  private static JsonSerializerOptions JsonOptions => new() { PropertyNameCaseInsensitive = true, };
+  private static JsonSerializerOptions JsonOptions => new() { PropertyNameCaseInsensitive = true };
 
   public static async Task<T> NotNull<T>(Func<Task<T?>> request)
   {

@@ -36,12 +36,11 @@ public partial class AuthViewModel : BaseViewModel
   private string? _passwordConfirmed;
 
   private readonly IServiceProvider _serviceProvider;
-  private readonly ILogger<AuthViewModel> _logger;
 
   public AuthViewModel(IServiceProvider serviceProvider)
+    : base(serviceProvider.GetService<ILogger<AuthViewModel>>()!)
   {
     _serviceProvider = serviceProvider;
-    _logger = serviceProvider.GetService<ILogger<AuthViewModel>>()!;
     Initialise();
   }
 
@@ -52,7 +51,7 @@ public partial class AuthViewModel : BaseViewModel
       this,
       (_, m) =>
       {
-        _logger.Info(
+        Logger.Info(
           "[AuthViewModel] Received message: Current user status has changed to: {User}",
           m.Value
         );
@@ -80,7 +79,7 @@ public partial class AuthViewModel : BaseViewModel
       return;
 
     IsBusy = true;
-    _logger.Info("User is signed in, redirecting now...");
+    Logger.Info("User is signed in, redirecting now...");
     Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
     IsBusy = false;
   }
@@ -118,7 +117,7 @@ public partial class AuthViewModel : BaseViewModel
     catch (Exception ex)
     {
       IsBusy = false;
-      _logger.Info("Sign up failed: {Exception}", ex);
+      Logger.Info("Sign up failed: {Exception}", ex);
       await Notifier.ShowAlertAsync("Sign up failed", ex.Message, "OK");
     }
   }
@@ -141,7 +140,7 @@ public partial class AuthViewModel : BaseViewModel
     }
     catch (Exception ex)
     {
-      _logger.Info("Sign in failed: {Exception}", ex);
+      Logger.Info("Sign in failed: {Exception}", ex);
       await RealmService.SignOutAsync();
       await Notifier.ShowAlertAsync("Sign in failed", ex.Message, "OK");
     }
@@ -197,7 +196,7 @@ public partial class AuthViewModel : BaseViewModel
   {
 #if __ANDROID__
     var isKeyboardHidden = view.HideKeyboardAsync(CancellationToken.None);
-    _logger.Info("Keyboard hidden: {State}", isKeyboardHidden);
+    Logger.Info("Keyboard hidden: {State}", isKeyboardHidden);
 #endif
   }
 }

@@ -42,6 +42,7 @@ public static class AutomationIdModel
     public static class Menu
     {
       public const string SignOutButton = "SignUpInOrOutButton";
+      public const string DeleteAccountButton = "DeleteAccountButton";
     }
   }
 
