@@ -32,11 +32,13 @@
                          Margin="20,0"
                          VerticalOptions="End"
                          Source="import_primary.png"
+                         AutomationId="InsertFromClipboardButton"
                          Command="{Binding InsertFromClipboardCommand}"
                          Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
             <ImageButton Grid.Column="3"
                          VerticalOptions="End"
                          Source="export_primary.png"
+                         AutomationId="CopyToClipboardButton"
                          Command="{Binding CopyToClipboardCommand}"
                          Aspect="AspectFit" WidthRequest="30" HeightRequest="30"/>
         </Grid>

@@ -95,7 +95,7 @@
                 <Label Text="Don't have an account yet?  "
                        Style="{DynamicResource ItemProperty}"
                        HorizontalTextAlignment="Center" />
-                <Label Text="Sign up now!" Style="{DynamicResource Link}">
+                <Label Text="Sign up now!" Style="{DynamicResource Link}" AutomationId="SignUpButton">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoToSignUpCommand}" NumberOfTapsRequired="1" />
                     </Label.GestureRecognizers>
