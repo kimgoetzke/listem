@@ -14,12 +14,10 @@ public partial class MainPage
   private readonly MainViewModel _viewModel;
   private const uint AnimationDuration = 400u;
   private bool _isMenuOpen;
-  private readonly ILogger<MainPage> _logger;
 
-  public MainPage(MainViewModel viewModel, IServiceProvider serviceProvider)
+  public MainPage(MainViewModel viewModel)
   {
     InitializeComponent();
-    _logger = serviceProvider.GetService<ILogger<MainPage>>()!;
     _viewModel = viewModel;
     _viewModel.InitialiseUser();
     BindingContext = _viewModel;
@@ -49,7 +47,6 @@ public partial class MainPage
   {
     var cancellationTokenSource = new CancellationTokenSource();
     CloseSettings(cancellationTokenSource).SafeFireAndForget();
-    _isMenuOpen = false;
   }
 
   private void MenuButton_OnTap(object? sender, EventArgs e)
@@ -58,12 +55,9 @@ public partial class MainPage
     if (!_isMenuOpen)
     {
       OpenSettings(cancellationTokenSource).SafeFireAndForget();
-      _isMenuOpen = true;
       return;
     }
-
     CloseSettings(cancellationTokenSource).SafeFireAndForget();
-    _isMenuOpen = false;
   }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -83,6 +77,7 @@ public partial class MainPage
     var tasks = new List<Task> { resize, scaleDown };
     await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
 #endif
+    _isMenuOpen = true;
   }
 
   [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
@@ -102,6 +97,7 @@ public partial class MainPage
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
 #endif
+    _isMenuOpen = false;
   }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
