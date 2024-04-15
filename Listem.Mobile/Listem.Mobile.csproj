@@ -3,15 +3,15 @@
     <PropertyGroup>
         <TargetFramework>net8.0-android</TargetFramework>
         <!-- <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net8.0-windows10.0.19041.0</TargetFrameworks> -->
-        
+
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        
+
         <!-- Set the below to true if debugging on physical device-->
-        <!-- <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>-->
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 
         <!-- Display name -->
         <ApplicationTitle>Listem</ApplicationTitle>
@@ -30,7 +30,7 @@
         <!-- <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion> -->
         <!-- <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion> -->
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
         <AndroidKeyStore>True</AndroidKeyStore>
         <AndroidSigningKeyStore>$(MSBuildThisFileDirectory)listem.keystore</AndroidSigningKeyStore>
@@ -41,41 +41,39 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.65" Color="#0E3C53" />
+        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" ForegroundScale="0.65" Color="#0E3C53"/>
 
         <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0E3C53" BaseSize="128,128" />
+        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0E3C53" BaseSize="128,128"/>
 
         <!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+        <MauiImage Include="Resources\Images\*"/>
+        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185"/>
 
         <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*" />
-        <MauiAsset Include="atlasConfig.template.json" />
+        <MauiFont Include="Resources\Fonts\*"/>
+        <MauiAsset Include="atlasConfig.template.json"/>
 
         <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-        
+        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)"/>
+
         <!-- MongoDB Atlas-->
-        <MauiAsset Include="atlasConfig.json" />
+        <MauiAsset Include="atlasConfig.json"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0" />
-        <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
-        <PackageReference Include="Realm" Version="11.7.0" />
-        <PackageReference Include="Serilog" Version="3.1.1" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
-        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0" />
-        <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
-        <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.7" />
+        <PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0"/>
+        <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)"/>
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
+        <PackageReference Include="Realm" Version="11.7.0"/>
+        <PackageReference Include="Serilog" Version="3.1.1"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Debug" Version="2.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -83,31 +81,31 @@
             <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Resources\Styles\LightTheme.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\MainPage.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\ListPage.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\Components\ListComponent.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\SignInPage.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\SignUpPage.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\StartPage.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\Controls\FramedCollection.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
         <MauiXaml Update="Views\Controls\Tag.xaml">
-          <SubType>Designer</SubType>
+            <SubType>Designer</SubType>
         </MauiXaml>
     </ItemGroup>
 
@@ -121,44 +119,42 @@
             <SubType>Code</SubType>
         </Compile>
         <Compile Update="Resources\Styles\LightTheme.xaml.cs">
-          <DependentUpon>LightTheme.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>LightTheme.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\MainPage.xaml.cs">
-          <DependentUpon>MainPageWindows.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>MainPageWindows.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\ListPage.xaml.cs">
-          <DependentUpon>ListPage.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>ListPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Components\ListComponent.xaml.cs">
-          <DependentUpon>ListComponent.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>ListComponent.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
-        <Compile Remove="ViewModel\CategoryViewModel.cs" />
+        <Compile Remove="ViewModel\CategoryViewModel.cs"/>
         <Compile Update="Views\SignInPage.xaml.cs">
-          <DependentUpon>LoginPage.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>LoginPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\SignUpPage.xaml.cs">
-          <DependentUpon>SignUpPage.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>SignUpPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\StartPage.xaml.cs">
-          <DependentUpon>StartPage.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>StartPage.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Controls\FramedCollection.xaml.cs">
-          <DependentUpon>FramedCollection.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>FramedCollection.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
         <Compile Update="Views\Controls\Tag.xaml.cs">
-          <DependentUpon>Tag.xaml</DependentUpon>
-          <SubType>Code</SubType>
+            <DependentUpon>Tag.xaml</DependentUpon>
+            <SubType>Code</SubType>
         </Compile>
-        <Compile Remove="Converters\MoreItemsTextConverter.cs" />
-        <Compile Remove="Converters\FirstXInCollectionConverter.cs" />
     </ItemGroup>
 
 </Project>
