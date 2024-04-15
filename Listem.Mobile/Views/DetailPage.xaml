@@ -40,7 +40,7 @@
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding Item.Name, Mode=TwoWay}"
+                    <Entry Text="{Binding ItemName, Mode=TwoWay}"
                            AutomationId="ItemNameEntry" />
                 </Frame>
             </Grid>
@@ -74,10 +74,10 @@
                 <HorizontalStackLayout Grid.Column="0" Padding="5">
                     <Label Text="Important: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="IsImportantProperty"
-                           Text="{Binding Item.IsImportant, Converter={StaticResource BoolToTextConverter}}"
+                           Text="{Binding ItemIsImportant, Converter={StaticResource BoolToTextConverter}}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
-                <Switch IsToggled="{Binding Item.IsImportant, Mode=TwoWay}"
+                <Switch IsToggled="{Binding ItemIsImportant, Mode=TwoWay}"
                         AutomationId="IsImportantSwitch"
                         Grid.Column="1"
                         VerticalOptions="Center"
@@ -96,10 +96,10 @@
                     <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="QuantityProperty"
                            AutomationId="QuantityLabel"
-                           Text="{Binding Item.Quantity}"
+                           Text="{Binding ItemQuantity, Mode=TwoWay}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
-                <Stepper Value="{Binding Item.Quantity}"
+                <Stepper Value="{Binding ItemQuantity}"
                          Grid.Column="1"
                          AutomationId="QuantityStepper"
                          Minimum="1" Maximum="99" Increment="1"

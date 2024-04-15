@@ -14,6 +14,15 @@ public partial class DetailViewModel : BaseViewModel
   private Item _item;
 
   [ObservableProperty]
+  private string _itemName;
+
+  [ObservableProperty]
+  private bool _itemIsImportant;
+
+  [ObservableProperty]
+  private int _itemQuantity;
+
+  [ObservableProperty]
   private Category _currentCategory;
 
   [ObservableProperty]
@@ -28,6 +37,9 @@ public partial class DetailViewModel : BaseViewModel
   {
     _itemService = serviceProvider.GetService<IItemService>()!;
     Item = item;
+    ItemName = item.Name;
+    ItemIsImportant = item.IsImportant;
+    ItemQuantity = item.Quantity;
     Categories = item.List!.Categories;
     CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
     ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
@@ -36,13 +48,25 @@ public partial class DetailViewModel : BaseViewModel
   [RelayCommand]
   private async Task SaveAndBack()
   {
-    if (CurrentCategory.Name == Item.Category?.Name)
+    ItemName = ItemName.Trim();
+    if (
+      CurrentCategory.Name == Item.Category?.Name
+      && ItemName == Item.Name
+      && ItemQuantity == Item.Quantity
+      && ItemIsImportant == Item.IsImportant
+    )
     {
       await Shell.Current.Navigation.PopModalAsync();
       return;
     }
 
-    await _itemService.UpdateAsync(Item, category: CurrentCategory);
+    await _itemService.UpdateAsync(
+      Item,
+      name: ItemName,
+      category: CurrentCategory,
+      quantity: ItemQuantity,
+      isImportant: ItemIsImportant
+    );
     await Shell.Current.Navigation.PopModalAsync();
   }
 }
