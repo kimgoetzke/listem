@@ -159,14 +159,13 @@ public abstract class TestHelper : BaseTest
       public static void SwipeDeleteItem(string itemName)
       {
         var windowSize = AppiumSetup.AppiumDriver.Manage().Window.Size;
-        var itemLabel = Element(ListPage.Item.Label + itemName);
         var listName = Element(ListPage.ListName);
         new Actions(AppiumSetup.AppiumDriver)
-          .MoveToElement(itemLabel)
+          .MoveToElement(Element(ListPage.Item.Label + itemName))
           .Pause(TimeSpan.FromMilliseconds(200))
           .ClickAndHold()
           .Pause(TimeSpan.FromMilliseconds(200))
-          .MoveToElement(itemLabel, windowSize.Width, 0)
+          .MoveToElement(Element(ListPage.Item.Label + itemName), windowSize.Width, 0)
           .Perform();
         Task.Delay(200);
         new Actions(AppiumSetup.AppiumDriver)

@@ -182,10 +182,10 @@ public class OrderedFeatureTest : BaseTest
   [Order(30)]
   public void CanAddItemsToList()
   {
-    _testList.Items.ForEach(i =>
+    _testList.Items.ForEach(item =>
     {
-      Act.OnListPage.AddItemToList(i.Name, i.Category, i.Quantity, i.IsImportant);
-      AssertThat.OnListPage.ItemIsCreated(i.Name, i.Category, i.Quantity, i.IsImportant);
+      Act.OnListPage.AddItemToList(item);
+      AssertThat.OnListPage.ItemIsCreated(item);
     });
     TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanAddItemsToList));
   }
@@ -209,13 +209,15 @@ public class OrderedFeatureTest : BaseTest
 
   [Test]
   [Order(38)]
-  public void CanRemoveItems_SwipeComplete()
+  public async Task CanRemoveItems_SwipeComplete()
   {
     Act.HideKeyboard();
     AssertThat.OnListPage.ItemIsCreated(_testList.Items[2]);
     AssertThat.OnListPage.ItemIsCreated(_testList.Items[3]);
     Act.OnListPage.SwipeDeleteItem(_testList.Items[2].Name);
+    await Task.Delay(1000);
     Act.OnListPage.SwipeDeleteItem(_testList.Items[3].Name);
+    await Task.Delay(1000);
     AssertThat.OnListPage.ItemIsDeleted(_testList.Items[2]);
     AssertThat.OnListPage.ItemIsDeleted(_testList.Items[3]);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
