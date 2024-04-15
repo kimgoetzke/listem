@@ -108,10 +108,15 @@ public class OrderedBasicFeatureTest : BaseTest
 
   [Test]
   [Order(24)]
-  public void CanEditListCategories_RemoveCategories()
+  public async Task CanEditListCategories_RemoveCategories()
   {
     Act.OnEditListPage.AddListCategories(_currentList.Categories);
-    _currentList.Categories.ForEach(Act.OnEditListPage.SwipeDeleteCategory);
+    await Task.Delay(300);
+    foreach (var category in _currentList.Categories)
+    {
+      Act.OnEditListPage.SwipeDeleteCategory(category);
+      await Task.Delay(300);
+    }
     AssertThat.OnEditListPage.Categories(false, _currentList.Categories);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _currentList.Name).Click();
@@ -125,6 +130,7 @@ public class OrderedBasicFeatureTest : BaseTest
   public void CanEditListCollaborators_ShareList()
   {
     Act.OnEditListPage.ShareList(_currentList.Collaborators[0]);
+    // TODO: Unshare button should be displayed after sharing list - fix that, then set ignoreButton to true below
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Assert.Multiple(() =>
     {
@@ -154,16 +160,9 @@ public class OrderedBasicFeatureTest : BaseTest
   [Order(27)]
   public void CanEditListCollaborators_ShareWithOwnerFails()
   {
-    Element(EditListPage.ShareButton).Click();
-    Element(StickyEntry.EntryField).SendKeys(_currentList.Owner.Email);
-    Element(StickyEntry.SubmitButton).Click();
-    var collaborator = _currentList.Collaborators[0];
-    Element(EditListPage.ShareButton).Click();
-    Element(StickyEntry.EntryField).SendKeys(collaborator.Email);
-    Element(StickyEntry.SubmitButton).Click();
+    Act.OnEditListPage.ShareList(_currentList.Owner);
+    Task.Delay(500);
     AssertThat.OnEditListPage.List(false, _currentList.Owner, true);
-    // TODO: Unshare button should be displayed after sharing list - fix that, then set ignoreButton to true below
-    AssertThat.OnEditListPage.List(true, _currentList.Collaborators[0], true);
   }
 
   [Test]

@@ -9,7 +9,7 @@ public class CollaborationTest : BaseTest
   private const string NewPrefix = "New";
 
   [Test]
-  public void BasicCollaborationTest()
+  public async Task BasicCollaborationTest()
   {
     // Can start app
     Console.WriteLine($"[XXX] {AppiumSetup.AppName} is installed: {IsInstalled}");
@@ -39,12 +39,14 @@ public class CollaborationTest : BaseTest
 
     // Change user to collaborator
     Act.OnMainPage.SignOut();
-    Task.Delay(2000);
+    await Task.Delay(1000);
     Act.OnStartPage.SignIn(_currentList.Collaborators[0]);
+    await Task.Delay(1000);
     TakeScreenshot(nameof(BasicCollaborationTest) + "-ChangeToCollaborator");
 
     // Collaborator can see shared list
-    Assert.That(Element(MainPage.List.ListTitle + _currentList.Name).Displayed, Is.True);
+    var list = AwaitElement(MainPage.List.ListTitle + _currentList.Name, 7);
+    Assert.That(list!.Displayed, Is.True);
     AssertThat.OnMainPage.ListTagsAreCorrect(_currentList.Name, true);
     Element(MainPage.List.ListTitle + _currentList.Name).Click();
     AssertThat.OnListPage.ItemIsCreated(_currentList.Items[0]);

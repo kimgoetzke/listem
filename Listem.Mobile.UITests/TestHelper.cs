@@ -91,13 +91,16 @@ public abstract class TestHelper : BaseTest
       public static void SwipeDeleteCategory(string category)
       {
         var windowSize = AppiumSetup.AppiumDriver.Manage().Window.Size;
-        var categoryLabel = Element(EditListPage.Categories.Label + category);
         new Actions(AppiumSetup.AppiumDriver)
-          .MoveToElement(categoryLabel)
+          .MoveToElement(Element(EditListPage.Categories.Label + category))
           .Pause(TimeSpan.FromMilliseconds(200))
           .ClickAndHold()
           .Pause(TimeSpan.FromMilliseconds(200))
-          .MoveToElement(categoryLabel, -windowSize.Width / 2, 0)
+          .MoveToElement(
+            Element(EditListPage.Categories.Label + category),
+            -windowSize.Width / 2,
+            0
+          )
           .Perform();
         Task.Delay(200);
         Element(EditListPage.Categories.BinIcon + category).Click();
