@@ -11,6 +11,7 @@ namespace Listem.Mobile.Models;
 [SuppressMessage("ReSharper", "RedundantExtendsListEntry")]
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "ReplaceAutoPropertyWithComputedProperty")]
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
 public partial class Item : IRealmObject, IShareable
 {
   [PrimaryKey]
