@@ -1,10 +1,15 @@
-﻿using OpenQA.Selenium.Appium;
+﻿using System.Diagnostics.CodeAnalysis;
+using OpenQA.Selenium.Appium;
 using OpenQA.Selenium.Appium.Android;
 using OpenQA.Selenium.Appium.Enums;
 
 namespace Listem.Mobile.UITests;
 
 [SetUpFixture]
+[SuppressMessage(
+  "Structure",
+  "NUnit1032:An IDisposable field/property should be Disposed in a TearDown method"
+)] // This is because .Quit() is called in [OneTimeTearDown] and this includes .Dispose()
 public class AppiumSetup
 {
   public static AppiumDriver AppiumDriver =>
