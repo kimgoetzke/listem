@@ -100,9 +100,19 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     if (name.Length == 0)
       return;
 
+    var processedName = StringProcessor.TrimAndCapitalise(name);
+    if (Lists.FirstOrDefault(l => l.Name == processedName) != null)
+    {
+      await Notifier.ShowAlertAsync(
+        "List already exists",
+        "A list with this name already exists. Please choose a different name.",
+        "OK"
+      );
+      return;
+    }
     var newList = new List
     {
-      Name = StringProcessor.TrimAndCapitalise(name),
+      Name = processedName,
       OwnedBy = RealmService.User.Id!,
       ListType = ListType.Standard.ToString(),
       UpdatedOn = DateTime.Now
