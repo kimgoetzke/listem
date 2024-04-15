@@ -101,11 +101,14 @@ public partial class MainViewModel : BaseViewModel, IDisposable
       return;
 
     var processedName = StringProcessor.TrimAndCapitalise(name);
-    if (Lists.FirstOrDefault(l => l.Name == processedName) != null)
+    if (
+      Lists.FirstOrDefault(l => l.Name.Equals(processedName, StringComparison.OrdinalIgnoreCase))
+      != null
+    )
     {
       await Notifier.ShowAlertAsync(
         "List already exists",
-        $"A list with the name \"{processedName}\" already exists. Please choose a different name.",
+        $"A list with the name \"{processedName}\" already exists (ignoring case). Please choose a different name.",
         "OK"
       );
       return;
