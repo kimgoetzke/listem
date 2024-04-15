@@ -88,10 +88,11 @@ public partial class ListViewModel : BaseViewModel
   [RelayCommand]
   private async Task RemoveItem(Item item)
   {
+    var previousStage = IsBusy;
     IsBusy = true;
     await _itemService.DeleteAsync(item);
     _listHasChanged = true;
-    IsBusy = false;
+    IsBusy = previousStage;
   }
 
   [RelayCommand]
@@ -126,11 +127,13 @@ public partial class ListViewModel : BaseViewModel
   [RelayCommand]
   private async Task GoBack()
   {
-    await DeleteSelectedItemsIfAny();
+    await IsBusyWhile(async () =>
+    {
+      await DeleteSelectedItemsIfAny();
 
-    if (_listHasChanged)
-      await _listService.MarkAsUpdatedAsync(CurrentList);
-
+      if (_listHasChanged)
+        await _listService.MarkAsUpdatedAsync(CurrentList);
+    });
     await Shell.Current.Navigation.PopAsync();
   }
 
