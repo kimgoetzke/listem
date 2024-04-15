@@ -75,16 +75,12 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
 
       if (StringProcessor.IsCategoryName(substring))
       {
-        if (
-          AddValidCategoryCandidate(
-            existingCategories,
-            ref categoryCount,
-            categoryCandidates,
-            substring
-          ) is
-          { } newCategory
-        )
-          category = newCategory;
+        category = GetCategoryAndAddCandidateIfNew(
+          existingCategories,
+          ref categoryCount,
+          categoryCandidates,
+          substring
+        );
         continue;
       }
 
@@ -98,7 +94,7 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
     return false;
   }
 
-  private static Category? AddValidCategoryCandidate(
+  private static Category GetCategoryAndAddCandidateIfNew(
     List<Category> existingCategories,
     ref int categoryCount,
     List<Category> categoryCandidates,
@@ -107,13 +103,13 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
   {
     var name = StringProcessor.ExtractCategoryName(str);
 
-    if (existingCategories.Find(c => c.Name == name) != null)
-      return null;
+    if (existingCategories.Find(c => c.Name == name) is { } existingCategory)
+      return existingCategory;
 
-    var processedName = new Category { Name = name };
+    var newCategory = new Category { Name = name };
     categoryCount++;
-    categoryCandidates.Add(processedName);
-    return processedName;
+    categoryCandidates.Add(newCategory);
+    return newCategory;
   }
 
   private static void AddItemCandidate(

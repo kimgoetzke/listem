@@ -11,7 +11,7 @@ public static partial class StringProcessor
   [GeneratedRegex(@"^(.*?)(?=\s*\(\d+|\s*!|$)")]
   private static partial Regex ItemNameRegex();
 
-  [GeneratedRegex(@"(\d+)")]
+  [GeneratedRegex(@"\((\d+)\)")]
   private static partial Regex ItemQuantityRegex();
 
   [GeneratedRegex(@"!")]
@@ -37,8 +37,16 @@ public static partial class StringProcessor
 
   private static int ParseMatchToIntOr1(Capture match)
   {
-    var success = int.TryParse(match.Value, out var number);
-    return success ? number : 1;
+    try
+    {
+      var processed = match.Value.Replace("(", "").Replace(")", "");
+      var success = int.TryParse(processed, out var number);
+      return success ? number : 1;
+    }
+    catch
+    {
+      return 1;
+    }
   }
 
   public static bool IsCategoryName(string input)
