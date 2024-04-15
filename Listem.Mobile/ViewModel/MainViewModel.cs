@@ -105,7 +105,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     {
       await Notifier.ShowAlertAsync(
         "List already exists",
-        "A list with this name already exists. Please choose a different name.",
+        $"A list with the name \"{processedName}\" already exists. Please choose a different name.",
         "OK"
       );
       return;
