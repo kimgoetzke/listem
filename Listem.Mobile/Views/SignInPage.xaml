@@ -38,10 +38,10 @@
                         <Grid ColumnDefinitions="Auto, *"
                               VerticalOptions="Fill"
                               HorizontalOptions="Fill" ColumnSpacing="5">
-                            <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                            <Image Source="user_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding UserEmail}"
                                    AutomationId="EmailEntry"
-                                   Placeholder="Enter your email address" />
+                                   Placeholder="Enter your user name" />
                         </Grid>
                     </Frame>
                 </Grid>
@@ -82,15 +82,8 @@
         </Grid>
 
         <!-- Content: Register link -->
-        <Grid Grid.Row="1" VerticalOptions="End" RowDefinitions="Auto, Auto"
-              BackgroundColor="{DynamicResource BackgroundColorAccent}">
-            <VerticalStackLayout Grid.Row="0" Padding="60, 10">
-                <Label
-                    Text="You only need an account if you want to share lists with others or access your lists on another device."
-                    FontSize="{DynamicResource FontSizeXS}"
-                    HorizontalTextAlignment="Center" />
-            </VerticalStackLayout>
-            <HorizontalStackLayout Grid.Row="1" Padding="0, 0, 0, 30"
+        <Grid Grid.Row="1" VerticalOptions="End" BackgroundColor="{DynamicResource BackgroundColorAccent}">
+            <HorizontalStackLayout Padding="0, 0, 0, 30"
                                    HorizontalOptions="Center" VerticalOptions="Fill">
                 <Label Text="Don't have an account yet?  "
                        Style="{DynamicResource ItemProperty}"

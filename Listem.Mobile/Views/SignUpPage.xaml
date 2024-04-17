@@ -39,10 +39,10 @@
                         <Grid ColumnDefinitions="Auto, *"
                               VerticalOptions="Fill"
                               HorizontalOptions="Fill" ColumnSpacing="5">
-                            <Image Source="email_tertiary.png" HeightRequest="15" WidthRequest="15" />
+                            <Image Source="user_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding UserEmail}"
                                    AutomationId="EmailEntry"
-                                   Placeholder="Enter your email address" />
+                                   Placeholder="Enter your user name" />
                         </Grid>
                     </Frame>
                 </Grid>
@@ -72,7 +72,7 @@
                             <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding PasswordConfirmed}"
                                    x:Name="PasswordConfirmedEntry"
-                                      AutomationId="PasswordConfirmedEntry"
+                                   AutomationId="PasswordConfirmedEntry"
                                    Placeholder="Re-enter your password" IsPassword="True" />
                         </Grid>
                     </Frame>
@@ -86,6 +86,26 @@
 
             </VerticalStackLayout>
         </Grid>
-    </Grid>
 
+        <!-- Content: Register link -->
+        <Grid Grid.Row="1" VerticalOptions="End" BackgroundColor="{DynamicResource BackgroundColorAccent}">
+            <VerticalStackLayout Grid.Row="0" Padding="60, 30">
+                <Label
+                    Text="Your privacy matters. No email required, just pick a unique user name that is at least 6 characters long."
+                    FontSize="{DynamicResource FontSizeXS}"
+                    HorizontalTextAlignment="Center"
+                    Padding="10,0,10,20" />
+                <Label
+                    Text="Due to this high degree of privacy, account owners can't be identified without their password. Therefore, password reset is not available."
+                    FontSize="{DynamicResource FontSizeXS}"
+                    HorizontalTextAlignment="Center"
+                    Padding="10,0,10,20" />
+                <Label
+                    Text="Your password must be at least 6 characters long, including a number, a letter, and a special character."
+                    FontSize="{DynamicResource FontSizeXS}"
+                    HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
 </ContentPage>

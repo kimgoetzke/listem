@@ -45,16 +45,16 @@
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center">
                 <Label.Triggers>
-                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}" 
+                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}"
                                  Value="NotSignedInAndNotRegistered">
                         <Setter Property="Text"
                                 Value="You don't seem to have an account that you've used on this device before." />
                     </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}" 
+                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}"
                                  Value="NotSignedInButRegistered">
-                        <Setter Property="Text" Value="You have an account with:" />
+                        <Setter Property="Text" Value="You have an account as:" />
                     </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}" 
+                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}"
                                  Value="SignedIn">
                         <Setter Property="Text" Value="You are signed in as:" />
                     </DataTrigger>
@@ -111,7 +111,7 @@
                                  Value="NotSignedInButRegistered">
                         <Setter Property="Text" Value="Continue without signing in" />
                         <!-- TODO: Configure offline flow to work with Realm -->
-                        <Setter Property="IsVisible" Value="False" /> 
+                        <Setter Property="IsVisible" Value="False" />
                     </DataTrigger>
                     <DataTrigger TargetType="Button"
                                  Binding="{Binding UserStatus}"
@@ -142,19 +142,6 @@
                     </DataTrigger>
                 </Label.Triggers>
             </Label>
-
-            <Label Text="You can change your mind at any time and update the settings accordingly."
-                   FontSize="{DynamicResource FontSizeXS}"
-                   Padding="60, 30, 60, 5"
-                   HorizontalTextAlignment="Center"
-                   HorizontalOptions="Center" />
-
-            <Label
-                Text="You only need an account if you want to share lists with others or access your lists on another device."
-                Padding="60, 10"
-                FontSize="{DynamicResource FontSizeXS}"
-                HorizontalTextAlignment="Center" />
-
         </VerticalStackLayout>
 
     </Grid>

@@ -1,4 +1,5 @@
-﻿using AsyncAwaitBestPractices;
+﻿using System.Text.RegularExpressions;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -154,9 +155,10 @@ public partial class AuthViewModel : BaseViewModel
   [RelayCommand]
   private static async Task ForgotPassword()
   {
-    await Notifier.ShowConfirmationAlertAsync(
+    await Notifier.ShowAlertAsync(
       "Password reset",
-      "Sorry, this feature has not implemented yet. Please contact the developer for assistance."
+      "For security reasons, you cannot reset your password. This app gives you privacy by not requiring you to enter and then verify an email address. However, this comes at a cost: there is no way of verifying a user without their password.",
+      "OK"
     );
   }
 
@@ -186,12 +188,41 @@ public partial class AuthViewModel : BaseViewModel
 
   private bool IsInputValid()
   {
-    if (!string.IsNullOrEmpty(UserEmail) && !string.IsNullOrEmpty(Password))
+    if (string.IsNullOrEmpty(UserEmail))
+    {
+      Notifier.ShowToast("You must enter a user name");
+      return false;
+    }
+
+    if (string.IsNullOrEmpty(Password))
+    {
+      Notifier.ShowToast("You must enter a password");
+      return false;
+    }
+
+    if (UserEmail.Length < 6)
+    {
+      Notifier.ShowAlertAsync(
+        "Invalid user name",
+        "User name must be at least 6 characters long.",
+        "OK"
+      );
+      return false;
+    }
+
+    if (PasswordRequirementRegex().IsMatch(Password))
       return true;
 
-    Notifier.ShowToast("You must enter both email and password");
+    Notifier.ShowAlertAsync(
+      "Invalid password",
+      "Password must be at least 6 characters long, including a number, a letter, and a special character.",
+      "OK"
+    );
     return false;
   }
+
+  [GeneratedRegex(@"^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{6,}$")]
+  private static partial Regex PasswordRequirementRegex();
 
   // ReSharper disable once UnusedParameter.Local
   private void HideKeyboard(ITextInput view)

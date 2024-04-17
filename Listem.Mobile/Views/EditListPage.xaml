@@ -135,7 +135,7 @@
         </ScrollView>
 
         <controls:StickyEntry Grid.Row="1" x:Name="StickyEntryCategory" PlaceholderText="Enter category name" />
-        <controls:StickyEntry Grid.Row="1" x:Name="StickyEntryShareWith" PlaceholderText="Enter their email" />
+        <controls:StickyEntry Grid.Row="1" x:Name="StickyEntryShareWith" PlaceholderText="Enter their user name" />
 
     </Grid>
 </ContentPage>
