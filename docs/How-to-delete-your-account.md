@@ -2,8 +2,6 @@
 
 <img src="./assets/logo.png" alt="Listem logo" width="64" height="64" />
 
-![Listem Logo PNG](./assets/logo.png =64x64)
-
 This guide relates to the following Google Play Store app: `<Add URL here once it exists>`
 
 > [!NOTE]
@@ -23,4 +21,4 @@ This guide relates to the following Google Play Store app: `<Add URL here once i
 1. Your account data, locally and on the server
 2. All of your private lists and items
 3. All shared lists which will also remove them for the users you have shared them with
-4. Lists that are shared with you will not be deleted but you will be removed from the list and no longer have access
+4. Lists that are shared with you will not be deleted, but you will be removed from the list and no longer have access
