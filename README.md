@@ -1,31 +1,18 @@
 # The Listem Project with MongoDB Atlas and Realm
 
-This repository contains a simple, minimalist to-do list Android app written in C# using .NET 8 MAUI, the
+This repository contains a super simple, minimalist list Android app written in C# using .NET 8 MAUI, the
 CommunityToolkit, and MongoDB Atlas with Realm and Flexible Sync. It also contains a UI test project for end-to-end
-testing using Appium and NUnit 4.
-
-The goals were to 1) learn something about .NET MAUI and Android app development by building on
-my first ever mobile app, the [Shopping List app](https://github.com/kimgoetzke/practice-maui-shopping-list) which I had
-created the week before, and 2) make it look a little less nasty and explore using some shared, custom controls. In
-addition, I wanted to 3) create a fully deployable application.
-
-> [!NOTE]  
-> I explored creating an ASP.NET Core backend (see
-> branch [use-backend-api](https://github.com/kimgoetzke/practice-maui-listem/tree/use-backend-api)) but I didn't find
-> an easy solution to deal with data synchronisation and conflict management (e.g. offline vs online changes, especially
-> to shared lists). This eventually led me to implement MongoDB Atlas with Realm and Flexible Sync because it allows
-> for offline-first development, deals with conflict resolution, and even offers authorisation/authentication.
+testing using Appium and NUnit 4. It was created to learn how to create and publish an Android app.
 
 ![Screenshots PNG](./docs/assets/screenshots.png)
 
 ### Overview
 
-- A super basic, minimalist to-do list app targeting Android
-- Users can register and log in to save their lists and use collaboration features
+- A super basic, minimalist app for lists, targeting Android
+- Users can register and log in without requiring an email address (only a username and password are needed)
 - Users can share lists with other users through the app and collaborate on them
-- Alternatively, the app can be used without account/connection, storing all data in a SQLite database on the device
-- Lists can be somewhat customised by adding categories or list types (e.g. changing to shopping list exposes a
-  quantity control)
+- Lists can be somewhat customised by adding categories or list types (e.g. changing type to shopping list exposes a
+  quantity control in the UI)
 - A list's content can be exported to the clipboard as text
 - List items can be imported from a comma-separated string from the clipboard and merged with the current list
 - Native confirmation prompts are used for destructive actions
@@ -35,6 +22,13 @@ addition, I wanted to 3) create a fully deployable application.
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
 
 ### How to configure your environment for development
+
+> [!NOTE]  
+> I explored creating an ASP.NET Core backend (see
+> branch [use-backend-api](https://github.com/kimgoetzke/practice-maui-listem/tree/use-backend-api)) but I didn't find
+> an easy solution to deal with data synchronisation and conflict management (e.g. offline vs online changes, especially
+> to shared lists). This eventually led me to implement MongoDB Atlas with Realm and Flexible Sync because it allows
+> for offline-first development, deals with conflict resolution, and even offers authorisation/authentication.
 
 1. Set environment variables for builds and running tests
     1. `ANDROID_HOME` - the absolute path of the Android SDK
@@ -61,7 +55,8 @@ phone.
 ### How to publish the app to the Google Play Store
 
 1. Create a keystore
-   with `keytool -genkey -v -keystore listem.keystore -alias listem -keyalg RSA -keysize 2048 -validity 10000` and set
+   with e.g. `keytool -genkey -v -keystore listem.keystore -alias listem -keyalg RSA -keysize 2048 -validity 10000` and
+   set
    the password as environment variable(s) accordingly
 2. Publish and sign the app:
     ```shell
