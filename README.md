@@ -16,7 +16,7 @@ addition, I wanted to 3) create a fully deployable application.
 > to shared lists). This eventually led me to implement MongoDB Atlas with Realm and Flexible Sync because it allows
 > for offline-first development, deals with conflict resolution, and even offers authorisation/authentication.
 
-![Screenshots PNG](./assets/screenshots.png)
+![Screenshots PNG](./docs/assets/screenshots.png)
 
 ### Overview
 
