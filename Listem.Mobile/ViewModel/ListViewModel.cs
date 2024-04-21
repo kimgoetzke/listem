@@ -91,6 +91,7 @@ public partial class ListViewModel : BaseViewModel
     var previousStage = IsBusy;
     IsBusy = true;
     await _itemService.DeleteAsync(item);
+    ItemsToDelete.Remove(item);
     _listHasChanged = true;
     IsBusy = previousStage;
   }
@@ -143,9 +144,20 @@ public partial class ListViewModel : BaseViewModel
       return;
 
     Logger.Debug("Removing selected item(s)");
-    foreach (var item in ItemsToDelete)
+    try
     {
-      await RemoveItemCommand.ExecuteAsync(item);
+      foreach (var item in ItemsToDelete)
+      {
+        await RemoveItemCommand.ExecuteAsync(item);
+      }
+    }
+    catch (Exception ex)
+    {
+      Logger.Warn("Failed to remove selected item(s): {Message}", ex.Message);
+    }
+    finally
+    {
+      ItemsToDelete.Clear();
     }
     _listHasChanged = true;
   }
