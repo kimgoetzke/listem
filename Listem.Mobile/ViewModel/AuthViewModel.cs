@@ -181,6 +181,12 @@ public partial class AuthViewModel : BaseViewModel
   }
 
   [RelayCommand]
+  private static async Task OpenPrivacyPolicy()
+  {
+    await Launcher.OpenAsync(Constants.PrivacyPolicyUrl);
+  }
+
+  [RelayCommand]
   private async Task GoToMainPage()
   {
     await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());

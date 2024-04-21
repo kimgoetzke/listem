@@ -177,6 +177,11 @@
     </Style>
 
     <!-- Spans -->
+    <Style TargetType="Span" x:Key="SpanLink">
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+        <Setter Property="FontFamily" Value="MulishBold" />
+        <Setter Property="TextDecorations" Value="Underline" />
+    </Style>
     <Style TargetType="Span" x:Key="Highlight">
         <Setter Property="TextColor" Value="{DynamicResource TextHighlightColor}" />
         <Setter Property="FontFamily" Value="MulishBold" />

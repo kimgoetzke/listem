@@ -103,7 +103,24 @@
                 <Label
                     Text="Your password must be at least 6 characters long, including a number, a letter, and a special character."
                     FontSize="{DynamicResource FontSizeXS}"
-                    HorizontalTextAlignment="Center" />
+                    HorizontalTextAlignment="Center"
+                    Padding="10,0,10,20" />
+                <Label FontSize="{DynamicResource FontSizeXS}" HorizontalTextAlignment="Center">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="You can access our " FontSize="{DynamicResource FontSizeXS}" />
+                            <Span Text="Privacy Policy here"
+                                  Style="{DynamicResource SpanLink}"
+                                  FontSize="{DynamicResource FontSizeXS}"
+                                  TextDecorations="Underline">
+                                <Span.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenPrivacyPolicyCommand}" />
+                                </Span.GestureRecognizers>
+                            </Span>
+                            <Span Text="." FontSize="{DynamicResource FontSizeXS}" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
             </VerticalStackLayout>
         </Grid>
 
