@@ -12,7 +12,7 @@ This guide relates to the following Google Play Store app: `<Add URL here once i
 
 1. Open the app
 2. Sign in with the account you want to remove
-3. Select the menu icon on the list dashboard view (:RiMenu2Fill:)
+3. Select the menu icon on the list dashboard view (<img src="./assets/menu_button.png" alt="Listem logo" width="15" height="15" />)
 4. Select `Delete my account`
 5. Confirm by selecting `Yes`
 
