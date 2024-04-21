@@ -28,7 +28,7 @@
         <!-- Content -->
         <Grid Grid.Row="1" BackgroundColor="{DynamicResource BackgroundColorAccent}">
             <VerticalStackLayout Padding="20,0,20,150"
-                                 MinimumWidthRequest="400" MaximumWidthRequest="850"
+                                 MinimumWidthRequest="400" MaximumWidthRequest="500"
                                  VerticalOptions="Center"
                                  HorizontalOptions="Fill">
 
@@ -108,7 +108,7 @@
                 <Label FontSize="{DynamicResource FontSizeXS}" HorizontalTextAlignment="Center">
                     <Label.FormattedText>
                         <FormattedString>
-                            <Span Text="You can access our " FontSize="{DynamicResource FontSizeXS}" />
+                            <Span Text="You can access the " FontSize="{DynamicResource FontSizeXS}" />
                             <Span Text="Privacy Policy here"
                                   Style="{DynamicResource SpanLink}"
                                   FontSize="{DynamicResource FontSizeXS}"
