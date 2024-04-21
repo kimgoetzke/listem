@@ -65,7 +65,7 @@ of any request to change username or password.
 We encourage parents and guardians to observe, participate in, and/or monitor and guide their online activity.
 
 Listem does not knowingly collect any Personal Identifiable Information from children under the age of 13. If you
-think that your child provided this kind of information on our website, we strongly encourage you to contact us
+think that your child provided this kind of information in this application, we strongly encourage you to contact us
 immediately, and we will do our best efforts to promptly remove such information from our records.
 
 ## 7. Contact Us
