@@ -4,7 +4,7 @@ This repository contains a super simple, minimalist list Android app written in 
 CommunityToolkit, and MongoDB Atlas with Realm and Flexible Sync. It also contains a UI test project for end-to-end
 testing using Appium and NUnit 4. It was created to learn how to create and publish an Android app.
 
-![Screenshots PNG](./docs/assets/screenshots.png)
+![Screenshots](./docs/assets/screenshots.png)
 
 ### Overview
 
@@ -20,6 +20,8 @@ testing using Appium and NUnit 4. It was created to learn how to create and publ
 - Icons used are CC0 from [iconsDB.com](https://www.iconsdb.com/) or self-made
 - Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
+
+![More screenshots](./docs/assets/screenshots_2.png)
 
 ### How to configure your environment for development
 
