@@ -71,7 +71,7 @@ immediately, and we will do our best efforts to promptly remove such information
 ## 7. Contact Us
 
 If you have any questions or concerns about this Privacy Policy or Listem's data practices, you may reach out to us via
-the GitHub repository issues page: https://github.com/kimgoetzke/practice-maui-listem/issues - or using the contact
+the GitHub repository issues page: https://github.com/kimgoetzke/listem/issues - or using the contact
 information provided on our Google Play Store page from where you downloaded this application.
 
 ## 8. Updates to this policy

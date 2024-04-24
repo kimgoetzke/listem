@@ -2,8 +2,6 @@
 
 <img src="./assets/logo.png" alt="Listem logo" width="64" height="64" />
 
-This guide relates to the following Google Play Store app: `<Add URL here once it exists>`
-
 > [!NOTE]
 > This guide shows you how to delete your Listem user account and all linked and shared lists permanently. This action
 > will also remove your account from any lists that were shared with you. This action cannot be undone.

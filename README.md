@@ -27,7 +27,7 @@ testing using Appium and NUnit 4. It was created to learn how to create and publ
 
 > [!NOTE]  
 > I explored creating an ASP.NET Core backend (see
-> branch [use-backend-api](https://github.com/kimgoetzke/practice-maui-listem/tree/use-backend-api)) but I didn't find
+> branch [use-backend-api](https://github.com/kimgoetzke/listem/tree/use-backend-api)) but I didn't find
 > an easy solution to deal with data synchronisation and conflict management (e.g. offline vs online changes, especially
 > to shared lists). This eventually led me to implement MongoDB Atlas with Realm and Flexible Sync because it allows
 > for offline-first development, deals with conflict resolution, and even offers authorisation/authentication.
