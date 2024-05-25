@@ -244,9 +244,10 @@ public class OrderedFeatureTest : BaseTest
     var currentItemName = _testList.Items[5].Name;
     Act.OnDetailPage.ChangeItemName(currentItemName, EditedPrefix);
     Act.NavigateBackAndAwait(ListPage.AddButton);
+    Act.HideKeyboard();
     Element(ListPage.Item.Label + EditedPrefix + currentItemName).Click();
-    var itemNameEntry = Element(DetailPage.NameEntry);
-    Assert.That(itemNameEntry.Text, Is.EqualTo(EditedPrefix + currentItemName));
+    var itemNameEntry = AwaitElement(DetailPage.NameEntry);
+    Assert.That(itemNameEntry!.Text, Is.EqualTo(EditedPrefix + currentItemName));
     Act.OnDetailPage.ChangeItemName(currentItemName);
   }
 
@@ -260,6 +261,7 @@ public class OrderedFeatureTest : BaseTest
     Act.NavigateBackAndAwait(ListPage.AddButton);
     AssertThat.OnListPage.CategoryTagIsCorrect(currentItem.Name, _testList.Categories[0]);
     Element(ListPage.Item.Label + currentItem.Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
     Assert.That(Element(DetailPage.CategoryPicker).Text, Is.EqualTo(_testList.Categories[0]));
     Act.OnDetailPage.ChangeItemCategory(currentItem.Category);
   }
@@ -273,6 +275,7 @@ public class OrderedFeatureTest : BaseTest
     Act.NavigateBackAndAwait(ListPage.AddButton);
     Assert.That(Element(ListPage.Item.IsImportantIcon + currentItem.Name).Displayed, Is.True);
     Element(ListPage.Item.Label + currentItem.Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
     AssertThat.OnDetailPage.ItemIsImportant(!currentItem.IsImportant);
     Act.OnDetailPage.SetItemIsImportant(currentItem.IsImportant);
     AssertThat.OnDetailPage.ItemIsImportant(currentItem.IsImportant);
@@ -287,11 +290,13 @@ public class OrderedFeatureTest : BaseTest
     Act.NavigateBackAndAwait(ListPage.AddButton);
     AssertThat.OnListPage.QuantityIsCorrect(currentItem.Name, 3);
     Element(ListPage.Item.Label + currentItem.Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
     AssertThat.OnDetailPage.QuantityIsCorrect(3);
     Act.OnDetailPage.ChangeItemQuantity(-5);
     Act.NavigateBackAndAwait(ListPage.AddButton);
     AssertThat.OnListPage.QuantityIsCorrect(currentItem.Name, 1);
     Element(ListPage.Item.Label + currentItem.Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
     AssertThat.OnDetailPage.QuantityIsCorrect(currentItem.Quantity);
   }
 
