@@ -10,5 +10,5 @@ public static class Constants
   public const string TokenRefreshFailedMessage =
     "Couldn't refresh your session - please sign in again";
   public const string PrivacyPolicyUrl =
-    "https://github.com/kimgoetzke/practice-maui-listem/blob/main/docs/privacy-policy.md";
+    "https://github.com/kimgoetzke/listem/blob/main/docs/privacy-policy.md";
 }
