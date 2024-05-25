@@ -31,6 +31,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   [ObservableProperty]
   private bool _isUserSignedIn;
 
+  public static string AppVersion => AppInfo.VersionString; // TODO: Display at bottom of main menu
   private readonly IServiceProvider _serviceProvider;
   private readonly IListService _listService;
   private readonly IItemService _itemService;
