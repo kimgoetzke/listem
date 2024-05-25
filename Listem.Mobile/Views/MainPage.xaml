@@ -69,7 +69,7 @@
                         Margin="25,10,0,20"
                         Text="Delete my account"
                         AutomationId="DeleteAccountButton"
-                        Clicked="DeleteMyAccount_OnClicked"/>
+                        Clicked="DeleteMyAccount_OnClicked" />
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
                        HorizontalOptions="Start"
@@ -124,11 +124,18 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
+
+                <!-- App version -->
+                <Label FontFamily="MulishRegular"
+                       FontSize="{DynamicResource FontSizeS}"
+                       Text="{Binding AppVersion}"
+                       Padding="25,40,20,10" />
+
             </VerticalStackLayout>
         </Grid>
 
         <!-- Content -->
-        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent" 
+        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent"
                HasShadow="False" Shadow="{DynamicResource DarkShadowL}">
             <Grid RowDefinitions="Auto, .4*, *, Auto"
                   BackgroundColor="{DynamicResource BackgroundColor}"
