@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
@@ -16,6 +17,9 @@ public partial class ListViewModel : BaseViewModel
 
   [ObservableProperty]
   private IQueryable<Item> _items = null!;
+
+  [ObservableProperty]
+  private ObservableCollection<Item> _observableItems = [];
 
   [ObservableProperty]
   private List<Item> _itemsToDelete;
@@ -85,26 +89,15 @@ public partial class ListViewModel : BaseViewModel
     GetSortedItems();
   }
 
-  /**
-   * Wrapping the item removal logic in a try-catch because I have observed infrequent app crashes that
-   * I simply cannot reproduce in a non-production environment. Will probably add some retrievable local
-   * logs to help debug this issue.
-   */
   [RelayCommand]
   private async Task RemoveItem(Item item)
   {
     var previousStage = IsBusy;
     IsBusy = true;
-    try
-    {
-      await _itemService.DeleteAsync(item);
-      ItemsToDelete.Remove(item);
-    }
-    catch (Exception ex)
-    {
-      Notifier.ShowToast($"Failed to remove item '{item.Name}': {ex.Message}");
-      Logger.Error("Failed to remove item '{Item}': {Message}", item.ToLog(), ex.Message);
-    }
+    ItemsToDelete.Remove(item);
+    await _itemService.DeleteAsync(item);
+    OnPropertyChanged(nameof(Items));
+    UpdateObservableItems();
     _listHasChanged = true;
     IsBusy = previousStage;
   }
@@ -131,11 +124,15 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private void InsertFromClipboard()
+  private async Task InsertFromClipboard()
   {
-    _clipboardService.InsertFromClipboardAsync(Items.ToList(), Categories.ToList(), CurrentList);
-    _listHasChanged = true;
-    GetSortedItems();
+    await IsBusyWhile(async () =>
+    {
+      await _clipboardService.InsertFromClipboardAsync(Categories.ToList(), CurrentList);
+      _listHasChanged = true;
+      OnPropertyChanged(nameof(Items));
+      GetSortedItems();
+    });
   }
 
   [RelayCommand]
@@ -161,7 +158,16 @@ public partial class ListViewModel : BaseViewModel
     {
       try
       {
-        await RemoveItemCommand.ExecuteAsync(item);
+        var realmItem = Items.FirstOrDefault(i => i.Id == item.Id);
+        if (realmItem != null)
+        {
+          await RemoveItem(realmItem);
+          GetSortedItems();
+        }
+        else
+        {
+          Logger.Warn("Item not found in realm: {Item}", item.ToLog());
+        }
       }
       catch (Exception ex)
       {
@@ -197,5 +203,16 @@ public partial class ListViewModel : BaseViewModel
       .Where(i => i.List == CurrentList)
       .OrderBy(i => i.Category!.Name)
       .ThenByDescending(i => i.UpdatedOn);
+    OnPropertyChanged(nameof(Items));
+    UpdateObservableItems();
+  }
+
+  private void UpdateObservableItems()
+  {
+    ObservableItems.Clear();
+    foreach (var list in Items)
+    {
+      ObservableItems.Add(list);
+    }
   }
 }

@@ -11,11 +11,7 @@ public class ClipboardService(IServiceProvider sp) : IClipboardService
   private readonly IItemService _itemService = sp.GetService<IItemService>()!;
   private readonly ILogger<ClipboardService> _logger = sp.GetService<ILogger<ClipboardService>>()!;
 
-  public async void InsertFromClipboardAsync(
-    IList<Item> items,
-    IList<Category> categories,
-    List list
-  )
+  public async Task InsertFromClipboardAsync(IList<Category> categories, List list)
   {
     var import = await Clipboard.GetTextAsync();
 

@@ -16,7 +16,7 @@
     </ContentView.Resources>
 
     <CollectionView
-        ItemsSource="{Binding Items}"
+        ItemsSource="{Binding ObservableItems}"
         SelectionMode="None"
         VerticalOptions="Fill">
         <CollectionView.Header>

@@ -58,9 +58,23 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
 
   public async Task DeleteAsync(Item item)
   {
-    logger.Info("Removing: {Item}", item.ToLog());
-    var realm = RealmService.GetMainThreadRealm();
-    await realm.WriteAsync(() => realm.Remove(item));
+    await MainThread.InvokeOnMainThreadAsync(async () =>
+    {
+      logger.Info("Removing: {Item}", item.ToLog());
+
+      var realm = RealmService.GetMainThreadRealm();
+      await realm.WriteAsync(() =>
+      {
+        if (realm.Find<Item>(item.Id) != null)
+        {
+          realm.Remove(item);
+        }
+        else
+        {
+          logger.Warn("Attempted to remove an item not found in the Realm: {Item}", item.ToLog());
+        }
+      });
+    });
   }
 
   public async Task DeleteAllInListAsync(List list)
