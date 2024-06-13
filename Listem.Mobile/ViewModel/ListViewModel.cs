@@ -102,7 +102,8 @@ public partial class ListViewModel : BaseViewModel
     }
     catch (Exception ex)
     {
-      Logger.Error("Failed to remove item: {Message}", ex.Message);
+      Notifier.ShowToast($"Failed to remove item '{item.Name}': {ex.Message}");
+      Logger.Error("Failed to remove item '{Item}': {Message}", item.ToLog(), ex.Message);
     }
     _listHasChanged = true;
     IsBusy = previousStage;
