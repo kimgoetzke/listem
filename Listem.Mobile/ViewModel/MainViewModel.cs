@@ -31,9 +31,9 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   [ObservableProperty]
   private bool _isUserSignedIn;
 
-  [ObservableProperty]  
+  [ObservableProperty]
   private string _appVersion = "Version " + AppInfo.VersionString;
-  
+
   private readonly IServiceProvider _serviceProvider;
   private readonly IListService _listService;
   private readonly IItemService _itemService;
