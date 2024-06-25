@@ -56,32 +56,19 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
     });
   }
 
-  public async Task DeleteAsync(Item? item)
+  public async Task DeleteAsync(Item item)
   {
     var realm = RealmService.GetMainThreadRealm();
     await realm.WriteAsync(() =>
     {
-      if (item != null)
+      var existingItem = realm.Find<Item>(item.Id);
+      if (existingItem == null)
       {
-        logger.Info("DeleteAsync - START");
-        var existingItem = realm.Find<Item>(item.Id);
-        if (existingItem == null)
-        {
-          logger.Warn(
-            "Deletion request completed: Attempted to remove an item not found in the Realm - request ignored..."
-          );
-          return;
-        }
-        logger.Info("Item exists in Realm: {Item}", item.ToLog());
-        logger.Info("Removing: {Item}", item.ToLog());
-        realm.Remove(existingItem);
-      }
-      else
-      {
-        logger.Warn("Deletion request completed: Provided item is null - request ignored...");
+        logger.Warn("Attempted to remove an item not found in the Realm - request ignored...");
         return;
       }
-      logger.Info("Deletion request completed: Item removed from Realm");
+      logger.Info("Removing: {Item}", item.ToLog());
+      realm.Remove(existingItem);
     });
   }
 
