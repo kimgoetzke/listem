@@ -192,6 +192,7 @@ public class OrderedFeatureTest : BaseTest
 
   [Test]
   [Order(37)]
+  [Ignore("Feature has been temporarily disabled, see TODO in ListViewModel.cs")]
   public void CanRemoveItems_TickAndLeaveList()
   {
     Element(ListPage.Item.DoneBox + _testList.Items[0].Name).Click();
