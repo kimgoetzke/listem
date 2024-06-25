@@ -60,18 +60,17 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
   {
     await MainThread.InvokeOnMainThreadAsync(async () =>
     {
-      logger.Info("Removing: {Item}", item.ToLog());
-
       var realm = RealmService.GetMainThreadRealm();
       await realm.WriteAsync(() =>
       {
         if (realm.Find<Item>(item.Id) != null)
         {
+          logger.Info("Removing: {Item}", item.ToLog());
           realm.Remove(item);
         }
         else
         {
-          logger.Warn("Attempted to remove an item not found in the Realm: {Item}", item.ToLog());
+          logger.Warn("Attempted to remove an item not found in the Realm");
         }
       });
     });
