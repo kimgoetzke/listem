@@ -45,8 +45,7 @@ testing using Appium and NUnit 4. It was created to learn how to create and publ
 Create APK with:
 
 ```shell
-cd Listem
-dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME
+cd Listem.Mobile ; dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME
 ```
 
 This assumes that the Android SDK is installed and the `ANDROID_HOME` environment variable is set.
@@ -62,7 +61,7 @@ phone.
    the password as environment variable(s) accordingly
 2. Publish and sign the app:
     ```shell
-    dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME /p:AndroidSigningKeyPass=$env:ANDROID_KEY_PASS /p:AndroidSigningStorePass=$env:ANDROID_STORE_PASS
+    cd Listem.Mobile ; dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDirectory=$env:ANDROID_HOME /p:AndroidSigningKeyPass=$env:ANDROID_KEY_PASS /p:AndroidSigningStorePass=$env:ANDROID_STORE_PASS
     ```
 3. Follow the usual steps to upload to the Google Play Console e.g.
    see [Microsoft - Publish a .NET MAUI app for Android](https://learn.microsoft.com/en-us/dotnet/maui/android/deployment/?view=net-maui-8.0)
@@ -84,7 +83,7 @@ To run the tests:
 
 1. Install the APK on the device/emulator
 2. Navigate to the `Listem.UITests` project with `cd Listem.UITests`
-3. Run the tests via your IDE or with `donet test`
+3. Run the tests via your IDE or with `dotnet test`
 
 For building any further tests, consider installing [Appium Inspector](https://github.com/appium/appium-inspector) in
 order to debug elements. Run Appium with `appium` and open the inspector, using the following config to connect to a
