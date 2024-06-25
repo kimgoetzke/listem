@@ -49,10 +49,12 @@ public class ClipboardTest : BaseTest
     Element(ListPage.CopyToClipboardButton).Click();
 
     // Clear list again
-    _testList.Items.ForEach(item =>
+    foreach (var item in _testList.Items)
     {
-      Element(ListPage.Item.DoneBox + item.Name).Click();
-    });
+      Act.OnListPage.SwipeDeleteItem(item.Name);
+      await Task.Delay(1000);
+    }
+
     Act.NavigateBackAndAwait(MainPage.MenuButton, 10);
     Element(MainPage.List.ListTitle + _testList.Name).Click();
     AwaitElement(ListPage.AddButton);

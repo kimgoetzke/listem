@@ -10,8 +10,8 @@
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <ApplicationTitle>Listem</ApplicationTitle>
         <ApplicationId>io.kimgoetzke.listem</ApplicationId>
-        <ApplicationDisplayVersion>1.4</ApplicationDisplayVersion>
-        <ApplicationVersion>5</ApplicationVersion>
+        <ApplicationDisplayVersion>1.6</ApplicationDisplayVersion>
+        <ApplicationVersion>7</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
@@ -47,20 +47,20 @@
 
     <ItemGroup>
         <PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0"/>
-        <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1"/>
+        <PackageReference Include="CommunityToolkit.Maui" Version="9.0.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
         <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="Realm" Version="12.2.0"/>
-        <PackageReference Include="Serilog" Version="4.0.0"/>
+        <PackageReference Include="Realm" Version="12.2.0" />
+        <PackageReference Include="Serilog" Version="4.0.0" />
         <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0"/>
-        <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
         <!-- Temporarily downgrading from $(MauiVersion) to 8.0.14 to avoid build errors -->
         <!-- See: https://github.com/dotnet/maui/issues/21757 -->
-        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.14"/>
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.14"/>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.60" />
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.60" />
     </ItemGroup>
 
     <ItemGroup>

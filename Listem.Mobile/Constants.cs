@@ -11,4 +11,5 @@ public static class Constants
     "Couldn't refresh your session - please sign in again";
   public const string PrivacyPolicyUrl =
     "https://github.com/kimgoetzke/listem/blob/main/docs/privacy-policy.md";
+  public const string LogFileName = "log-.txt";
 }

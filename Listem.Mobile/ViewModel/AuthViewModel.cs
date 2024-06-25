@@ -59,6 +59,7 @@ public partial class AuthViewModel : BaseViewModel
         UpdateUser(m.Value);
       }
     );
+    Logger.Info("On-device logs are stored at: {LogFilePath}", FileSystem.Current.AppDataDirectory);
 
     if (!await RealmService.Init())
       Notifier.ShowToast(Constants.TokenRefreshFailedMessage);

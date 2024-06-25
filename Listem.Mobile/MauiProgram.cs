@@ -14,12 +14,16 @@ public static class MauiProgram
   public static MauiApp CreateMauiApp()
   {
     Log.Logger = new LoggerConfiguration()
-      .MinimumLevel.Information()
-      .WriteTo.Debug(
-        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u4}] [XXX] {NewLine}{Message:lj}{NewLine}{Exception}"
-      )
+      // .MinimumLevel.Information()
+      // .WriteTo.Debug(
+      //   outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u4}] [XXX] {NewLine}{Message:lj}{NewLine}{Exception}"
+      // )
       .MinimumLevel.Information()
       .WriteTo.Sink<AndroidLogSink>()
+      // .WriteTo.File(
+      //   FileSystem.Current.AppDataDirectory + Constants.LogFileName,
+      //   rollingInterval: RollingInterval.Day
+      // )
       .CreateLogger();
 
     var app = MauiApp
