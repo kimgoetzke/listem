@@ -63,6 +63,7 @@ public class ItemService(ILogger<CategoryService> logger) : IItemService
     {
       if (item != null)
       {
+        logger.Info("DeleteAsync - START");
         var existingItem = realm.Find<Item>(item.Id);
         if (existingItem == null)
         {

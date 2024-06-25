@@ -6,6 +6,7 @@ using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
 using Listem.Mobile.Views;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using StringProcessor = Listem.Mobile.Utilities.StringProcessor;
 
 namespace Listem.Mobile.ViewModel;
@@ -90,18 +91,15 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private async Task RemoveItem(Item? item)
+  private async Task RemoveItem(Item item)
   {
     var previousStage = IsBusy;
     IsBusy = true;
-    if (item == null)
-    {
-      Logger.Warn("Attempted to remove item that is null");
-      IsBusy = previousStage;
-      return;
-    }
-    ItemsToDelete.Remove(item);
-    await _itemService.DeleteAsync(item);
+    Logger.Info("RemoveItem - START");
+    await _itemService.DeleteAsync(item); // TODO: Find out why it crashes here with the above being the last log
+    Logger.Info("RemoveItem: await _itemService.DeleteAsync(item) - DONE");
+    var result = ItemsToDelete.Remove(item);
+    Logger.Info("RemoveItem: ItemsToDelete.Remove(item) with result={Result} - DONE", result);
     GetSortedItems();
     _listHasChanged = true;
     IsBusy = previousStage;
@@ -160,7 +158,7 @@ public partial class ListViewModel : BaseViewModel
     if (ItemsToDelete.Count == 0)
       return;
 
-    Logger.Debug("Removing selected item(s)");
+    Logger.Info("DeleteSelectedItemsIfAny: Removing selected item(s)");
     var listCopy = new List<Item>(ItemsToDelete);
     foreach (var item in listCopy)
     {
@@ -170,23 +168,26 @@ public partial class ListViewModel : BaseViewModel
         {
           throw new InvalidOperationException("Attempted to remove item that is null");
         }
-        var realmItem = Items.FirstOrDefault(i => i.Id == item.Id);
-        if (realmItem != null)
-        {
-          await RemoveItem(realmItem);
-          GetSortedItems();
-        }
-        else
-        {
-          Logger.Warn("Item not found in realm: {Item}", item.ToLog());
-        }
+
+        var indexOfCurrentItem = listCopy.IndexOf(item) + 1;
+        Logger.Info(
+          "DeleteSelectedItemsIfAny: Processing item {Number}/{Total}...",
+          indexOfCurrentItem,
+          listCopy.Count
+        );
+        await RemoveItem(item);
+        Logger.Info(
+          "DeleteSelectedItemsIfAny: Item {Number}/{Total} removed",
+          indexOfCurrentItem,
+          listCopy.Count
+        );
       }
       catch (Exception ex)
       {
         Logger.Warn("Failed to remove selected item(s): {Message}", ex.Message);
       }
     }
-    Logger.Debug("Removed all selected item(s)");
+    Logger.Info("DeleteSelectedItemsIfAny: Removed all selected item(s)");
 
     ItemsToDelete.Clear();
     _listHasChanged = true;
@@ -216,8 +217,11 @@ public partial class ListViewModel : BaseViewModel
       .Where(i => i.List == CurrentList)
       .OrderBy(i => i.Category!.Name)
       .ThenByDescending(i => i.UpdatedOn);
+    Logger.Info("GetSortedItems: Fetched sorted items - DONE");
     OnPropertyChanged(nameof(Items));
+    Logger.Info("GetSortedItems: OnPropertyChanged(nameof(Items)) - DONE");
     UpdateObservableItems();
+    Logger.Info("GetSortedItems: UpdateObservableItems() - DONE");
   }
 
   private void UpdateObservableItems()
