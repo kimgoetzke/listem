@@ -14,7 +14,7 @@
         <ApplicationVersion>6</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
-    
+
     <PropertyGroup Condition="$(TargetFramework.Contains('-android')) and '$(Configuration)' == 'Release'">
         <AndroidKeyStore>True</AndroidKeyStore>
         <AndroidSigningKeyStore>$(MSBuildThisFileDirectory)listem.keystore</AndroidSigningKeyStore>

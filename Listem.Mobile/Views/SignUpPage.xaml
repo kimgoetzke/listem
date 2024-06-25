@@ -74,6 +74,7 @@
                             <Entry Grid.Column="1" Text="{Binding PasswordConfirmed}"
                                    x:Name="PasswordConfirmedEntry"
                                    AutomationId="PasswordConfirmedEntry"
+                                   Keyboard="Default"
                                    Placeholder="Re-enter your password" IsPassword="True" />
                         </Grid>
                     </Frame>

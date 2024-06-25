@@ -14,16 +14,16 @@ public static class MauiProgram
   public static MauiApp CreateMauiApp()
   {
     Log.Logger = new LoggerConfiguration()
-      .MinimumLevel.Information()
+      // .MinimumLevel.Information()
       // .WriteTo.Debug(
       //   outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u4}] [XXX] {NewLine}{Message:lj}{NewLine}{Exception}"
       // )
       .MinimumLevel.Information()
       .WriteTo.Sink<AndroidLogSink>()
-      .WriteTo.File(
-        FileSystem.Current.AppDataDirectory + Constants.LogFileName,
-        rollingInterval: RollingInterval.Day
-      )
+      // .WriteTo.File(
+      //   FileSystem.Current.AppDataDirectory + Constants.LogFileName,
+      //   rollingInterval: RollingInterval.Day
+      // )
       .CreateLogger();
 
     var app = MauiApp
@@ -63,9 +63,11 @@ public static class MauiProgram
     builder.Services.AddSingleton(Connectivity.Current);
     builder.Services.AddSingleton<IClipboardService, ClipboardService>();
 
+#if DEBUG
     builder.Services.AddLogging();
     builder.Logging.ClearProviders();
     builder.Logging.AddSerilog(Log.Logger);
+#endif
 
     return builder;
   }
