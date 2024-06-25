@@ -15,7 +15,7 @@ public interface IItemService
     int? quantity = null,
     bool? isImportant = null
   );
-  Task DeleteAsync(Item item);
+  Task DeleteAsync(Item? item);
   Task DeleteAllInListAsync(List list);
   Task ResetAllToDefaultCategoryAsync(List list);
   Task ResetSelectedToDefaultCategoryAsync(List list, Category category);

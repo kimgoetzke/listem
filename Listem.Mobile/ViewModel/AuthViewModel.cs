@@ -59,6 +59,7 @@ public partial class AuthViewModel : BaseViewModel
         UpdateUser(m.Value);
       }
     );
+    Logger.Info("Log file path: {LogFilePath}", FileSystem.Current.AppDataDirectory);
 
     if (!await RealmService.Init())
       Notifier.ShowToast(Constants.TokenRefreshFailedMessage);

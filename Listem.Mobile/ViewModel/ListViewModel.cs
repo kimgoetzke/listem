@@ -90,14 +90,19 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private async Task RemoveItem(Item item)
+  private async Task RemoveItem(Item? item)
   {
     var previousStage = IsBusy;
     IsBusy = true;
+    if (item == null)
+    {
+      Logger.Warn("Attempted to remove item that is null");
+      IsBusy = previousStage;
+      return;
+    }
     ItemsToDelete.Remove(item);
     await _itemService.DeleteAsync(item);
-    OnPropertyChanged(nameof(Items));
-    UpdateObservableItems();
+    GetSortedItems();
     _listHasChanged = true;
     IsBusy = previousStage;
   }
@@ -140,6 +145,8 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
+      // Temporarily disabled due to https://www.mongodb.com/community/forums/t/realminvalidobjectexception-in-release-but-not-in-debug-mode/285108
+      // TODO: Find a fix for the seemingly random RealmInvalidObjectException that occurs sometimes
       await DeleteSelectedItemsIfAny();
 
       if (_listHasChanged)
@@ -154,10 +161,15 @@ public partial class ListViewModel : BaseViewModel
       return;
 
     Logger.Debug("Removing selected item(s)");
-    foreach (var item in new List<Item>(ItemsToDelete))
+    var listCopy = new List<Item>(ItemsToDelete);
+    foreach (var item in listCopy)
     {
       try
       {
+        if (item?.Id == null)
+        {
+          throw new InvalidOperationException("Attempted to remove item that is null");
+        }
         var realmItem = Items.FirstOrDefault(i => i.Id == item.Id);
         if (realmItem != null)
         {
@@ -174,6 +186,7 @@ public partial class ListViewModel : BaseViewModel
         Logger.Warn("Failed to remove selected item(s): {Message}", ex.Message);
       }
     }
+    Logger.Debug("Removed all selected item(s)");
 
     ItemsToDelete.Clear();
     _listHasChanged = true;
