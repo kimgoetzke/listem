@@ -13,16 +13,16 @@ public static class AutomationIdModel
 
   public static class SignInPage
   {
-    public const string EmailEntry = "EmailEntry";
-    public const string PasswordEntry = "PasswordEntry";
+    public const string EmailEntry = "Login";
+    public const string PasswordEntry = "Password";
     public const string SignInButton = "SignInButton";
     public const string SignUpButton = "SignUpButton";
   }
 
   public static class SignUpPage
   {
-    public const string EmailEntry = "EmailEntry";
-    public const string PasswordEntry = "PasswordEntry";
+    public const string EmailEntry = "Login";
+    public const string PasswordEntry = "Password";
     public const string PasswordConfirmedEntry = "PasswordConfirmedEntry";
     public const string SignUpButton = "SignUpButton";
   }

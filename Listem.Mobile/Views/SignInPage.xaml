@@ -40,7 +40,8 @@
                               HorizontalOptions="Fill" ColumnSpacing="5">
                             <Image Source="user_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding UserEmail}"
-                                   AutomationId="EmailEntry"
+                                   AutomationId="Login"
+                                   Keyboard="Email"
                                    Placeholder="Enter your user name" />
                         </Grid>
                     </Frame>
@@ -56,7 +57,8 @@
                             <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding Password}"
                                    x:Name="PasswordEntry"
-                                   AutomationId="PasswordEntry"
+                                   Keyboard="Default"
+                                   AutomationId="Password"
                                    Placeholder="Enter your password" IsPassword="True" />
                         </Grid>
                     </Frame>
