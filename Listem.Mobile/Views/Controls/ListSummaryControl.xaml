@@ -19,7 +19,7 @@
 
         <!-- Content: Box -->
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:List}">
+            <DataTemplate x:DataType="models:List">
                 <FlexLayout>
 
                     <!-- Box -->
@@ -99,7 +99,7 @@
 
                                 <!-- Items inside the list: Content -->
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate x:DataType="{x:Type models:Item}">
+                                    <DataTemplate x:DataType="models:Item">
                                         <HorizontalStackLayout HorizontalOptions="Fill" Padding="0" Margin="0"
                                                                HeightRequest="30"
                                                                VerticalOptions="Fill">
