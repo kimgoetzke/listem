@@ -10,8 +10,8 @@
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <ApplicationTitle>Listem</ApplicationTitle>
         <ApplicationId>io.kimgoetzke.listem</ApplicationId>
-        <ApplicationDisplayVersion>1.6</ApplicationDisplayVersion>
-        <ApplicationVersion>7</ApplicationVersion>
+        <ApplicationDisplayVersion>1.7</ApplicationDisplayVersion>
+        <ApplicationVersion>8</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
