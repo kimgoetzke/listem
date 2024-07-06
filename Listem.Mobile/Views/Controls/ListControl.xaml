@@ -94,7 +94,7 @@
                                 <!-- Content: Left aligned stack -->
                                 <HorizontalStackLayout Grid.Column="0"
                                                        VerticalOptions="Center"
-                                                       Padding="5, 0">
+                                                       Padding="5, 0, 0, 0">
 
                                     <!-- Left aligned stack: Checkbox -->
                                     <CheckBox x:Name="DoneBox"

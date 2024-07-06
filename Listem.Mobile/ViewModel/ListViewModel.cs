@@ -85,26 +85,14 @@ public partial class ListViewModel : BaseViewModel
     GetSortedItems();
   }
 
-  /**
-   * Wrapping the item removal logic in a try-catch because I have observed infrequent app crashes that
-   * I simply cannot reproduce in a non-production environment. Will probably add some retrievable local
-   * logs to help debug this issue.
-   */
   [RelayCommand]
   private async Task RemoveItem(Item item)
   {
     var previousStage = IsBusy;
     IsBusy = true;
-    try
-    {
-      await _itemService.DeleteAsync(item);
-      ItemsToDelete.Remove(item);
-    }
-    catch (Exception ex)
-    {
-      Notifier.ShowToast($"Failed to remove item '{item.Name}': {ex.Message}");
-      Logger.Error("Failed to remove item '{Item}': {Message}", item.ToLog(), ex.Message);
-    }
+    ItemsToDelete.Remove(item);
+    await _itemService.DeleteAsync(item);
+    GetSortedItems();
     _listHasChanged = true;
     IsBusy = previousStage;
   }
@@ -131,11 +119,15 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private void InsertFromClipboard()
+  private async Task InsertFromClipboard()
   {
-    _clipboardService.InsertFromClipboardAsync(Items.ToList(), Categories.ToList(), CurrentList);
-    _listHasChanged = true;
-    GetSortedItems();
+    await IsBusyWhile(async () =>
+    {
+      _clipboardService.InsertFromClipboardAsync(Categories.ToList(), CurrentList);
+      _listHasChanged = true;
+      OnPropertyChanged(nameof(Items));
+      GetSortedItems();
+    });
   }
 
   [RelayCommand]
@@ -156,17 +148,9 @@ public partial class ListViewModel : BaseViewModel
     if (ItemsToDelete.Count == 0)
       return;
 
-    Logger.Debug("Removing selected item(s)");
     foreach (var item in new List<Item>(ItemsToDelete))
     {
-      try
-      {
-        await RemoveItemCommand.ExecuteAsync(item);
-      }
-      catch (Exception ex)
-      {
-        Logger.Warn("Failed to remove selected item(s): {Message}", ex.Message);
-      }
+      await RemoveItem(item);
     }
 
     ItemsToDelete.Clear();
