@@ -16,7 +16,7 @@
     </ContentView.Resources>
 
     <CollectionView
-        ItemsSource="{Binding ObservableItems}"
+        ItemsSource="{Binding Items}"
         SelectionMode="None"
         VerticalOptions="Fill">
         <CollectionView.Header>
@@ -94,7 +94,14 @@
                                 <!-- Content: Left aligned stack -->
                                 <HorizontalStackLayout Grid.Column="0"
                                                        VerticalOptions="Center"
-                                                       Padding="15, 0, 0, 0">
+                                                       Padding="5, 0, 0, 0">
+
+                                    <!-- Left aligned stack: Checkbox -->
+                                    <CheckBox x:Name="DoneBox"
+                                              AutomationId="{Binding Name, StringFormat='DoneBox_{0}'}"
+                                              IsChecked="False" Scale="1.2"
+                                              CheckedChanged="CheckBox_OnCheckChanged"
+                                              BindingContext="{Binding .}" />
 
                                     <!-- Left aligned stack: Item name -->
                                     <Label Text="{Binding Name}"
@@ -107,6 +114,13 @@
                                                 <On Platform="iOS, Android">None</On>
                                             </OnPlatform>
                                         </Label.TextDecorations>
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding Source={x:Reference DoneBox}, Path=IsChecked}"
+                                                         Value="True">
+                                                <Setter Property="TextDecorations" Value="Strikethrough" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
                                     </Label>
 
                                     <!-- Left aligned stack: Quantity label -->

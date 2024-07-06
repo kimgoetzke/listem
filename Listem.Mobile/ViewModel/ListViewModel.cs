@@ -1,5 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
@@ -17,9 +16,6 @@ public partial class ListViewModel : BaseViewModel
 
   [ObservableProperty]
   private IQueryable<Item> _items = null!;
-
-  [ObservableProperty]
-  private ObservableCollection<Item> _observableItems = [];
 
   [ObservableProperty]
   private List<Item> _itemsToDelete;
@@ -94,6 +90,7 @@ public partial class ListViewModel : BaseViewModel
   {
     var previousStage = IsBusy;
     IsBusy = true;
+    ItemsToDelete.Remove(item);
     await _itemService.DeleteAsync(item);
     GetSortedItems();
     _listHasChanged = true;
@@ -126,7 +123,7 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
-      await _clipboardService.InsertFromClipboardAsync(Categories.ToList(), CurrentList);
+      _clipboardService.InsertFromClipboardAsync(Categories.ToList(), CurrentList);
       _listHasChanged = true;
       OnPropertyChanged(nameof(Items));
       GetSortedItems();
@@ -138,9 +135,7 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
-      // Temporarily disabled due to https://www.mongodb.com/community/forums/t/realminvalidobjectexception-in-release-but-not-in-debug-mode/285108
-      // TODO: Find a fix for the seemingly random RealmInvalidObjectException that occurs sometimes
-      // await DeleteSelectedItemsIfAny();
+      await DeleteSelectedItemsIfAny();
 
       if (_listHasChanged)
         await _listService.MarkAsUpdatedAsync(CurrentList);
@@ -186,16 +181,5 @@ public partial class ListViewModel : BaseViewModel
       .Where(i => i.List == CurrentList)
       .OrderBy(i => i.Category!.Name)
       .ThenByDescending(i => i.UpdatedOn);
-    OnPropertyChanged(nameof(Items));
-    UpdateObservableItems();
-  }
-
-  private void UpdateObservableItems()
-  {
-    ObservableItems.Clear();
-    foreach (var list in Items)
-    {
-      ObservableItems.Add(list);
-    }
   }
 }

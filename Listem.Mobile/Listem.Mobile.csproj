@@ -57,8 +57,6 @@
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
         <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-        <!-- Temporarily downgrading from $(MauiVersion) to 8.0.14 to avoid build errors -->
-        <!-- See: https://github.com/dotnet/maui/issues/21757 -->
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.60" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.60" />
     </ItemGroup>

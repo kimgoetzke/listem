@@ -58,6 +58,7 @@
                             <Image Source="key_tertiary.png" HeightRequest="15" WidthRequest="15" />
                             <Entry Grid.Column="1" Text="{Binding Password}"
                                    AutomationId="Password"
+                                   Keyboard="Default"
                                    Placeholder="Enter your password" IsPassword="True" />
                         </Grid>
                     </Frame>
