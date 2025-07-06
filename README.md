@@ -50,7 +50,7 @@ cd Listem.Mobile ; dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDire
 
 This assumes that the Android SDK is installed and the `ANDROID_HOME` environment variable is set.
 
-APK file can then be found in `ShoppingList\bin\Release\net8.0-android\publish\` and installed directly on any Android
+APK file can then be found in `Listem\Listem.Mobile\bin\Release\net8.0-android\publish\` and installed directly on any Android
 phone.
 
 ### How to publish the app to the Google Play Store
