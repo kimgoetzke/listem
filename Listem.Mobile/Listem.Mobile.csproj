@@ -61,6 +61,8 @@
         <!-- See: https://github.com/dotnet/maui/issues/21757 -->
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.60" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.60" />
+        <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+        <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
     </ItemGroup>
 
     <ItemGroup>

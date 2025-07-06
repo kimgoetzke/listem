@@ -39,6 +39,7 @@ testing using Appium and NUnit 4. It was created to learn how to create and publ
     4. `ANDROID_KEY_PASS` - the password for the keystore used to sign the APK
     5. `ANDROID_STORE_PASS` - the password for the key used to sign the APK
 2. Run `dotnet restore` in the base directory to restore all dependencies
+3. Install [CSharpier](https://csharpier.com/) and use it
 
 ### How to build the APK
 
@@ -50,8 +51,8 @@ cd Listem.Mobile ; dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDire
 
 This assumes that the Android SDK is installed and the `ANDROID_HOME` environment variable is set.
 
-APK file can then be found in `ShoppingList\bin\Release\net8.0-android\publish\` and installed directly on any Android
-phone.
+APK file can then be found in `Listem\Listem.Mobile\bin\Release\net8.0-android\publish\` and installed directly on any
+Android phone.
 
 ### How to publish the app to the Google Play Store
 
