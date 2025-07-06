@@ -1,8 +1,16 @@
 # The Listem Project with MongoDB Atlas and Realm
 
 This repository contains a super simple, minimalist list Android app written in C# using .NET 8 MAUI, the
-CommunityToolkit, and MongoDB Atlas with Realm and Flexible Sync. It also contains a UI test project for end-to-end
+CommunityToolkit, and MongoDB Atlas with Realm and Device Sync. It also contains a UI test project for end-to-end
 testing using Appium and NUnit 4. It was created to learn how to create and publish an Android app.
+
+> [!IMPORTANT]  
+> This branch of the project features the .NET MAUI mobile application using MongoDB Atlas with Realm and Device Sync.
+> [MongoDB deprecated Device Sync](https://www.mongodb.com/docs/atlas/app-services/sync/device-sync-deprecation/)
+> in September 2024 and no clear replacement exists. Without Device Sync, there is no reason to use MongoDB
+> Therefore, this branch, which used to be the main branch, is archived and will not receive further
+> updates. In addition, I have not used the list sharing functionality enough to justify the complexity of offering any
+> form of synchronisation.
 
 ![Screenshots](./docs/assets/screenshots.png)
 
@@ -50,7 +58,8 @@ cd Listem.Mobile ; dotnet publish -f:net8.0-android -c:Release /p:AndroidSdkDire
 
 This assumes that the Android SDK is installed and the `ANDROID_HOME` environment variable is set.
 
-APK file can then be found in `Listem\Listem.Mobile\bin\Release\net8.0-android\publish\` and installed directly on any Android
+APK file can then be found in `Listem\Listem.Mobile\bin\Release\net8.0-android\publish\` and installed directly on any
+Android
 phone.
 
 ### How to publish the app to the Google Play Store
