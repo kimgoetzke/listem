@@ -14,22 +14,16 @@ namespace Listem.Mobile.ViewModel;
 public partial class MainViewModel : BaseViewModel, IDisposable
 {
   [ObservableProperty]
-  private IQueryable<List> _lists = null!;
+  private ObservableCollection<ObservableList> _lists = null!;
 
   [ObservableProperty]
-  private ObservableCollection<List> _observableLists = [];
+  private ObservableList _newList;
 
   [ObservableProperty]
   private ObservableCollection<ObservableTheme> _themes = [];
 
   [ObservableProperty]
   private ObservableTheme _currentTheme;
-
-  [ObservableProperty]
-  private string? _currentUserEmail;
-
-  [ObservableProperty]
-  private bool _isUserSignedIn;
 
   [ObservableProperty]
   private string _appVersion = "Version " + AppInfo.VersionString;
@@ -46,55 +40,69 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     _listService = serviceProvider.GetService<IListService>()!;
     _itemService = serviceProvider.GetService<IItemService>()!;
     Logger.Debug("Initialising MainViewModel...");
-    GetSortedLists();
+    NewList = new ObservableList();
+    Lists = [];
     Themes = ThemeHandler.GetAllThemesAsCollection();
     CurrentTheme = Themes.First(t => t.Name == Settings.CurrentTheme);
-    WeakReferenceMessenger.Default.Register<UserStatusChangedMessage>(
+
+    WeakReferenceMessenger.Default.Register<ItemRemovedFromListMessage>(
       this,
       (_, m) =>
       {
         Logger.Info(
-          "[MainViewModel] Received message: Current user status has changed to: {User}",
-          m.Value
+          "Received message: Removing {Title} from {ID}",
+          m.Value.Item.Title,
+          m.Value.ListId
         );
-        CurrentUserEmail = m.Value.EmailAddress;
-        IsUserSignedIn = m.Value.IsSignedIn;
+        try
+        {
+          Lists.First(l => l.Id == m.Value.ListId).Items.Remove(m.Value.Item);
+        }
+        catch (InvalidOperationException)
+        {
+          Logger.Error(
+            "Failed to remove item {Title} from list {ID} because the list does not seem to exist",
+            m.Value.Item.Title,
+            m.Value.ListId
+          );
+        }
       }
     );
+
+    WeakReferenceMessenger.Default.Register<ItemAddedToListMessage>(
+      this,
+      (_, m) =>
+      {
+        Logger.Info("Received message: Adding {Title} to {ID}", m.Value.Item.Title, m.Value.ListId);
+        Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
+      }
+    );
+
     IsBusy = false;
   }
 
-  // TODO: Implement sorting and filtering
-  private void GetSortedLists()
+  public async Task LoadLists()
   {
-    Lists = RealmService.GetMainThreadRealm().All<List>().OrderByDescending(l => l.UpdatedOn);
-    OnPropertyChanged(nameof(Lists));
-    UpdateObservableLists();
-  }
-
-  // Pretty nasty but the UI doesn't update when changes are made to the Realm collection, so this is
-  // an attempt to make sure the list summaries are always reflecting the current state of the Realm.
-  // Could possibly remove the Lists property entirely but need to test if that would work.
-  private void UpdateObservableLists()
-  {
-    ObservableLists.Clear();
-    foreach (var list in Lists)
+    Logger.Info("Loading lists from database");
+    var lists = await _listService.GetAllAsync();
+    foreach (var list in lists)
     {
-      ObservableLists.Add(list);
+      var items = await _itemService.GetAllByListIdAsync(list.Id!);
+      foreach (var item in items)
+      {
+        list.Items.Add(item);
+      }
+
+      Lists.Add(list);
     }
+
+    SortLists();
   }
 
-  public void InitialiseUser()
+  private void SortLists()
   {
-    var currentUser = RealmService.User;
-    CurrentUserEmail = currentUser.EmailAddress;
-    IsUserSignedIn = currentUser.IsSignedIn;
-  }
-
-  public void TriggerListPropertyChange()
-  {
+    Lists = new ObservableCollection<ObservableList>(Lists.OrderBy(l => l.UpdatedOn).Reverse());
     OnPropertyChanged(nameof(Lists));
-    UpdateObservableLists();
   }
 
   [RelayCommand]
@@ -116,32 +124,48 @@ public partial class MainViewModel : BaseViewModel, IDisposable
       );
       return;
     }
-    var newList = new List
+
+    NewList = new ObservableList
     {
       Name = processedName,
-      OwnedBy = RealmService.User.Id!,
-      ListType = ListType.Standard.ToString(),
+      AddedOn = DateTime.Now,
       UpdatedOn = DateTime.Now
     };
-    await _listService.CreateAsync(newList);
-    GetSortedLists();
+    await AddNewList(NewList);
+
+    NewList = new ObservableList();
+    OnPropertyChanged(nameof(NewList));
+    OnPropertyChanged(nameof(Lists));
+  }
+
+  private async Task AddNewList(ObservableList newList)
+  {
+    await _listService.CreateOrUpdateAsync(newList);
+    Lists.Add(newList);
+    Notifier.ShowToast($"Added: {newList.Name}");
+    Logger.Info("Added list: {List}", newList.ToLoggableString());
+    SortLists();
   }
 
   [RelayCommand]
-  private async Task RemoveList(List list)
+  private async Task RemoveList(ObservableList list)
   {
     if (!await IsDeletionConfirmedByUser(list.Name))
     {
-      Logger.Info("Cancelled action to delete: {List}", list.ToLog());
+      Logger.Info("Cancelled action to delete: {List}", list.ToLoggableString());
       return;
     }
 
     await IsBusyWhile(async () =>
     {
-      await _itemService.DeleteAllInListAsync(list);
+      if (list.Id != null)
+      {
+        await _itemService.DeleteAllByListIdAsync(list.Id);
+      }
+
       await _listService.DeleteAsync(list);
+      Lists.Remove(list);
       OnPropertyChanged(nameof(Lists));
-      UpdateObservableLists();
     });
   }
 
@@ -151,37 +175,6 @@ public partial class MainViewModel : BaseViewModel, IDisposable
       "Delete list",
       $"This will delete the list '{listName}' and all of its contents. It cannot be undone. Are you sure?"
     );
-  }
-
-  [RelayCommand]
-  private async Task ExitList(List list)
-  {
-    if (
-      !await Notifier.ShowConfirmationAlertAsync(
-        "Exit list",
-        "You don't own this list but you can remove yourself from it without deleting it for the owner. Do you want to continue?"
-      )
-    )
-    {
-      Logger.Info("Cancelled action to exit list: {List}", list.ToLog());
-      return;
-    }
-
-    IsBusy = true;
-    var id = list.SharedWith.First(id => id == RealmService.User.Id);
-    if (await _listService.RevokeAccess(list, id))
-    {
-      ObservableLists.Remove(list);
-    }
-    else
-    {
-      await Notifier.ShowAlertAsync(
-        "Failed leave shared list",
-        "An error occurred while trying to remove yourself from this shared list. Please try again and contact the developer if this issue persists.",
-        "OK"
-      );
-    }
-    IsBusy = false;
   }
 
   [RelayCommand]
@@ -200,21 +193,33 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   [RelayCommand]
   private async Task BackToStartPage()
   {
-    await IsBusyWhile(async () =>
-    {
-      await RealmService.SignOutAsync();
-    });
     await Shell.Current.Navigation.PopToRootAsync();
     Dispose();
   }
 
   [RelayCommand]
-  private async Task DeleteMyAccount()
+  private async Task TapList(ObservableList list)
+  {
+    Logger.Info("Opening list: {List}", list.ToLoggableString());
+    var listPage = IsBusyWhile(() => new ListPage(list, _serviceProvider));
+    await Shell.Current.Navigation.PushAsync(listPage);
+  }
+
+  [RelayCommand]
+  private async Task EditList(ObservableList list)
+  {
+    Logger.Info("Editing list: {List}", list.ToLoggableString());
+    var editListPage = IsBusyWhile(() => new EditListPage(list, _serviceProvider));
+    await Shell.Current.Navigation.PushModalAsync(editListPage);
+  }
+
+  [RelayCommand]
+  private async Task DeleteMyData()
   {
     if (
       !await Notifier.ShowConfirmationAlertAsync(
-        "Delete account & all data",
-        "This will log you out, remove you from all lists shared with you (if any), and delete all your user data and lists (including lists you shared) permanently. This action cannot be undone. Are you sure?"
+        "Delete all data",
+        "This will delete all your user data and lists permanently. This action cannot be undone. Are you sure?"
       )
     )
       return;
@@ -223,43 +228,19 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     {
       foreach (var list in Lists)
       {
-        if (list.IsMine)
-        {
-          await _itemService.DeleteAllInListAsync(list);
-          await _listService.DeleteAsync(list);
-        }
-        else
-        {
-          await _listService.RevokeAccess(list, RealmService.User.Id!);
-        }
+        if (list.Id != null)
+          await _itemService.DeleteAllByListIdAsync(list.Id);
+        await _listService.DeleteAsync(list);
       }
+
       OnPropertyChanged(nameof(Lists));
-      UpdateObservableLists();
-      await RealmService.RemoveUserAsync();
     });
     await Shell.Current.Navigation.PopToRootAsync();
-  }
-
-  [RelayCommand]
-  private async Task TapList(List list)
-  {
-    Logger.Info("Opening list: {List}", list.ToLog());
-    var listPage = IsBusyWhile(() => new ListPage(list, _serviceProvider));
-    await Shell.Current.Navigation.PushAsync(listPage);
-  }
-
-  [RelayCommand]
-  private async Task EditList(List list)
-  {
-    Logger.Info("Editing list: {List}", list.ToLog());
-    var editListPage = IsBusyWhile(() => new EditListPage(list, _serviceProvider));
-    await Shell.Current.Navigation.PushModalAsync(editListPage);
   }
 
   public void Dispose()
   {
     Logger.Debug("Disposing MainViewModel...");
-    WeakReferenceMessenger.Default.Unregister<UserStatusChangedMessage>(this);
     GC.SuppressFinalize(this);
   }
 }

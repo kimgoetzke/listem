@@ -20,13 +20,8 @@ public abstract class TestHelper : BaseTest
 
     public static class OnStartPage
     {
-      public static void SignIn(TestData.TestUser user)
+      public static void WaitForRedirect()
       {
-        Element(StartPage.SignInButton).Click();
-        Wait().Until(_ => Element(SignInPage.SignInButton).Displayed);
-        Element(SignInPage.EmailEntry).SendKeys(user.Email);
-        Element(SignInPage.PasswordEntry).SendKeys(user.Password);
-        Element(SignInPage.SignInButton).Click();
         Wait(8).Until(_ => Element(MainPage.MenuButton).Displayed);
       }
     }
@@ -53,11 +48,10 @@ public abstract class TestHelper : BaseTest
           .Perform();
       }
 
-      public static void SignOut()
+      public static void OpenMenu()
       {
         Element(MainPage.MenuButton).Click();
-        AwaitElement(MainPage.Menu.SignOutButton)!.Click();
-        Wait().Until(_ => Element(StartPage.SignInButton).Displayed);
+        Wait().Until(_ => Element(MainPage.Menu.DeleteDataButton).Displayed);
       }
     }
 
@@ -104,13 +98,6 @@ public abstract class TestHelper : BaseTest
           .Perform();
         Task.Delay(200);
         Element(EditListPage.Categories.BinIcon + category).Click();
-      }
-
-      public static void ShareList(TestData.TestUser user)
-      {
-        Element(EditListPage.ShareButton).Click();
-        Element(StickyEntry.EntryField).SendKeys(user.Email);
-        Element(StickyEntry.SubmitButton).Click();
       }
     }
 
@@ -223,28 +210,23 @@ public abstract class TestHelper : BaseTest
 
   public static class AssertThat
   {
+    public static void ElementDoesNotExist(
+      string id,
+      int seconds = DefaultWaitSec,
+      int interval = DefaultIntervalMs
+    )
+    {
+      Wait(seconds, interval)
+        .Until(_ =>
+        {
+          var element = OptionalElement(id);
+          return element == null;
+        });
+    }
+
     public static class OnMainPage
     {
-      public static void ListTagsAreCorrect(string listName, bool isShared, bool isOwner = false)
-      {
-        Assert.Multiple(() =>
-        {
-          if (!isShared)
-          {
-            Assert.That(OptionalElement(MainPage.List.Tags.Shared + listName), Is.Null);
-            Assert.That(OptionalElement(MainPage.List.Tags.Owner + listName), Is.Null);
-            Assert.That(OptionalElement(MainPage.List.Tags.Collaborator + listName), Is.Null);
-            return;
-          }
-          Assert.That(Element(MainPage.List.Tags.Shared + listName).Displayed, Is.True);
-          Assert.That(
-            isOwner
-              ? Element(MainPage.List.Tags.Owner + listName).Displayed
-              : Element(MainPage.List.Tags.Collaborator + listName).Displayed,
-            Is.True
-          );
-        });
-      }
+      // Nothing here yet
     }
 
     public static class OnEditListPage
@@ -272,29 +254,6 @@ public abstract class TestHelper : BaseTest
       public static void CategoryIsDeleted(string category)
       {
         Assert.That(OptionalElement(EditListPage.Categories.Label + category), Is.Null);
-      }
-
-      public static void List(bool isShared, TestData.TestUser user, bool ignoreButton = false)
-      {
-        Assert.Multiple(() =>
-        {
-          if (isShared)
-          {
-            Assert.That(Element(EditListPage.Collaborators.Label + user.Id).Displayed, Is.True);
-            if (!ignoreButton)
-            {
-              Assert.That(AwaitElement(EditListPage.UnshareButton)!.Displayed, Is.True);
-            }
-          }
-          else
-          {
-            Assert.That(OptionalElement(EditListPage.Collaborators.Label + user.Id), Is.Null);
-            if (!ignoreButton)
-            {
-              Assert.That(OptionalElement(EditListPage.UnshareButton), Is.Null);
-            }
-          }
-        });
       }
     }
 

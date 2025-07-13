@@ -15,8 +15,7 @@ public class ClipboardTest : BaseTest
     {
       Assert.Fail($"{AppiumSetup.AppName} is not installed");
     }
-    Wait(15).Until(_ => Element(StartPage.SignInButton).Displayed);
-    Act.OnStartPage.SignIn(_testList.Owner);
+    Act.OnStartPage.WaitForRedirect();
   }
 
   [Test]
@@ -82,7 +81,6 @@ public class ClipboardTest : BaseTest
   [OneTimeTearDown]
   public void CleanUp()
   {
-    Act.OnMainPage.SignOut();
-    Wait(5).Until(_ => Element(StartPage.SignInButton));
+    // No op
   }
 }

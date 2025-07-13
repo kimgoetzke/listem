@@ -11,14 +11,14 @@ public partial class FramedCollection
 
   public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(
     nameof(ItemsSource),
-    typeof(IEnumerable<string>),
+    typeof(IList<string>),
     typeof(FramedCollection),
     propertyChanged: OnItemsSourceChanged
   );
 
-  public IEnumerable<string> ItemsSource
+  public IList<string> ItemsSource
   {
-    get => (IEnumerable<string>)GetValue(ItemsSourceProperty);
+    get => (IList<string>)GetValue(ItemsSourceProperty);
     set => SetValue(ItemsSourceProperty, value);
   }
 
@@ -29,7 +29,7 @@ public partial class FramedCollection
   )
   {
     var control = (FramedCollection)bindable;
-    control.ItemsCollectionView.ItemsSource = (IEnumerable<string>)newValue;
+    control.ItemsCollectionView.ItemsSource = (IList<string>)newValue;
   }
 
   public static readonly BindableProperty DataTypeProperty = BindableProperty.Create(

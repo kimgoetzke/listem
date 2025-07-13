@@ -16,14 +16,14 @@
     </ContentView.Resources>
 
     <CollectionView
-        ItemsSource="{Binding ObservableItems}"
+        ItemsSource="{Binding Items}"
         SelectionMode="None"
         VerticalOptions="Fill">
         <CollectionView.Header>
             <BoxView HeightRequest="30" BackgroundColor="{DynamicResource BackgroundColor}" />
         </CollectionView.Header>
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="{x:Type models:Item}">
+            <DataTemplate x:DataType="{x:Type models:ObservableItem}">
                 <SwipeView>
 
                     <!-- List of added items: Swipe from left to right to complete task -->
@@ -74,7 +74,7 @@
                     <!-- List of added items: Contents of list -->
                     <Grid Padding="0" RowDefinitions="Auto, Auto" VerticalOptions="Fill">
                         <Frame HeightRequest="{DynamicResource StandardSwipeItemHeight}"
-                               AutomationId="{Binding Name, StringFormat='Frame_{0}'}"
+                               AutomationId="{Binding Title, StringFormat='Frame_{0}'}"
                                Margin="20, 5"
                                Padding="0"
                                VerticalOptions="Fill"
@@ -97,8 +97,8 @@
                                                        Padding="15, 0, 0, 0">
 
                                     <!-- Left aligned stack: Item name -->
-                                    <Label Text="{Binding Name}"
-                                           AutomationId="{Binding Name, StringFormat='Label_{0}'}"
+                                    <Label Text="{Binding Title}"
+                                           AutomationId="{Binding Title, StringFormat='Label_{0}'}"
                                            HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                            HorizontalOptions="Start"
                                            VerticalTextAlignment="Center">
@@ -111,7 +111,7 @@
 
                                     <!-- Left aligned stack: Quantity label -->
                                     <Label x:Name="QuantityLabel"
-                                           AutomationId="{Binding Name, StringFormat='QuantityLabel_{0}'}"
+                                           AutomationId="{Binding Title, StringFormat='QuantityLabel_{0}'}"
                                            HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                            IsVisible="False"
                                            HorizontalOptions="Start"
@@ -124,7 +124,7 @@
                                                         Value="{Binding Quantity, StringFormat=' ({0})'}" />
                                             </DataTrigger>
                                             <DataTrigger TargetType="Label"
-                                                         Binding="{Binding List.ListType}"
+                                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.ListType}"
                                                          Value="Shopping">
                                                 <Setter Property="IsVisible" Value="True" />
                                             </DataTrigger>
@@ -148,11 +148,11 @@
                                                   TextColor="{DynamicResource TextColorInverted}"
                                                   BackgroundColor="{DynamicResource BackgroundColorAccent}"
                                                   VerticalOptions="Center"
-                                                  AutomationId="{Binding Name, StringFormat='CategoryTag_{0}'}"
-                                                  Text="{Binding Category.Name}">
+                                                  AutomationId="{Binding Title, StringFormat='CategoryTag_{0}'}"
+                                                  Text="{Binding CategoryName}">
                                         <controls:Tag.Triggers>
                                             <DataTrigger TargetType="controls:Tag"
-                                                         Binding="{Binding Category.Name}"
+                                                         Binding="{Binding CategoryName}"
                                                          Value="{StaticResource DefaultCategoryName}">
                                                 <Setter Property="IsVisible" Value="False" />
                                             </DataTrigger>
@@ -163,7 +163,7 @@
                                     <!-- Note: Must be in a Grid as adding a BackgroundColor to the Image makes it ignore its vertical alignment -->
                                     <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}">
                                         <Image x:Name="PriorityIcon"
-                                               AutomationId="{Binding Name, StringFormat='IsImportantIcon_{0}'}"
+                                               AutomationId="{Binding Title, StringFormat='IsImportantIcon_{0}'}"
                                                Source="important_accentbright.png"
                                                Scale="0.5"
                                                IsVisible="False"

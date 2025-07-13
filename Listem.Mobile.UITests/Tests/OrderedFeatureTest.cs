@@ -17,16 +17,15 @@ public class OrderedFeatureTest : BaseTest
     {
       Assert.Fail($"{AppiumSetup.AppName} is not installed");
     }
-    Wait(15).Until(_ => Element(StartPage.SignInButton).Displayed);
     TakeScreenshot(nameof(OrderedFeatureTest), "CanStartApp");
   }
 
   [Test]
   [Order(1)]
-  public void CanSignIn()
+  public void CanSeeMainPage()
   {
-    Act.OnStartPage.SignIn(_testList.Owner);
-    TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanSignIn));
+    Act.OnStartPage.WaitForRedirect();
+    TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanSeeMainPage));
   }
 
   [Test]
@@ -41,14 +40,14 @@ public class OrderedFeatureTest : BaseTest
 
   [Test]
   [Order(11)]
-  public void CanDeleteListAsOwner_PrivateList()
+  public void CanDeleteList()
   {
     const string listName = "Delete-Me-List";
     Act.OnMainPage.CreateList(listName);
     Wait().Until(_ => Element(MainPage.List.ListTitle + listName).Displayed);
     Element(MainPage.List.DeleteButton + listName).Click();
     AwaitElementXPath(Alert.Yes)!.Click();
-    Assert.That(OptionalElement(MainPage.List.ListTitle + listName), Is.Null);
+    AssertThat.ElementDoesNotExist(MainPage.List.ListTitle + listName);
   }
 
   [Test]
@@ -126,46 +125,6 @@ public class OrderedFeatureTest : BaseTest
     AwaitElement(EditListPage.ListNameEntry);
     AssertThat.OnEditListPage.Categories(false, _testList.Categories);
     Act.OnEditListPage.AddListCategories(_testList.Categories);
-  }
-
-  [Test]
-  [Order(25)]
-  public void CanEditListCollaborators_ShareList()
-  {
-    Act.OnEditListPage.ShareList(_testList.Collaborators[0]);
-    // TODO: Unshare button should be displayed after sharing list - fix that, then set ignoreButton to true below
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Assert.Multiple(() =>
-    {
-      Assert.That(Element(MainPage.List.Tags.Shared + _testList.Name).Displayed, Is.True);
-      Assert.That(Element(MainPage.List.Tags.Owner + _testList.Name).Displayed, Is.True);
-    });
-    Element(MainPage.List.EditButton + _testList.Name).Click();
-    AssertThat.OnEditListPage.List(true, _testList.Collaborators[0]);
-  }
-
-  [Test]
-  [Order(26)]
-  public void CanEditListCollaborators_MakeListPrivate()
-  {
-    var collaborator = _testList.Collaborators[0];
-    var unshareButton = Element(EditListPage.UnshareButton);
-    Assert.That(unshareButton.Displayed, Is.True);
-    unshareButton.Click();
-    AwaitElementXPath(Alert.Yes)!.Click();
-    AssertThat.OnEditListPage.List(false, collaborator);
-    Act.NavigateBackAndAwait(MainPage.MenuButton);
-    Element(MainPage.List.EditButton + _testList.Name).Click();
-    AssertThat.OnEditListPage.List(false, collaborator);
-  }
-
-  [Test]
-  [Order(27)]
-  public void CanEditListCollaborators_ShareWithOwnerFails()
-  {
-    Act.OnEditListPage.ShareList(_testList.Owner);
-    Task.Delay(500);
-    AssertThat.OnEditListPage.List(false, _testList.Owner, true);
   }
 
   [Test]
@@ -310,10 +269,20 @@ public class OrderedFeatureTest : BaseTest
     TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanNavigateFromDetailPageToMainPage));
   }
 
+  [Test]
+  [Order(50)]
+  public void CanDeleteData()
+  {
+    Act.OnMainPage.OpenMenu();
+    Element(MainPage.Menu.DeleteDataButton).Click();
+    AwaitElementXPath(Alert.Yes)!.Click();
+    AssertThat.ElementDoesNotExist(MainPage.List.ListTitle + _testList.Name);
+    TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanNavigateFromDetailPageToMainPage));
+  }
+
   [OneTimeTearDown]
   public void CleanUp()
   {
-    Act.OnMainPage.SignOut();
-    Wait(5).Until(_ => Element(StartPage.SignInButton));
+    // No op
   }
 }

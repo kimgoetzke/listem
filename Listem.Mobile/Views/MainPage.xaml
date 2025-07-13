@@ -27,49 +27,19 @@
                 <Label Text="Settings" Style="{DynamicResource Headline}" Margin="0, 20, 0, 0" />
                 <BoxView Style="{DynamicResource ThinLineSeparator}" Margin="25,0,0, 20" />
 
-                <!-- Account -->
+                <!-- Data -->
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
-                       Text="Account"
+                       Text="Data"
                        HorizontalOptions="Start"
                        Padding="25,30,20,10" />
-                <Label FontFamily="MulishRegular"
-                       FontSize="{DynamicResource FontSizeS}"
-                       IsVisible="{Binding IsUserSignedIn}"
-                       Text="Signed in as:"
-                       Padding="25,10,20,0" />
-                <Label FontFamily="MulishRegular"
-                       FontSize="{DynamicResource FontSizeS}"
-                       IsVisible="{Binding IsUserSignedIn}"
-                       Text="{Binding CurrentUserEmail}"
-                       Padding="25,0,20,10" />
-                <Button Style="{DynamicResource SimpleButton}"
-                        HorizontalOptions="Start"
-                        WidthRequest="175"
-                        Margin="25,10,0,10"
-                        Text="Sign up, in or out"
-                        AutomationId="SignUpInOrOutButton"
-                        Clicked="SignUpInOrOutButton_OnClicked">
-                    <Button.Triggers>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding IsUserSignedIn}"
-                                     Value="False">
-                            <Setter Property="Text" Value="Sign up or sign in" />
-                        </DataTrigger>
-                        <DataTrigger TargetType="Button"
-                                     Binding="{Binding IsUserSignedIn}"
-                                     Value="True">
-                            <Setter Property="Text" Value="Sign out" />
-                        </DataTrigger>
-                    </Button.Triggers>
-                </Button>
                 <Button Style="{DynamicResource SimpleButton}"
                         HorizontalOptions="Start"
                         WidthRequest="175"
                         Margin="25,10,0,20"
-                        Text="Delete my account"
-                        AutomationId="DeleteAccountButton"
-                        Clicked="DeleteMyAccount_OnClicked" />
+                        Text="Delete my data"
+                        AutomationId="DeleteDataButton"
+                        Clicked="DeleteMyData_OnClicked" />
                 <Label Style="{DynamicResource SubHeadline}"
                        FontFamily="MulishRegular"
                        HorizontalOptions="Start"
@@ -161,7 +131,7 @@
                 </Grid>
 
                 <!-- Content: Collection view with list of lists -->
-                <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding .}" />
+                <controls:ListSummaryControl Grid.Row="2" BindingContext="{Binding}" />
 
                 <!-- Content: Add button -->
                 <Grid Grid.Row="3">

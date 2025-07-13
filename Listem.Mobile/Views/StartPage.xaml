@@ -39,109 +39,19 @@
 
             <BoxView Margin="10" />
 
-            <!-- Content: Account info text -->
-            <Label Text="You have an account with:"
+            <Label Text="You don't need an account to use Listem."
                    Padding="10, 0,10,0"
                    HorizontalTextAlignment="Center"
                    HorizontalOptions="Center">
-                <Label.Triggers>
-                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}"
-                                 Value="NotSignedInAndNotRegistered">
-                        <Setter Property="Text"
-                                Value="You don't seem to have an account that you've used on this device before." />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}"
-                                 Value="NotSignedInButRegistered">
-                        <Setter Property="Text" Value="You have an account as:" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Label" Binding="{Binding UserStatus}"
-                                 Value="SignedIn">
-                        <Setter Property="Text" Value="You are signed in as:" />
-                    </DataTrigger>
-                </Label.Triggers>
             </Label>
-            <Label Text="{Binding UserEmail}"
-                   Padding="10, 0,10,10"
-                   IsVisible="{Binding IsUserRegistered}"
-                   FontFamily="MulishBold"
-                   HorizontalTextAlignment="Center"
-                   HorizontalOptions="Center" />
 
             <BoxView Margin="15" />
-
-            <!-- Content: Sign in button -->
-            <Button Style="{DynamicResource GradientButton}"
-                    AutomationId="SignInButton"
-                    WidthRequest="220" Margin="0, 0, 0, 30"
-                    Text="Sign up or sign in" Command="{Binding GoToSignInCommand}">
-                <Button.Triggers>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding UserStatus}"
-                                 Value="NotSignedInAndNotRegistered">
-                        <Setter Property="IsVisible" Value="True" />
-                        <Setter Property="Text" Value="Sign up or sign in" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding UserStatus}"
-                                 Value="NotSignedInButRegistered">
-                        <Setter Property="IsVisible" Value="True" />
-                        <Setter Property="Text" Value="Sign in" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding UserStatus}"
-                                 Value="SignedIn">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                </Button.Triggers>
-            </Button>
 
             <!-- Content: Continue button -->
             <Button Style="{DynamicResource GradientButton}" WidthRequest="220"
                     Text="Continue" Command="{Binding GoToMainPageCommand}">
-                <Button.Triggers>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding UserStatus}"
-                                 Value="NotSignedInAndNotRegistered">
-                        <Setter Property="Text" Value="Continue without an account" />
-                        <!-- TODO: Configure offline flow to work with Realm -->
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding UserStatus}"
-                                 Value="NotSignedInButRegistered">
-                        <Setter Property="Text" Value="Continue without signing in" />
-                        <!-- TODO: Configure offline flow to work with Realm -->
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Button"
-                                 Binding="{Binding UserStatus}"
-                                 Value="SignedIn">
-                        <Setter Property="Text" Value="Continue" />
-                    </DataTrigger>
-                </Button.Triggers>
             </Button>
-
-            <!-- Content: Sign out link button -->
-            <Label Text="Sign out"
-                   Padding="60, 20, 60, 0"
-                   Style="{DynamicResource Link}"
-                   FontSize="{DynamicResource FontSizeM}">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding SignOutCommand}" NumberOfTapsRequired="1" />
-                </Label.GestureRecognizers>
-                <Label.Triggers>
-                    <DataTrigger TargetType="Label"
-                                 Binding="{Binding IsUserSignedIn}"
-                                 Value="False">
-                        <Setter Property="IsVisible" Value="False" />
-                    </DataTrigger>
-                    <DataTrigger TargetType="Label"
-                                 Binding="{Binding IsUserSignedIn}"
-                                 Value="True">
-                        <Setter Property="IsVisible" Value="True" />
-                    </DataTrigger>
-                </Label.Triggers>
-            </Label>
+            
         </VerticalStackLayout>
 
     </Grid>

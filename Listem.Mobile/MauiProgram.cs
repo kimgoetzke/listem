@@ -4,7 +4,6 @@ using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
 using Listem.Mobile.Views;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.LifecycleEvents;
 using Serilog;
 
 namespace Listem.Mobile;
@@ -29,14 +28,6 @@ public static class MauiProgram
     var app = MauiApp
       .CreateBuilder()
       .UseMauiApp<App>()
-      .ConfigureLifecycleEvents(events =>
-      {
-#if __ANDROID__
-        events.AddAndroid(android => android.OnDestroy(_ => RealmService.DisposeRealm()));
-#elif __IOS__
-        events.AddiOS(app => app.WillTerminate(_ => RealmService.DisposeRealm()));
-#endif
-      })
       .ConfigureFonts(fonts =>
       {
         fonts.AddFont("Mulish-Black.ttf", "MulishBlack");
@@ -57,6 +48,7 @@ public static class MauiProgram
 
   private static MauiAppBuilder RegisterServices(this MauiAppBuilder builder)
   {
+    builder.Services.AddSingleton<IDatabaseProvider, DatabaseProvider>();
     builder.Services.AddSingleton<IListService, ListService>();
     builder.Services.AddSingleton<ICategoryService, CategoryService>();
     builder.Services.AddSingleton<IItemService, ItemService>();
@@ -85,8 +77,6 @@ public static class MauiProgram
   private static MauiAppBuilder RegisterViews(this MauiAppBuilder builder)
   {
     builder.Services.AddSingleton<StartPage>();
-    builder.Services.AddSingleton<SignInPage>();
-    builder.Services.AddSingleton<SignUpPage>();
     builder.Services.AddTransient<MainPage>();
     builder.Services.AddTransient<EditListPage>();
     builder.Services.AddTransient<DetailPage>();

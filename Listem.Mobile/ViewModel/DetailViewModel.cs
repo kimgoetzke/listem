@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
@@ -11,62 +13,55 @@ namespace Listem.Mobile.ViewModel;
 public partial class DetailViewModel : BaseViewModel
 {
   [ObservableProperty]
-  private Item _item;
+  private ObservableCollection<ObservableCategory> _categories = [];
 
   [ObservableProperty]
-  private string _itemName;
+  private ObservableCategory _currentCategory;
 
   [ObservableProperty]
-  private bool _itemIsImportant;
-
-  [ObservableProperty]
-  private int _itemQuantity;
-
-  [ObservableProperty]
-  private Category _currentCategory;
-
-  [ObservableProperty]
-  private IList<Category> _categories = [];
+  private ObservableItem _item;
 
   public ListType ListType { get; }
 
   private readonly IItemService _itemService;
+  private readonly ICategoryService _categoryService;
 
-  public DetailViewModel(Item item, IServiceProvider serviceProvider)
-    : base(serviceProvider.GetService<ILogger<DetailViewModel>>()!)
+  public DetailViewModel(ObservableItem item, ObservableList list, IServiceProvider sp)
+    : base(sp.GetService<ILogger<DetailViewModel>>()!)
   {
-    _itemService = serviceProvider.GetService<IItemService>()!;
+    _itemService = sp.GetService<IItemService>()!;
+    _categoryService = sp.GetService<ICategoryService>()!;
     Item = item;
-    ItemName = item.Name;
-    ItemIsImportant = item.IsImportant;
-    ItemQuantity = item.Quantity;
-    Categories = item.List!.Categories;
-    CurrentCategory = Categories.First(c => c.Name == item.Category!.Name);
-    ListType = Enum.TryParse(item.List!.ListType, out ListType type) ? type : ListType.Standard;
+    ListType = list.ListType;
+    CurrentCategory = new ObservableCategory(item.ListId);
+    SetCategories();
   }
 
   [RelayCommand]
   private async Task SaveAndBack()
   {
-    ItemName = ItemName.Trim();
-    if (
-      CurrentCategory.Name == Item.Category?.Name
-      && ItemName == Item.Name
-      && ItemQuantity == Item.Quantity
-      && ItemIsImportant == Item.IsImportant
-    )
-    {
-      await Shell.Current.Navigation.PopModalAsync();
-      return;
-    }
+    Item.CategoryName = CurrentCategory.Name;
+    await _itemService.CreateOrUpdateAsync(Item);
+    Back().SafeFireAndForget();
+  }
 
-    await _itemService.UpdateAsync(
-      Item,
-      name: ItemName,
-      category: CurrentCategory,
-      quantity: ItemQuantity,
-      isImportant: ItemIsImportant
-    );
+  [RelayCommand]
+  private static async Task Back()
+  {
     await Shell.Current.Navigation.PopModalAsync();
+  }
+
+  private async void SetCategories()
+  {
+    var loaded = await _categoryService.GetAllByListIdAsync(Item.ListId);
+    Categories.Clear();
+    foreach (var category in loaded)
+    {
+      Categories.Add(category);
+      if (category.Name == Item.CategoryName)
+      {
+        CurrentCategory = category;
+      }
+    }
   }
 }

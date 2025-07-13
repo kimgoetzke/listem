@@ -40,7 +40,7 @@
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                 <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                    <Entry Text="{Binding ItemName, Mode=TwoWay}"
+                    <Entry Text="{Binding Item.Title, Mode=TwoWay}"
                            AutomationId="ItemNameEntry" />
                 </Frame>
             </Grid>
@@ -74,10 +74,10 @@
                 <HorizontalStackLayout Grid.Column="0" Padding="5">
                     <Label Text="Important: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="IsImportantProperty"
-                           Text="{Binding ItemIsImportant, Converter={StaticResource BoolToTextConverter}}"
+                           Text="{Binding Item.IsImportant, Converter={StaticResource BoolToTextConverter}}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
-                <Switch IsToggled="{Binding ItemIsImportant, Mode=TwoWay}"
+                <Switch IsToggled="{Binding Item.IsImportant, Mode=TwoWay}"
                         AutomationId="IsImportantSwitch"
                         Grid.Column="1"
                         VerticalOptions="Center"
@@ -96,10 +96,10 @@
                     <Label Text="Quantity: " Style="{DynamicResource ItemProperty}" />
                     <Label x:Name="QuantityProperty"
                            AutomationId="QuantityLabel"
-                           Text="{Binding ItemQuantity, Mode=TwoWay}"
+                           Text="{Binding Item.Quantity, Mode=TwoWay}"
                            Style="{DynamicResource ItemProperty}" />
                 </HorizontalStackLayout>
-                <Stepper Value="{Binding ItemQuantity}"
+                <Stepper Value="{Binding Item.Quantity}"
                          Grid.Column="1"
                          AutomationId="QuantityStepper"
                          Minimum="1" Maximum="99" Increment="1"
@@ -111,7 +111,7 @@
             <!-- Added on -->
             <HorizontalStackLayout Padding="0, 5, 0, 40" Margin="5" VerticalOptions="Center">
                 <Label Text="Added on: " Style="{DynamicResource ItemProperty}" />
-                <Label Text="{Binding Item.Id.CreationTime}" Style="{DynamicResource ItemProperty}" />
+                <Label Text="{Binding Item.AddedOn}" Style="{DynamicResource ItemProperty}" />
             </HorizontalStackLayout>
 
         </VerticalStackLayout>

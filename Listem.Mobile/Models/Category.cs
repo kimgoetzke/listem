@@ -1,20 +1,21 @@
-using Realms;
-
-// ReSharper disable RedundantExtendsListEntry
+﻿using SQLite;
 
 namespace Listem.Mobile.Models;
 
-public partial class Category : IEmbeddedObject
+public class Category
 {
-  public string Name { get; set; } = null!;
+  [PrimaryKey]
+  public string Id { get; init; } = null!;
+  public string Name { get; init; } = null!;
+  public string ListId { get; init; } = null!;
 
   public override string ToString()
   {
     return Name;
   }
 
-  public string ToLog()
+  public string ToLoggableString()
   {
-    return $"[Category] {Name}";
+    return $"[Category] '{Name}' {Id} in {ListId}";
   }
 }

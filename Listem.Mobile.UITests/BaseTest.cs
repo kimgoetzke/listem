@@ -12,7 +12,7 @@ public abstract class BaseTest
   private static AppiumDriver App => AppiumSetup.AppiumDriver;
   private readonly string _timestamp = DateTime.Now.ToString("yyyy-MM-dd-HH-mm");
   protected const int DefaultWaitSec = 4;
-  private const int DefaultIntervalMs = 500;
+  protected const int DefaultIntervalMs = 500;
 
   protected static AppiumElement Element(string id)
   {

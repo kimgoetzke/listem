@@ -7,16 +7,16 @@ namespace Listem.Mobile.Views;
 
 public partial class StartPage
 {
-  private readonly AuthViewModel _viewModel;
   private readonly ILogger<StartPage> _logger;
+  private readonly IServiceProvider _serviceProvider;
 
   public StartPage(IServiceProvider serviceProvider)
   {
     InitializeComponent();
-    _logger = serviceProvider.GetService<ILogger<StartPage>>()!;
-    _viewModel = serviceProvider.GetService<AuthViewModel>()!;
-    _viewModel.PropertyChanged += ViewModel_PropertyChanged;
-    BindingContext = _viewModel;
+    _serviceProvider = serviceProvider;
+    _logger = _serviceProvider.GetService<ILogger<StartPage>>()!;
+    var viewModel = _serviceProvider.GetService<AuthViewModel>()!;
+    BindingContext = viewModel;
   }
 
   protected override void OnAppearing()
@@ -35,22 +35,12 @@ public partial class StartPage
   protected override void OnNavigatedTo(NavigatedToEventArgs args)
   {
     base.OnNavigatedTo(args);
-    _viewModel.RedirectIfUserIsSignedIn();
+    SkipLogin();
   }
 
-  // Evaluates redirect on app startup - doesn't kick when user comes back from sign in page
-  // which is why we need to evaluate on OnNavigatedTo too; there's probably a cleaner way to do this
-  private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+  private void SkipLogin()
   {
-    if (e.PropertyName != nameof(_viewModel.IsUserSignedIn))
-      return;
-
-    _viewModel.RedirectIfUserIsSignedIn();
-  }
-
-  protected override void OnDisappearing()
-  {
-    base.OnDisappearing();
-    _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+    _logger.Info("Skipping sign-in, redirecting to main page now...");
+    Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
   }
 }
