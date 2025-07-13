@@ -1,8 +1,0 @@
-{
-  "appId": "<Enter your app ID here>", 
-  "baseUrl": "https://services.cloud.mongodb.com",
-  "clientApiBaseUrl": "https://services.cloud.mongodb.com",
-  "dataApiBaseUrl": "https://data.mongodb-api.com",
-  "dataSourceName": "<Enter your data source name>",
-  "secretKey": "<Enter random string here and add to MongoDB secrets>"
-}
