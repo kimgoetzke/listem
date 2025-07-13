@@ -1,16 +1,26 @@
 # The Listem Project with MongoDB Atlas and Realm
 
-This repository contains a super simple, minimalist list Android app written in C# using .NET 8 MAUI, the
-CommunityToolkit, and MongoDB Atlas with Realm and Flexible Sync. It also contains a UI test project for end-to-end
-testing using Appium and NUnit 4. It was created to learn how to create and publish an Android app.
+This repository contains a super simple, minimalist list Android app written in C# using .NET 9 MAUI, the
+CommunityToolkit, and SQLite. It also contains a UI test project for end-to-end testing using Appium and NUnit 4. It was
+created to learn how to create and publish an Android app.
+
+> [!NOTE]  
+> This application used to have collaborative features and used MongoDB Atlas with Realm and Device Sync but the
+> latter was deprecated in September 2024 and no feasible replacement exists. Without Device Sync, there is no reason to
+> use MongoDB. In addition, I didn't use the collaborative features enough to justify the complexity or any
+> potential costs involved in replacing it. You can still find the old code in the
+> branch [use-mongodb-atlas-and-realm](https://github.com/kimgoetzke/listem/tree/use-mongodb-atlas-and-realm).
+>
+> In addition, I had previously explored creating an ASP.NET Core backend, but I didn't find
+> an easy solution to deal with data synchronisation and conflict management (e.g. offline vs online changes, especially
+> to shared lists). You can still find the code in the
+> branch [use-backend-api](https://github.com/kimgoetzke/listem/tree/use-backend-api).
 
 ![Screenshots](./docs/assets/screenshots.png)
 
 ### Overview
 
 - A super basic, minimalist app for lists, targeting Android
-- Users can register and log in without requiring an email address (only a username and password are needed)
-- Users can share lists with other users through the app and collaborate on them
 - Lists can be somewhat customised by adding categories or list types (e.g. changing type to shopping list exposes a
   quantity control in the UI)
 - A list's content can be exported to the clipboard as text
@@ -21,16 +31,7 @@ testing using Appium and NUnit 4. It was created to learn how to create and publ
 - Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
 
-![More screenshots](./docs/assets/screenshots_2.png)
-
 ### How to configure your environment for development
-
-> [!NOTE]  
-> I explored creating an ASP.NET Core backend (see
-> branch [use-backend-api](https://github.com/kimgoetzke/listem/tree/use-backend-api)) but I didn't find
-> an easy solution to deal with data synchronisation and conflict management (e.g. offline vs online changes, especially
-> to shared lists). This eventually led me to implement MongoDB Atlas with Realm and Flexible Sync because it allows
-> for offline-first development, deals with conflict resolution, and even offers authorisation/authentication.
 
 1. Set environment variables for builds and running tests
     1. `ANDROID_HOME` - the absolute path of the Android SDK
