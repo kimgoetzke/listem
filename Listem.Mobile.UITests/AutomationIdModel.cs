@@ -6,27 +6,6 @@ public static class AutomationIdModel
   public const string DefaultListType = "Standard";
   public const string ShoppingListType = "Shopping";
 
-  public static class StartPage
-  {
-    public const string SignInButton = "SignInButton";
-  }
-
-  public static class SignInPage
-  {
-    public const string EmailEntry = "Login";
-    public const string PasswordEntry = "Password";
-    public const string SignInButton = "SignInButton";
-    public const string SignUpButton = "SignUpButton";
-  }
-
-  public static class SignUpPage
-  {
-    public const string EmailEntry = "Login";
-    public const string PasswordEntry = "Password";
-    public const string PasswordConfirmedEntry = "PasswordConfirmedEntry";
-    public const string SignUpButton = "SignUpButton";
-  }
-
   public static class MainPage
   {
     public const string AddListButton = "AddListButton";
@@ -39,19 +18,11 @@ public static class AutomationIdModel
       public const string EmptyListLabel = "EmptyListLabel_";
       public const string DeleteButton = "DeleteButton_";
       public const string ExitButton = "ExitButton_";
-
-      public static class Tags
-      {
-        public const string Shared = "SharedTag_";
-        public const string Collaborator = "CollaboratorTag_";
-        public const string Owner = "OwnerTag_";
-      }
     }
 
     public static class Menu
     {
-      public const string SignOutButton = "SignUpInOrOutButton";
-      public const string DeleteAccountButton = "DeleteAccountButton";
+      public const string DeleteDataButton = "DeleteDataButton";
     }
   }
 
