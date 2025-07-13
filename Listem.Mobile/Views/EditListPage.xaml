@@ -76,7 +76,8 @@
                             Style="{DynamicResource SimpleButton}"
                             VerticalOptions="Start"
                             Clicked="AddCategoryButton_OnClicked" />
-                    <Button Grid.Column="2"
+                    <ContentView Grid.Column="2">
+                        <Button
                             Text="Reset all"
                             AutomationId="ResetCategoriesButton"
                             Margin="0"
@@ -85,6 +86,7 @@
                             IsVisible="{Binding HasCustomCategories}"
                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=ResetCategoriesCommand}"
                             CommandParameter="{Binding .}" />
+                    </ContentView>
                 </Grid>
 
                 <!-- Manage categories CollectionView -->
@@ -92,7 +94,7 @@
                                            DataType="{x:Type x:String}"
                                            AutomationId="CategoriesCollectionView"
                                            SwipeCommand="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RemoveCategoryCommand}" />
-                
+
                 <BoxView Margin="10" />
 
             </VerticalStackLayout>

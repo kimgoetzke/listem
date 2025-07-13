@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -27,12 +28,26 @@ public partial class EditListViewModel : BaseViewModel
   private ObservableCategory _newObservableCategory;
 
   [ObservableProperty]
-  private ObservableCollection<ObservableCategory> _categories = [];
-
-  [ObservableProperty]
   private ObservableCollection<string> _categoryNames = [];
 
-  public bool HasCustomCategories => Categories.Count > 1;
+  private ObservableCollection<ObservableCategory> _categories = [];
+
+  public ObservableCollection<ObservableCategory> Categories
+  {
+    get => _categories;
+    set
+    {
+      _categories.CollectionChanged -= Categories_CollectionChanged;
+      _categories = value;
+      OnPropertyChanged();
+      _categories.CollectionChanged += Categories_CollectionChanged;
+      HasCustomCategories = _categories.Count > 1;
+      OnPropertyChanged(nameof(HasCustomCategories));
+    }
+  }
+
+  [ObservableProperty]
+  private bool _hasCustomCategories;
 
   private readonly ICategoryService _categoryService;
   private readonly IItemService _itemService;
@@ -59,12 +74,18 @@ public partial class EditListViewModel : BaseViewModel
     var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id!);
     Categories = new ObservableCollection<ObservableCategory>(categories);
     CategoryNames = new ObservableCollection<string>(categories.Select(c => c.Name));
-    OnPropertyChanged(nameof(Categories));
     Logger.Info(
-      "Loaded {Count} categories for list {ID} from database",
+      "Loaded {Count} {HasCustomCategories} for list {ID} from database",
       Categories.Count,
+      HasCustomCategories ? "categories" : "category",
       ObservableList.Id
     );
+  }
+
+  private void Categories_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+  {
+    HasCustomCategories = Categories.Count > 1;
+    OnPropertyChanged(nameof(HasCustomCategories));
   }
 
   [RelayCommand]
@@ -91,8 +112,6 @@ public partial class EditListViewModel : BaseViewModel
     NewObservableCategory = new ObservableCategory(ObservableList.Id!);
     OnPropertyChanged(nameof(NewObservableCategory));
     OnPropertyChanged(nameof(Categories));
-    OnPropertyChanged(nameof(CategoryNames));
-    OnPropertyChanged(nameof(HasCustomCategories));
   }
 
   [RelayCommand]
@@ -107,12 +126,10 @@ public partial class EditListViewModel : BaseViewModel
     var observableCategory = Categories.FirstOrDefault(c => c.Name == categoryName);
     if (observableCategory == null)
     {
-      Logger.Error(
-        "Cannot remove category '{Name}' because it doesn't seem to exist",
-        categoryName
-      );
+      Logger.Error("Cannot remove category {Name} because it doesn't seem to exist", categoryName);
       return;
     }
+
     Categories.Remove(observableCategory);
     CategoryNames.Remove(observableCategory.Name);
     await _itemService.UpdateAllToCategoryAsync(observableCategory.Name, ObservableList.Id!);
@@ -120,7 +137,6 @@ public partial class EditListViewModel : BaseViewModel
     var message = $"Removed: {observableCategory}";
     OnPropertyChanged(nameof(Categories));
     OnPropertyChanged(nameof(CategoryNames));
-    OnPropertyChanged(nameof(HasCustomCategories));
     Notifier.ShowToast(message);
   }
 
@@ -135,10 +151,10 @@ public partial class EditListViewModel : BaseViewModel
     )
       return;
 
+    Notifier.ShowToast("Reset categories");
     await _itemService.UpdateAllToDefaultCategoryAsync(ObservableList.Id!).ConfigureAwait(false);
     await _categoryService.DeleteAllByListIdAsync(ObservableList.Id!).ConfigureAwait(false);
     await LoadCategories().ConfigureAwait(false);
-    Notifier.ShowToast("Reset categories");
   }
 
   [RelayCommand]
