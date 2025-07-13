@@ -1,106 +1,104 @@
 ﻿using Listem.Mobile.Models;
 using Microsoft.Extensions.Logging;
+using SQLite;
+using Models_Category = Listem.Mobile.Models.Category;
 
 namespace Listem.Mobile.Services;
 
-public class ListService(ILogger<CategoryService> logger) : IListService
+public class ListService(IDatabaseProvider db, ILogger<ListService> logger) : IListService
 {
-  public async Task CreateAsync(List list)
+  public async Task<List<ObservableList>> GetAllAsync()
   {
-    var realm = RealmService.GetMainThreadRealm();
-    await realm.WriteAsync(() =>
-    {
-      list.IsDraft = false;
-      list.Categories.Add(new Category { Name = Constants.DefaultCategoryName });
-      realm.Add(list);
-      logger.Info("Added: {List}", list.ToLog());
-    });
+    var connection = await db.GetConnection();
+    var lists = await connection.Table<List>().ToListAsync();
+    return ConvertToObservableItemLists(lists);
   }
 
-  public async Task UpdateAsync(
-    List list,
-    string? name = null,
-    string? ownedBy = null,
-    ISet<string>? sharedWith = null,
-    string? listType = null
-  )
+  private static List<ObservableList> ConvertToObservableItemLists(List<List> lists)
   {
-    var realm = RealmService.GetMainThreadRealm();
-    if (realm.Find<List>(list.Id) == null)
+    return lists.Select(ObservableList.From).ToList();
+  }
+
+  public async Task CreateOrUpdateAsync(ObservableList observableList)
+  {
+    var connection = await db.GetConnection();
+    var list = observableList.ToItemList();
+    var existingList = await connection
+      .Table<List>()
+      .Where(i => i.Id == observableList.Id)
+      .FirstOrDefaultAsync();
+    if (existingList != null)
     {
-      logger.Info("Not updated because it doesn't exist: {List}", list.ToLog());
+      await connection.UpdateAsync(list);
+      logger.Info("Updated list: {List}", list.ToLoggableString());
       return;
     }
-    await realm.WriteAsync(() =>
-    {
-      list.Name = name ?? list.Name;
-      list.OwnedBy = ownedBy ?? list.OwnedBy;
-      if (sharedWith != null)
-      {
-        list.SharedWith.Clear();
-        foreach (var id in sharedWith)
-        {
-          list.SharedWith.Add(id);
-        }
-      }
-      list.ListType = listType ?? list.ListType;
-      list.UpdatedOn = DateTimeOffset.Now;
 
-      logger.Info("Updated: {List}", list.ToLog());
-    });
+    await connection.InsertAsync(list);
+    logger.Info("Created list: {List}", list.ToLoggableString());
+    await CreateDefaultCategory(connection, list.Id);
   }
 
-  public async Task MarkAsUpdatedAsync(List list)
+  private async Task CreateDefaultCategory(SQLiteAsyncConnection connection, string listId)
   {
-    var realm = RealmService.GetMainThreadRealm();
-    await realm.WriteAsync(() =>
-    {
-      list.UpdatedOn = DateTimeOffset.Now;
-      logger.Info("Marked as updated: {List}", list.ToLog());
-    });
-  }
+    var existingDefaultCategory = await connection
+      .Table<Models_Category>()
+      .Where(i => i.ListId == listId && i.Name == Constants.DefaultCategoryName)
+      .FirstOrDefaultAsync();
 
-  public async Task DeleteAsync(List list)
-  {
-    logger.Info("Removing: {List}", list.ToLog());
-    var realm = RealmService.GetMainThreadRealm();
-    await realm.WriteAsync(() => realm.Remove(list));
-  }
-
-  public async Task<bool> ShareWith(List list, string email)
-  {
-    if (await RealmService.ResolveToUserId(email) is not { } id)
+    if (existingDefaultCategory != null)
     {
-      logger.Info("Cannot share list with '{User}' - user not found", email);
-      return false;
+      logger.Info("Default category already exists for list {ListID} - skipping creation", listId);
+      return;
     }
-    var realm = RealmService.GetMainThreadRealm();
-    await realm.WriteAsync(() =>
+
+    var observableCategory = new ObservableCategory(listId)
     {
-      list.SharedWith.Add(id);
-      list.UpdatedOn = DateTimeOffset.Now;
-      foreach (var item in list.Items)
-      {
-        item.SharedWith.Add(id);
-        item.UpdatedOn = DateTimeOffset.Now;
-        logger.Info("Shared: '{Item}' with {User}", item.ToLog(), id);
-      }
-    });
-    logger.Info("Shared: '{List}' with {User}", list.ToLog(), id);
-    return true;
+      Name = Constants.DefaultCategoryName
+    };
+    var category = observableCategory.ToCategory();
+    await connection.InsertAsync(category).ConfigureAwait(false);
+    logger.Info(
+      "Added category {DefaultCategory} to list {ListID}",
+      Constants.DefaultCategoryName,
+      listId
+    );
   }
 
-  public async Task<bool> RevokeAccess(List list, string id)
+  public Task MarkAsUpdatedAsync(ObservableList observableList)
   {
-    // Handled using serverless function because caller will, by definition, lack permission
-    // to write to a document if they are no longer shared with it.
-    var result = await RealmService.RevokeAccess(list.Id.ToString(), id);
     logger.Info(
-      "{Result} access of user {User} from {List}",
-      result ? "Removed" : "Failed to remove",
-      id,
-      list.ToLog()
+      "Marking list as updated: {ListName} with ID {ListID}",
+      observableList.Name,
+      observableList.Id
     );
-    return result;
+    observableList.UpdatedOn = DateTime.Now;
+    return CreateOrUpdateAsync(observableList);
+  }
+
+  public async Task DeleteAsync(ObservableList observableList)
+  {
+    // TODO: Delete all categories and items associated with this list
+    logger.Info(
+      "Removing list: {ListName} with ID {ListID}",
+      observableList.Name,
+      observableList.Id
+    );
+    var connection = await db.GetConnection();
+    var list = observableList.ToItemList();
+    await connection.DeleteAsync(list);
+  }
+
+  public async Task DeleteAllAsync()
+  {
+    // TODO: Delete all categories and items associated with all lists
+    var connection = await db.GetConnection();
+    var allLists = await connection.Table<List>().ToListAsync();
+    foreach (var list in allLists)
+    {
+      await connection.DeleteAsync(list);
+    }
+
+    logger.Info("Removed all lists");
   }
 }

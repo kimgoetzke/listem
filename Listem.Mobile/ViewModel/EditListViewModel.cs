@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Listem.Mobile.Models;
@@ -12,40 +13,58 @@ namespace Listem.Mobile.ViewModel;
 public partial class EditListViewModel : BaseViewModel
 {
   [ObservableProperty]
-  private List _list;
+  private ObservableList _observableList;
 
-  [ObservableProperty]
-  private ObservableCollection<string> _categories;
-
-  [ObservableProperty]
-  private string _currentName;
-
-  [ObservableProperty]
   private ListType _currentListType;
 
   [ObservableProperty]
   private ObservableCollection<ListType> _listTypes = [];
 
-  public bool IsShared => List.SharedWith.Any();
-  public bool HasCustomCategories => List.Categories.Count > 1;
+  [ObservableProperty]
+  private ObservableCollection<ObservableItem> _items = [];
+
+  [ObservableProperty]
+  private ObservableCategory _newObservableCategory;
+
+  [ObservableProperty]
+  private ObservableCollection<ObservableCategory> _categories = [];
+
+  [ObservableProperty]
+  private ObservableCollection<string> _categoryNames = [];
+
+  public bool HasCustomCategories => Categories.Count > 1;
 
   private readonly ICategoryService _categoryService;
   private readonly IItemService _itemService;
   private readonly IListService _listService;
 
-  public EditListViewModel(List list, IServiceProvider serviceProvider)
+  public EditListViewModel(ObservableList list, IServiceProvider serviceProvider)
     : base(serviceProvider.GetService<ILogger<EditListViewModel>>()!)
   {
     _listService = serviceProvider.GetService<IListService>()!;
     _categoryService = serviceProvider.GetService<ICategoryService>()!;
     _itemService = serviceProvider.GetService<IItemService>()!;
-    List = list;
-    Categories = new ObservableCollection<string>(List.Categories.Select(c => c.Name));
+    ObservableList = list;
+    _currentListType = list.ListType;
     ListTypes = new ObservableCollection<ListType>(
       Enum.GetValues(typeof(ListType)).Cast<ListType>()
     );
-    CurrentListType = Enum.TryParse(list.ListType, out ListType type) ? type : ListType.Standard;
-    CurrentName = list.Name;
+    Items = new ObservableCollection<ObservableItem>(list.Items);
+    NewObservableCategory = new ObservableCategory(list.Id!);
+    LoadCategories().SafeFireAndForget();
+  }
+
+  private async Task LoadCategories()
+  {
+    var categories = await _categoryService.GetAllByListIdAsync(ObservableList.Id!);
+    Categories = new ObservableCollection<ObservableCategory>(categories);
+    CategoryNames = new ObservableCollection<string>(categories.Select(c => c.Name));
+    OnPropertyChanged(nameof(Categories));
+    Logger.Info(
+      "Loaded {Count} categories for list {ID} from database",
+      Categories.Count,
+      ObservableList.Id
+    );
   }
 
   [RelayCommand]
@@ -54,18 +73,26 @@ public partial class EditListViewModel : BaseViewModel
     if (string.IsNullOrWhiteSpace(categoryName))
       return;
 
-    var category = new Category { Name = StringProcessor.TrimAndCapitalise(categoryName) };
-    if (List.Categories.Any(c => c.Name == category.Name))
+    // Pre-process
+    NewObservableCategory.Name = StringProcessor.TrimAndCapitalise(categoryName);
+    if (Categories.Any(category => category.Name == NewObservableCategory.Name))
     {
-      Notifier.ShowToast($"Cannot add '{category.Name}' - it already exists");
+      Notifier.ShowToast($"Cannot add '{NewObservableCategory.Name}' - it already exists");
       return;
     }
-    await _categoryService.CreateAsync(category, List);
-    Categories.Add(category.Name);
-    OnPropertyChanged(nameof(List));
+
+    // Add to list and database
+    Categories.Add(NewObservableCategory);
+    CategoryNames.Add(NewObservableCategory.Name);
+    await _categoryService.CreateOrUpdateAsync(NewObservableCategory);
+
+    // Update/reset UI
+    Notifier.ShowToast($"Added: {NewObservableCategory.Name}");
+    NewObservableCategory = new ObservableCategory(ObservableList.Id!);
+    OnPropertyChanged(nameof(NewObservableCategory));
     OnPropertyChanged(nameof(Categories));
+    OnPropertyChanged(nameof(CategoryNames));
     OnPropertyChanged(nameof(HasCustomCategories));
-    Notifier.ShowToast($"Added: {category.Name}");
   }
 
   [RelayCommand]
@@ -77,13 +104,22 @@ public partial class EditListViewModel : BaseViewModel
       return;
     }
 
-    var message = $"Removed: {categoryName}";
-    var toDelete = List.Categories.First(c => c.Name == categoryName);
-    await _itemService.ResetSelectedToDefaultCategoryAsync(List, category: toDelete);
-    await _categoryService.DeleteAsync(toDelete);
-    Categories.Remove(categoryName);
-    OnPropertyChanged(nameof(List));
+    var observableCategory = Categories.FirstOrDefault(c => c.Name == categoryName);
+    if (observableCategory == null)
+    {
+      Logger.Error(
+        "Cannot remove category '{Name}' because it doesn't seem to exist",
+        categoryName
+      );
+      return;
+    }
+    Categories.Remove(observableCategory);
+    CategoryNames.Remove(observableCategory.Name);
+    await _itemService.UpdateAllToCategoryAsync(observableCategory.Name, ObservableList.Id!);
+    await _categoryService.DeleteAsync(observableCategory);
+    var message = $"Removed: {observableCategory}";
     OnPropertyChanged(nameof(Categories));
+    OnPropertyChanged(nameof(CategoryNames));
     OnPropertyChanged(nameof(HasCustomCategories));
     Notifier.ShowToast(message);
   }
@@ -99,61 +135,10 @@ public partial class EditListViewModel : BaseViewModel
     )
       return;
 
-    await _itemService.ResetAllToDefaultCategoryAsync(List);
-    await _categoryService.ResetAsync(List);
-    Categories.Clear();
-    OnPropertyChanged(nameof(List));
-    OnPropertyChanged(nameof(Categories));
-    OnPropertyChanged(nameof(HasCustomCategories));
+    await _itemService.UpdateAllToDefaultCategoryAsync(ObservableList.Id!).ConfigureAwait(false);
+    await _categoryService.DeleteAllByListIdAsync(ObservableList.Id!).ConfigureAwait(false);
+    await LoadCategories().ConfigureAwait(false);
     Notifier.ShowToast("Reset categories");
-  }
-
-  [RelayCommand]
-  private async Task Share(string email)
-  {
-    if (string.IsNullOrWhiteSpace(email))
-      return;
-
-    email = email.ToLower();
-    if (email == RealmService.User.EmailAddress)
-    {
-      Notifier.ShowToast("Cannot share list with yourself");
-      return;
-    }
-    if (await _listService.ShareWith(List, email))
-    {
-      Notifier.ShowToast($"Shared list with: {email}");
-      OnPropertyChanged(nameof(List));
-      OnPropertyChanged(nameof(IsShared));
-      return;
-    }
-    Notifier.ShowToast($"Cannot share list with '{email}' - user not found");
-  }
-
-  [RelayCommand]
-  private async Task RevokeAccess(string id)
-  {
-    await _listService.RevokeAccess(List, id);
-    OnPropertyChanged(nameof(List));
-    OnPropertyChanged(nameof(IsShared));
-    Notifier.ShowToast($"Revoked access for: {id}");
-  }
-
-  [RelayCommand]
-  private async Task MakePrivate()
-  {
-    if (
-      !await Notifier.ShowConfirmationAlertAsync(
-        "Make private",
-        "This will remove all other collaborators from this list. Are you sure you want to continue?"
-      )
-    )
-      return;
-
-    await _listService.UpdateAsync(List, sharedWith: new HashSet<string>());
-    OnPropertyChanged(nameof(List));
-    OnPropertyChanged(nameof(IsShared));
-    Notifier.ShowToast("List is now private");
   }
 
   [RelayCommand]
@@ -167,21 +152,28 @@ public partial class EditListViewModel : BaseViewModel
     )
       return;
 
-    await _itemService.DeleteAllInListAsync(List);
+    Items.Clear();
+    await _itemService.DeleteAllByListIdAsync(ObservableList.Id!);
     Notifier.ShowToast("Removed all items from list");
   }
 
   [RelayCommand]
   private async Task SaveAndBack()
   {
-    var name = StringProcessor.TrimAndCapitalise(CurrentName);
-    if (name == List.Name && CurrentListType.ToString() == List.ListType)
+    var name = StringProcessor.TrimAndCapitalise(ObservableList.Name);
+    if (name == ObservableList.Name && ObservableList.ListType == _currentListType)
     {
-      await Shell.Current.Navigation.PopModalAsync();
+      Back().SafeFireAndForget();
       return;
     }
 
-    await _listService.UpdateAsync(List, name: name, listType: CurrentListType.ToString());
+    await _listService.CreateOrUpdateAsync(ObservableList);
+    Back().SafeFireAndForget();
+  }
+
+  [RelayCommand]
+  private static async Task Back()
+  {
     await Shell.Current.Navigation.PopModalAsync();
   }
 }

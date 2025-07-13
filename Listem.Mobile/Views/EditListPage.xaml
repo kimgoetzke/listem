@@ -34,7 +34,7 @@
                       RowDefinitions="Auto, Auto">
                     <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
                     <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
-                        <Entry Text="{Binding CurrentName}"
+                        <Entry Text="{Binding ObservableList.Name, Mode=TwoWay}"
                                AutomationId="ListNameEntry"
                                Unfocused="OnEntryUnfocused" />
                     </Frame>
@@ -53,7 +53,7 @@
                                     AutomationId="ListTypePicker"
                                     Title="{OnPlatform WinUI='', MacCatalyst='', Default='Select type'}"
                                     ItemsSource="{Binding ListTypes}"
-                                    SelectedItem="{Binding CurrentListType, Mode=TwoWay}"
+                                    SelectedItem="{Binding ObservableList.ListType, Mode=TwoWay}"
                                     TextColor="{DynamicResource TextColor}"
                                     TitleColor="{DynamicResource PickerTitleColor}"
                                     MinimumWidthRequest="400" MaximumWidthRequest="850"
@@ -88,54 +88,17 @@
                 </Grid>
 
                 <!-- Manage categories CollectionView -->
-                <controls:FramedCollection ItemsSource="{Binding Categories}"
+                <controls:FramedCollection ItemsSource="{Binding CategoryNames}"
                                            DataType="{x:Type x:String}"
                                            AutomationId="CategoriesCollectionView"
                                            SwipeCommand="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RemoveCategoryCommand}" />
-
-                <!-- Collaborate title -->
-                <Label Text="Collaborate" Style="{DynamicResource ItemProperty}"
-                       Padding="5, 10, 5,0" />
-
-                <!-- Collaborate buttons -->
-                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="0" Padding="5, 10"
-                      IsVisible="{Binding List.IsMine}">
-                    <Button Grid.Column="0"
-                            Text="Share"
-                            AutomationId="ShareButton"
-                            Margin="0"
-                            Style="{DynamicResource SimpleButton}"
-                            VerticalOptions="Start"
-                            Clicked="ShareWithButton_OnClicked" />
-                    <Button Grid.Column="2"
-                            Text="Unshare"
-                            AutomationId="UnshareButton"
-                            IsVisible="{Binding IsShared}"
-                            Margin="0"
-                            Style="{DynamicResource SimpleButton}"
-                            VerticalOptions="Fill"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=MakePrivateCommand}"
-                            CommandParameter="{Binding .}" />
-                </Grid>
-
-                <!-- Collaborate CollectionView -->
-                <Label Padding="5, 10, 5,0" TextColor="{DynamicResource TextColor}"
-                       Text="You don't own this list. Only the owner of a list can add or remove collaborators."
-                       FontSize="{DynamicResource FontSizeS}"
-                       IsVisible="{Binding List.IsSharedWithMe}" />
-                <controls:FramedCollection ItemsSource="{Binding List.SharedWith}"
-                                           DataType="{x:Type x:String}"
-                                           IsVisible="{Binding List.IsMine}"
-                                           AutomationId="CollaboratorsCollectionView"
-                                           SwipeCommand="{Binding Source={RelativeSource AncestorType={x:Type viewModel:EditListViewModel}}, Path=RevokeAccessCommand}" />
-
+                
                 <BoxView Margin="10" />
 
             </VerticalStackLayout>
         </ScrollView>
 
         <controls:StickyEntry Grid.Row="1" x:Name="StickyEntryCategory" PlaceholderText="Enter category name" />
-        <controls:StickyEntry Grid.Row="1" x:Name="StickyEntryShareWith" PlaceholderText="Enter their user name" />
 
     </Grid>
 </ContentPage>

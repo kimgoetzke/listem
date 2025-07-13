@@ -4,10 +4,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:Listem.Mobile.Models"
              xmlns:viewModel="clr-namespace:Listem.Mobile.ViewModel"
-             xmlns:controls="clr-namespace:Listem.Mobile.Views.Controls"
              x:Class="Listem.Mobile.Views.Controls.ListSummaryControl">
 
-    <CollectionView ItemsSource="{Binding ObservableLists}"
+    <CollectionView ItemsSource="{Binding Lists}"
                     ItemsLayout="HorizontalList"
                     VerticalOptions="Fill"
                     SelectionMode="None"
@@ -19,7 +18,7 @@
 
         <!-- Content: Box -->
         <CollectionView.ItemTemplate>
-            <DataTemplate x:DataType="models:List">
+            <DataTemplate x:DataType="models:ObservableList">
                 <FlexLayout>
 
                     <!-- Box -->
@@ -61,28 +60,6 @@
                                              HeightRequest="32" />
                             </Grid>
 
-                            <HorizontalStackLayout Grid.Row="1" Spacing="5">
-                                <controls:Tag TagColor="{DynamicResource AccentBright}"
-                                              Text="Shared"
-                                              AutomationId="{Binding Name, StringFormat='SharedTag_{0}'}"
-                                              IsVisible="{Binding IsShared}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
-                                              CommandParameter="{Binding .}" />
-                                <controls:Tag TagColor="{DynamicResource Neutral}"
-                                              Text="Collaborator"
-                                              AutomationId="{Binding Name, StringFormat='CollaboratorTag_{0}'}"
-                                              IsVisible="{Binding IsSharedWithMe}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
-                                              CommandParameter="{Binding .}" />
-                                <controls:Tag TagColor="{DynamicResource AccentDark}"
-                                              TextColor="{DynamicResource TextColorInverted}"
-                                              Text="Owner"
-                                              AutomationId="{Binding Name, StringFormat='OwnerTag_{0}'}"
-                                              IsVisible="{Binding IsSharedByMe}"
-                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
-                                              CommandParameter="{Binding .}" />
-                            </HorizontalStackLayout>
-
                             <!-- List summary: Items inside the list -->
                             <CollectionView Grid.Row="2"
                                             ItemsSource="{Binding Items}"
@@ -99,23 +76,23 @@
 
                                 <!-- Items inside the list: Content -->
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Item">
+                                    <DataTemplate x:DataType="models:ObservableItem">
                                         <HorizontalStackLayout HorizontalOptions="Fill" Padding="0" Margin="0"
                                                                HeightRequest="30"
                                                                VerticalOptions="Fill">
                                             <HorizontalStackLayout.GestureRecognizers>
                                                 <TapGestureRecognizer
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
-                                                    CommandParameter="{Binding Path=List}" />
+                                                    CommandParameter="{Binding Source={RelativeSource AncestorType={x:Type models:ObservableList}}}" />
                                             </HorizontalStackLayout.GestureRecognizers>
                                             <CheckBox Scale="0.8" IsEnabled="False" Margin="-13,0,0,0" />
-                                            <Label Text="{Binding Name}"
+                                            <Label Text="{Binding Title}"
                                                    VerticalOptions="Center"
                                                    TextColor="{DynamicResource TextColor}">
                                                 <Label.GestureRecognizers>
                                                     <TapGestureRecognizer
                                                         Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
-                                                        CommandParameter="{Binding Path=List}" />
+                                                        CommandParameter="{Binding Source={RelativeSource AncestorType={x:Type models:ObservableList}}}" />
                                                 </Label.GestureRecognizers>
                                             </Label>
                                         </HorizontalStackLayout>
@@ -156,23 +133,12 @@
                                 <ImageButton Source="bin_secondary_margin.png"
                                              Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=RemoveListCommand}"
                                              CommandParameter="{Binding .}"
-                                             IsVisible="{Binding IsMine}"
                                              AutomationId="{Binding Name, StringFormat='DeleteButton_{0}'}"
                                              Aspect="AspectFit"
                                              HorizontalOptions="End"
                                              VerticalOptions="End"
                                              WidthRequest="40"
                                              HeightRequest="40" />
-                                <ImageButton Source="exit_secondary_margin.png"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=ExitListCommand}"
-                                             CommandParameter="{Binding .}"
-                                             IsVisible="{Binding IsSharedWithMe}"
-                                             AutomationId="{Binding Name, StringFormat='ExitButton_{0}'}"
-                                             Aspect="AspectFit"
-                                             HorizontalOptions="End"
-                                             VerticalOptions="End"
-                                             WidthRequest="36"
-                                             HeightRequest="36" />
                             </Grid>
 
                         </Grid>

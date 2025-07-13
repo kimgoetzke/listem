@@ -6,14 +6,14 @@ namespace Listem.Mobile.Views;
 
 public partial class DetailPage
 {
-  public DetailPage(Item item)
+  public DetailPage(ObservableItem item, ObservableList list)
   {
     InitializeComponent();
 
     if (IPlatformApplication.Current?.Services.GetService<IServiceProvider>() is not { } sp)
       throw new NullReferenceException("ServiceProvider is null");
 
-    BindingContext = new DetailViewModel(item, sp);
+    BindingContext = new DetailViewModel(item, list, sp);
   }
 
   private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)

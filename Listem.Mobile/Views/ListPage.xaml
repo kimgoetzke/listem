@@ -60,7 +60,7 @@
         <!-- (Inserted via code behind) -->
 
         <!-- Main page content: List of added items -->
-        <controls:ListControl BindingContext="{Binding .}" Grid.Row="2" Padding="0" />
+        <controls:ListControl BindingContext="{Binding}" Grid.Row="2" Padding="0" />
         <BoxView Grid.Row="2"
                  Style="{StaticResource TopGrey150ToBottomTransparent}"
                  HeightRequest="20" />

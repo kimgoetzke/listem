@@ -9,7 +9,6 @@ public partial class App
   public App()
   {
     InitializeComponent();
-    RealmService.RetrieveDataFromSecureStorage().SafeFireAndForget();
     SetThemeToSystemThemeOnFirstRun();
     var currentTheme = Settings.CurrentTheme;
     ThemeHandler.SetTheme(currentTheme);

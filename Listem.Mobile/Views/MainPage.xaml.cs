@@ -19,8 +19,8 @@ public partial class MainPage
   {
     InitializeComponent();
     _viewModel = viewModel;
-    _viewModel.InitialiseUser();
     BindingContext = _viewModel;
+    _viewModel.LoadLists().SafeFireAndForget();
 
     StickyEntry.Submitted += (_, text) =>
     {
@@ -32,7 +32,6 @@ public partial class MainPage
   {
     base.OnAppearing();
     StickyEntry.SetVisibility(false);
-    _viewModel.TriggerListPropertyChange();
   }
 
   private void AddListButton_OnClicked(object? sender, EventArgs e)
@@ -101,15 +100,9 @@ public partial class MainPage
   }
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
-  private void SignUpInOrOutButton_OnClicked(object? sender, EventArgs e)
+  private void DeleteMyData_OnClicked(object? sender, EventArgs e)
   {
     CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
-    _viewModel.BackToStartPageCommand.Execute(null);
-  }
-
-  private void DeleteMyAccount_OnClicked(object? sender, EventArgs e)
-  {
-    CloseSettings(new CancellationTokenSource()).SafeFireAndForget();
-    _viewModel.DeleteMyAccountCommand.Execute(null);
+    _viewModel.DeleteMyDataCommand.Execute(null);
   }
 }
