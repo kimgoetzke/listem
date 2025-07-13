@@ -1,6 +1,6 @@
 # The Listem Project with SQLite
 
-This repository contains a super simple, minimalist list Android app written in C# using .NET 9 MAUI, the
+This repository contains a super simple, minimalist list Android app written in C# using .NET 8 MAUI, the
 CommunityToolkit, and SQLite. It also contains a UI test project for end-to-end testing using Appium and NUnit 4. It was
 created to learn how to create and publish an Android app.
 
