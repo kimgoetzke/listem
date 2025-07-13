@@ -1,14 +1,14 @@
-# The Listem Project with MongoDB Atlas and Realm
+# The Listem Project with SQLite
 
 This repository contains a super simple, minimalist list Android app written in C# using .NET 9 MAUI, the
 CommunityToolkit, and SQLite. It also contains a UI test project for end-to-end testing using Appium and NUnit 4. It was
 created to learn how to create and publish an Android app.
 
-> [!NOTE]  
+> [!NOTE]
 > This application used to have collaborative features and used MongoDB Atlas with Realm and Device Sync but the
-> latter was deprecated in September 2024 and no feasible replacement exists. Without Device Sync, there is no reason to
-> use MongoDB. In addition, I didn't use the collaborative features enough to justify the complexity or any
-> potential costs involved in replacing it. You can still find the old code in the
+> latter was deprecated in September 2024 and no feasible replacement exists. In addition, I didn't use the
+> collaborative features enough to justify the complexity or any potential costs involved in replacing it. You can still
+> find the old code in the
 > branch [use-mongodb-atlas-and-realm](https://github.com/kimgoetzke/listem/tree/use-mongodb-atlas-and-realm).
 >
 > In addition, I had previously explored creating an ASP.NET Core backend, but I didn't find
