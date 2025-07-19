@@ -71,10 +71,58 @@ public partial class MainViewModel : BaseViewModel, IDisposable
 
     WeakReferenceMessenger.Default.Register<ItemAddedToListMessage>(
       this,
-      (_, m) =>
+      async void (_, m) =>
       {
-        Logger.Info("Received message: Adding {Title} to {ID}", m.Value.Item.Title, m.Value.ListId);
-        Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
+        try
+        {
+          Logger.Info(
+            "Received message: Adding {Title} to {ID}",
+            m.Value.Item.Title,
+            m.Value.ListId
+          );
+          const int maxRetries = 2;
+          const int delayMs = 100;
+          for (var attempt = 0; attempt < maxRetries; attempt++)
+          {
+            try
+            {
+              Lists.First(l => l.Id == m.Value.ListId).Items.Add(m.Value.Item);
+              break;
+            }
+            catch (InvalidOperationException)
+            {
+              if (attempt == maxRetries - 1)
+              {
+                Logger.Warn(
+                  "Failed to add item {Title} to list {ID} after {Attempts} attempts",
+                  m.Value.Item.Title,
+                  m.Value.ListId,
+                  maxRetries
+                );
+                throw;
+              }
+              await Task.Delay(delayMs);
+            }
+          }
+        }
+        catch (Exception e)
+        {
+          Logger.Error(
+            "Failed to add item {Title} to list {ID} because the list does not seem to exist: {Message}",
+            m.Value.Item.Title,
+            m.Value.ListId,
+            e.Message
+          );
+        }
+      }
+    );
+
+    WeakReferenceMessenger.Default.Register<ListModifiedMessage>(
+      this,
+      void (_, m) =>
+      {
+        Logger.Info("Received message: {ID} was modified", m.Value.Id);
+        SortLists();
       }
     );
 
@@ -87,6 +135,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
     var lists = await _listService.GetAllAsync();
     foreach (var list in lists)
     {
+      Logger.Debug("Loaded: {List} - {UpdatedOn}", list.ToLoggableString(), list.UpdatedOn);
       var items = await _itemService.GetAllByListIdAsync(list.Id!);
       foreach (var item in items)
       {

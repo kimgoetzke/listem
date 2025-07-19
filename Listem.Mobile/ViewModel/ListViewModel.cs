@@ -151,7 +151,10 @@ public partial class ListViewModel : BaseViewModel
       await DeleteSelectedItemsIfAny();
 
       if (_listHasChanged)
+      {
         await _listService.MarkAsUpdatedAsync(ObservableList);
+        WeakReferenceMessenger.Default.Send(new ListModifiedMessage(ObservableList));
+      }
     });
     await Shell.Current.Navigation.PopAsync();
   }

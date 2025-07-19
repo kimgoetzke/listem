@@ -3,6 +3,8 @@ using System.Collections.Specialized;
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using Listem.Mobile.Events;
 using Listem.Mobile.Models;
 using Listem.Mobile.Services;
 using Listem.Mobile.Utilities;
@@ -15,8 +17,6 @@ public partial class EditListViewModel : BaseViewModel
 {
   [ObservableProperty]
   private ObservableList _observableList;
-
-  private ListType _currentListType;
 
   [ObservableProperty]
   private ObservableCollection<ListType> _listTypes = [];
@@ -49,6 +49,9 @@ public partial class EditListViewModel : BaseViewModel
   [ObservableProperty]
   private bool _hasCustomCategories;
 
+  private bool _listHasChanged;
+  private readonly string _originalListName;
+  private readonly ListType _originalListType;
   private readonly ICategoryService _categoryService;
   private readonly IItemService _itemService;
   private readonly IListService _listService;
@@ -60,7 +63,8 @@ public partial class EditListViewModel : BaseViewModel
     _categoryService = serviceProvider.GetService<ICategoryService>()!;
     _itemService = serviceProvider.GetService<IItemService>()!;
     ObservableList = list;
-    _currentListType = list.ListType;
+    _originalListName = list.Name;
+    _originalListType = list.ListType;
     ListTypes = new ObservableCollection<ListType>(
       Enum.GetValues(typeof(ListType)).Cast<ListType>()
     );
@@ -86,6 +90,7 @@ public partial class EditListViewModel : BaseViewModel
   {
     HasCustomCategories = Categories.Count > 1;
     OnPropertyChanged(nameof(HasCustomCategories));
+    _listHasChanged = true;
   }
 
   [RelayCommand]
@@ -170,20 +175,25 @@ public partial class EditListViewModel : BaseViewModel
 
     Items.Clear();
     await _itemService.DeleteAllByListIdAsync(ObservableList.Id!);
+    _listHasChanged = true;
     Notifier.ShowToast("Removed all items from list");
   }
 
   [RelayCommand]
   private async Task SaveAndBack()
   {
-    var name = StringProcessor.TrimAndCapitalise(ObservableList.Name);
-    if (name == ObservableList.Name && ObservableList.ListType == _currentListType)
+    if (_originalListName != ObservableList.Name || _originalListType != ObservableList.ListType)
     {
-      Back().SafeFireAndForget();
-      return;
+      Logger.Info("Name or type of list has changed, marking list as modified");
+      _listHasChanged = true;
     }
 
-    await _listService.CreateOrUpdateAsync(ObservableList);
+    if (_listHasChanged)
+    {
+      await _listService.MarkAsUpdatedAsync(ObservableList);
+      WeakReferenceMessenger.Default.Send(new ListModifiedMessage(ObservableList));
+    }
+
     Back().SafeFireAndForget();
   }
 

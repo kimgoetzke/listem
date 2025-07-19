@@ -12,6 +12,17 @@ public abstract class TestData
       new("Item-5", AutomationIdModel.DefaultCategoryName, 1, false)
     ];
 
+  private static List<TestItem> StandardListItems { get; } =
+    [
+      new("Item-0", AutomationIdModel.DefaultCategoryName, 1, false),
+      new("Item-1", "Cat-A", 1, false),
+      new("Item-2", "Cat-B", 1, true),
+      new("Item-3", "Cat-B", 2, true)
+    ];
+
+  public static readonly TestList StandardList =
+    new("Standard", StandardListItems, AutomationIdModel.DefaultListType, ["Cat-A", "Cat-B"]);
+
   public static readonly TestList FeatureList =
     new("Features", StoreListItems, AutomationIdModel.ShoppingListType, ["Store-1", "Store-2"]);
 
