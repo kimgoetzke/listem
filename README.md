@@ -18,7 +18,7 @@ created to learn how to create and publish an Android app.
 
 ![Screenshots](./docs/assets/screenshots.png)
 
-### Overview
+## Overview
 
 - A super basic, minimalist app for lists, targeting Android
 - Lists can be somewhat customised by adding categories or list types (e.g. changing type to shopping list exposes a
@@ -30,6 +30,15 @@ created to learn how to create and publish an Android app.
 - Icons used are CC0 from [iconsDB.com](https://www.iconsdb.com/) or self-made
 - Colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
+
+## Demo
+
+![Demo GIF](./docs/assets/demo.gif)
+
+_This demo is captured on an emulator. It does not show many of Listem's features. Its purpose is to give a first
+visual impression only._
+
+## Development
 
 ### How to configure your environment for development
 
