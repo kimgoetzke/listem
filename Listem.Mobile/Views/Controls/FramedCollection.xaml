@@ -6,11 +6,12 @@
              xmlns:views="clr-namespace:Listem.Mobile.Views.Controls"
              x:Class="Listem.Mobile.Views.Controls.FramedCollection">
 
-    <Frame Margin="5, 5" Padding="0" BorderColor="Transparent" CornerRadius="15">
+    <Frame Margin="5, 5" Padding="0" BorderColor="Transparent" CornerRadius="15" HasShadow="False"
+           BackgroundColor="{DynamicResource BackgroundColor}">
         <CollectionView x:Name="ItemsCollectionView"
                         Margin="0"
                         SelectionMode="None"
-                        HeightRequest="175"
+                        HeightRequest="200"
                         VerticalScrollBarVisibility="Always">
 
             <CollectionView.ItemTemplate>

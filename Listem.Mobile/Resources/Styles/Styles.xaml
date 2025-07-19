@@ -46,7 +46,7 @@
         </Setter>
     </Style>
     <Style TargetType="Button" x:Key="SimpleButton" BasedOn="{StaticResource GradientButton}">
-        <Setter Property="Background" Value="{DynamicResource White}" />
+        <Setter Property="Background" Value="{DynamicResource SimpleButtonBackgroundColor}" />
         <Setter Property="FontSize" Value="{DynamicResource FontSizeM}" />
         <Setter Property="FontFamily" Value="MulishRegular" />
         <Setter Property="TextColor" Value="{DynamicResource Primary}" />

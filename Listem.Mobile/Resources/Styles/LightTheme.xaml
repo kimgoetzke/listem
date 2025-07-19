@@ -43,6 +43,7 @@
     <Color x:Key="ThinLineSeparatorColor">#0E3C53</Color>
     <Color x:Key="CheckboxColor">#3CADD3</Color>
     <Color x:Key="DisabledColor">#D8D8D8</Color>
+    <Color x:Key="SimpleButtonBackgroundColor">White</Color>
     <Color x:Key="PickerTitleColor">#ACACAC</Color>
     <Color x:Key="StandardGradientStop1">#48F2D9</Color>
     <Color x:Key="StandardGradientStop2">#378CD1</Color>

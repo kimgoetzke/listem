@@ -24,10 +24,10 @@
     <Color x:Key="Gray800">#2E2E2E</Color>
     <Color x:Key="Gray900">#1F1F1F</Color>
 
-    <Color x:Key="StatusBarColor">#1F1F1F</Color>
+    <Color x:Key="StatusBarColor">#2E2E2E</Color>
     <Color x:Key="MainPageBackStatusBarColour">#0E3C53</Color>
-    <Color x:Key="BackgroundColor">#1F1F1F</Color>
-    <Color x:Key="BackgroundColorAccent">#0E3C53</Color>
+    <Color x:Key="BackgroundColor">#2E2E2E</Color>
+    <Color x:Key="BackgroundColorAccent">#404040</Color>
     <Color x:Key="HeadlineColor">#D8D8D8</Color>
     <Color x:Key="SubHeadlineColor">#D8D8D8</Color>
     <Color x:Key="TextColor">#D8D8D8</Color>
@@ -43,6 +43,7 @@
     <Color x:Key="ThinLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="CheckboxColor">#3CADD3</Color>
     <Color x:Key="DisabledColor">#D8D8D8</Color>
+    <Color x:Key="SimpleButtonBackgroundColor">#0E3C53</Color>
     <Color x:Key="PickerTitleColor">#ACACAC</Color>
     <Color x:Key="StandardGradientStop1">#48F2D9</Color>
     <Color x:Key="StandardGradientStop2">#378CD1</Color>
