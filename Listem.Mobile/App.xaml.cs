@@ -1,6 +1,4 @@
-﻿using AsyncAwaitBestPractices;
-using Listem.Mobile.Services;
-using Listem.Mobile.Utilities;
+﻿using Listem.Mobile.Utilities;
 
 namespace Listem.Mobile;
 

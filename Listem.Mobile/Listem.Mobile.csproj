@@ -10,8 +10,8 @@
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <ApplicationTitle>Listem</ApplicationTitle>
         <ApplicationId>io.kimgoetzke.listem</ApplicationId>
-        <ApplicationDisplayVersion>1.9</ApplicationDisplayVersion>
-        <ApplicationVersion>10</ApplicationVersion>
+        <ApplicationDisplayVersion>1.10</ApplicationDisplayVersion>
+        <ApplicationVersion>11</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
@@ -105,7 +105,6 @@
             <DependentUpon>ListComponent.xaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-        <Compile Remove="ViewModel\CategoryViewModel.cs"/>
         <Compile Update="Views\StartPage.xaml.cs">
             <DependentUpon>StartPage.xaml</DependentUpon>
             <SubType>Code</SubType>

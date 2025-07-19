@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Listem.Mobile.Utilities;
+﻿using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
 using Microsoft.Extensions.Logging;
 
