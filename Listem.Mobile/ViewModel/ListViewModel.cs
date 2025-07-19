@@ -148,10 +148,26 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
+      await DeleteSelectedItemsIfAny();
+
       if (_listHasChanged)
         await _listService.MarkAsUpdatedAsync(ObservableList);
     });
     await Shell.Current.Navigation.PopAsync();
+  }
+
+  private async Task DeleteSelectedItemsIfAny()
+  {
+    if (ItemsToDelete.Count == 0)
+      return;
+
+    foreach (var item in new List<ObservableItem>(ItemsToDelete))
+    {
+      await RemoveItem(item);
+    }
+
+    ItemsToDelete.Clear();
+    _listHasChanged = true;
   }
 
   public string ProcessedObservableItemListName
