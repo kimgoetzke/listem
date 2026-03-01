@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0-android</TargetFramework>
+        <TargetFramework>net10.0-android</TargetFramework>
         <OutputType>Exe</OutputType>
         <UseMaui>true</UseMaui>
         <SingleProject>true</SingleProject>
@@ -10,8 +10,8 @@
         <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
         <ApplicationTitle>Listem</ApplicationTitle>
         <ApplicationId>io.kimgoetzke.listem</ApplicationId>
-        <ApplicationDisplayVersion>1.10</ApplicationDisplayVersion>
-        <ApplicationVersion>11</ApplicationVersion>
+        <ApplicationDisplayVersion>1.11</ApplicationDisplayVersion>
+        <ApplicationVersion>12</ApplicationVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
 
@@ -42,15 +42,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncAwaitBestPractices" Version="7.0.0"/>
+        <PackageReference Include="AsyncAwaitBestPractices" Version="10.0.0"/>
         <PackageReference Include="CommunityToolkit.Maui" Version="9.0.1" />
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0"/>
-        <PackageReference Include="Serilog" Version="4.0.0" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog" Version="4.3.1" />
+        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
         <PackageReference Include="Serilog.Sinks.Debug" Version="3.0.0" />
-        <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.60" />
         <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.60" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />

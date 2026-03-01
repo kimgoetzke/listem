@@ -16,7 +16,7 @@ public class AppiumSetup
     _driver ?? throw new NullReferenceException("AppiumDriver is null");
   public const string AppName = "io.kimgoetzke.listem";
   private const string MainActivityName = "crc644cb8d77eec54dc0d.MainActivity";
-  private const string Avd = "Pixel_3a_API_34_extension_level_7_x86_64";
+  private const string Avd = "Pixel_3a";
   private static AppiumDriver? _driver;
 
   [OneTimeSetUp]
@@ -28,7 +28,7 @@ public class AppiumSetup
     {
       AutomationName = AutomationName.AndroidUIAutomator2,
       PlatformName = "Android",
-      PlatformVersion = "14",
+      PlatformVersion = "16",
       DeviceName = "Android Emulator",
       App = apk + "/io.kimgoetzke.listem-Signed.apk"
     };
