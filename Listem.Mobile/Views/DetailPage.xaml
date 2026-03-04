@@ -15,8 +15,9 @@
 
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0">
-            <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
-                   BackgroundColor="{DynamicResource BackgroundColorAccent}" />
+            <Border HeightRequest="50" Stroke="Transparent"
+                    BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                    StrokeShape="RoundRectangle 15" />
             <Grid Margin="0, 15, 0,0">
                 <BoxView VerticalOptions="End" HeightRequest="25" />
                 <ImageButton Source="left_primary.png" HeightRequest="30" WidthRequest="30"
@@ -39,17 +40,17 @@
             <Grid Margin="5, 20, 5,0"
                   RowDefinitions="Auto, Auto">
                 <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
-                <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                <Border Grid.Row="1" Style="{DynamicResource EntryFrame}">
                     <Entry Text="{Binding Item.Title, Mode=TwoWay}"
                            AutomationId="ItemNameEntry" />
-                </Frame>
+                </Border>
             </Grid>
 
             <!-- Category -->
             <Grid RowDefinitions="1*">
                 <VerticalStackLayout Padding="5">
                     <Label Text="Category" Style="{DynamicResource ItemProperty}" />
-                    <Frame Style="{DynamicResource EntryFrame}">
+                    <Border Style="{DynamicResource EntryFrame}">
                         <Grid ColumnDefinitions="Auto, *"
                               VerticalOptions="Fill"
                               HorizontalOptions="Fill" ColumnSpacing="5">
@@ -64,7 +65,7 @@
                                     MinimumWidthRequest="400" MaximumWidthRequest="850"
                                     HorizontalOptions="Fill" />
                         </Grid>
-                    </Frame>
+                    </Border>
                 </VerticalStackLayout>
             </Grid>
 

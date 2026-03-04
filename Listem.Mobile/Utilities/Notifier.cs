@@ -1,4 +1,5 @@
 using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
 using Listem.Mobile.Views;
 
@@ -15,17 +16,17 @@ public static class Notifier
   public static Action ShowActivityIndicator()
   {
     var popup = new BusyPopup();
-    Shell.Current.ShowPopup(popup);
-    return () => popup.Close();
+    Shell.Current.CurrentPage.ShowPopup(popup);
+    return () => popup.CloseAsync();
   }
 
   public static Task ShowAlertAsync(string title, string message, string button)
   {
-    return Shell.Current.DisplayAlert(title, message, button);
+    return Shell.Current.DisplayAlertAsync(title, message, button);
   }
 
   public static async Task<bool> ShowConfirmationAlertAsync(string title, string message)
   {
-    return await Shell.Current.DisplayAlert(title, message, "Yes", "No");
+    return await Shell.Current.DisplayAlertAsync(title, message, "Yes", "No");
   }
 }

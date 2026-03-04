@@ -22,17 +22,19 @@
                 <FlexLayout>
 
                     <!-- Box -->
-                    <Frame FlexLayout.Grow="1"
-                           Margin="10"
-                           WidthRequest="230"
-                           BorderColor="Transparent"
-                           BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                    <Border FlexLayout.Grow="1"
+                            Margin="10"
+                            Padding="20"
+                            WidthRequest="230"
+                            Stroke="Transparent"
+                            StrokeShape="RoundRectangle 10"
+                            BackgroundColor="{DynamicResource BackgroundColorAccent}">
 
-                        <Frame.GestureRecognizers>
+                        <Border.GestureRecognizers>
                             <TapGestureRecognizer
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewModel:MainViewModel}}, Path=TapListCommand}"
                                 CommandParameter="{Binding .}" />
-                        </Frame.GestureRecognizers>
+                        </Border.GestureRecognizers>
 
                         <!-- Box: List summary -->
                         <Grid RowDefinitions="Auto, Auto, *, Auto">
@@ -143,7 +145,7 @@
 
                         </Grid>
 
-                    </Frame>
+                    </Border>
 
                 </FlexLayout>
             </DataTemplate>

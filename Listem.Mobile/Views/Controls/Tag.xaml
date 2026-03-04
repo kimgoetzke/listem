@@ -5,11 +5,11 @@
              x:Class="Listem.Mobile.Views.Controls.Tag"
              x:Name="TagContentView">
 
-    <Frame Padding="3"
-           Margin="0"
-           CornerRadius="4"
-           BorderColor="Transparent"
-           BackgroundColor="{Binding TagColor, Source={x:Reference TagContentView}}">
+    <Border Padding="3"
+            Margin="0"
+            StrokeShape="RoundRectangle 4"
+            Stroke="Transparent"
+            BackgroundColor="{Binding TagColor, Source={x:Reference TagContentView}}">
         <Label Text="{Binding Text, Source={x:Reference TagContentView}}"
                AutomationId="TagLabel"
                TextColor="{Binding TextColor, Source={x:Reference TagContentView}}"
@@ -20,9 +20,9 @@
                HorizontalTextAlignment="Center"
                VerticalOptions="Center"
                VerticalTextAlignment="Center" />
-        <Frame.GestureRecognizers>
-            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference TagContentView}}" 
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Command, Source={x:Reference TagContentView}}"
                                   CommandParameter="{Binding CommandParameter, Source={x:Reference TagContentView}}" />
-        </Frame.GestureRecognizers>
-    </Frame>
+        </Border.GestureRecognizers>
+    </Border>
 </ContentView>

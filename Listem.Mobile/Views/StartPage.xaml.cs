@@ -34,12 +34,28 @@ public partial class StartPage
   protected override void OnNavigatedTo(NavigatedToEventArgs args)
   {
     base.OnNavigatedTo(args);
-    SkipLogin();
+    if (!_isNavigatingToMain)
+      SkipLogin();
   }
 
-  private void SkipLogin()
+  private bool _isNavigatingToMain;
+
+  private async void SkipLogin()
   {
-    _logger.Info("Skipping sign-in, redirecting to main page now...");
-    Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+    _isNavigatingToMain = true;
+    try
+    {
+      _logger.Info("Skipping sign-in, redirecting to main page now...");
+      await Shell.Current.Navigation.PushAsync(_serviceProvider.GetService<MainPage>());
+    }
+    catch (Exception e)
+    {
+      _logger.Info("Failed to navigate to main page: {Message}", e.Message);
+      throw;
+    }
+    finally
+    {
+      _isNavigatingToMain = false;
+    }
   }
 }

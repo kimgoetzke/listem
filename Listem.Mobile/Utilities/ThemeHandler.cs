@@ -89,7 +89,8 @@ public static class ThemeHandler
     {
       return;
     }
-    AndroidPlatform.CurrentActivity.Window.SetStatusBarColor(statusBarColor.ToAndroid());
+    if (!OperatingSystem.IsAndroidVersionAtLeast(35))
+      AndroidPlatform.CurrentActivity.Window.SetStatusBarColor(statusBarColor.ToAndroid());
 #endif
   }
 }

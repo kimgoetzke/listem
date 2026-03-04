@@ -35,7 +35,6 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   public MainViewModel(IServiceProvider serviceProvider)
     : base(serviceProvider.GetService<ILogger<MainViewModel>>()!)
   {
-    IsBusy = true;
     _serviceProvider = serviceProvider;
     _listService = serviceProvider.GetService<IListService>()!;
     _itemService = serviceProvider.GetService<IItemService>()!;
@@ -125,8 +124,6 @@ public partial class MainViewModel : BaseViewModel, IDisposable
         SortLists();
       }
     );
-
-    IsBusy = false;
   }
 
   public async Task LoadLists()

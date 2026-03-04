@@ -10,8 +10,9 @@ public partial class App
     SetThemeToSystemThemeOnFirstRun();
     var currentTheme = Settings.CurrentTheme;
     ThemeHandler.SetTheme(currentTheme);
-    MainPage = new AppShell();
   }
+
+  protected override Window CreateWindow(IActivationState? activationState) => new(new AppShell());
 
   private static void SetThemeToSystemThemeOnFirstRun()
   {

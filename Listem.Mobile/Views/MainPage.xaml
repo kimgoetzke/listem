@@ -105,8 +105,12 @@
         </Grid>
 
         <!-- Content -->
-        <Frame Padding="0" CornerRadius="0" x:Name="MainPageContent"
-               HasShadow="False" Shadow="{DynamicResource DarkShadowL}">
+        <Border Padding="0" x:Name="MainPageContent"
+                Stroke="Transparent" StrokeThickness="0"
+                Shadow="{DynamicResource DarkShadowL}">
+            <Border.StrokeShape>
+                <RoundRectangle x:Name="MainPageContentShape" CornerRadius="0" />
+            </Border.StrokeShape>
             <Grid RowDefinitions="Auto, .4*, *, Auto"
                   BackgroundColor="{DynamicResource BackgroundColor}"
                   VerticalOptions="Fill"
@@ -151,7 +155,7 @@
 
                 <controls:StickyEntry Grid.Row="2" x:Name="StickyEntry" PlaceholderText="Enter list name" />
             </Grid>
-        </Frame>
+        </Border>
     </Grid>
 
 </ContentPage>

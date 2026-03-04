@@ -136,7 +136,7 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
   private static async Task<bool> IsImportConfirmedByUser(int itemCount, int categoryCount)
   {
     var message = CreateToastMessage(itemCount, categoryCount);
-    var isConfirmed = await Shell.Current.DisplayAlert(
+    var isConfirmed = await Shell.Current.DisplayAlertAsync(
       "Import from clipboard",
       message,
       "Yes",

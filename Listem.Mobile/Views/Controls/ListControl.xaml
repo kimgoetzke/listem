@@ -54,39 +54,41 @@
                             <SwipeItemView
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
                                 CommandParameter="{Binding .}">
-                                <Frame BackgroundColor="{DynamicResource AccentBright}"
-                                       BorderColor="Transparent"
-                                       Padding="0"
-                                       VerticalOptions="Center"
-                                       HeightRequest="100"
-                                       WidthRequest="100">
+                                <Border BackgroundColor="{DynamicResource AccentBright}"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="0"
+                                        VerticalOptions="Center"
+                                        HeightRequest="100"
+                                        WidthRequest="100">
                                     <Image Source="important_white.png"
                                            Aspect="AspectFit"
                                            WidthRequest="25"
                                            HeightRequest="25"
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center" />
-                                </Frame>
+                                </Border>
                             </SwipeItemView>
                         </SwipeItems>
                     </SwipeView.RightItems>
 
                     <!-- List of added items: Contents of list -->
                     <Grid Padding="0" RowDefinitions="Auto, Auto" VerticalOptions="Fill">
-                        <Frame HeightRequest="{DynamicResource StandardSwipeItemHeight}"
+                        <Border HeightRequest="{DynamicResource StandardSwipeItemHeight}"
                                AutomationId="{Binding Title, StringFormat='Frame_{0}'}"
                                Margin="20, 5"
                                Padding="0"
                                VerticalOptions="Fill"
-                               BorderColor="Transparent"
+                               Stroke="Transparent"
+                               StrokeShape="RoundRectangle 10"
                                BackgroundColor="{DynamicResource BackgroundColorAccent}">
 
                             <!-- Contents of list: Settings -->
-                            <Frame.GestureRecognizers>
+                            <Border.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TapItemCommand}"
                                     CommandParameter="{Binding .}" />
-                            </Frame.GestureRecognizers>
+                            </Border.GestureRecognizers>
 
                             <!-- Contents of list: Content -->
                             <Grid ColumnDefinitions="*,Auto" VerticalOptions="Fill">
@@ -198,7 +200,7 @@
 
                                 </HorizontalStackLayout>
                             </Grid>
-                        </Frame>
+                        </Border>
                     </Grid>
 
                 </SwipeView>

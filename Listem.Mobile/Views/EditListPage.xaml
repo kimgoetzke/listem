@@ -9,8 +9,9 @@
 
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0">
-            <Frame HeightRequest="50" CornerRadius="15" BorderColor="Transparent"
-                   BackgroundColor="{DynamicResource BackgroundColorAccent}" />
+            <Border HeightRequest="50" Stroke="Transparent"
+                    BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                    StrokeShape="RoundRectangle 15" />
             <Grid Margin="0, 15, 0,0">
                 <BoxView VerticalOptions="End" HeightRequest="25"
                          BackgroundColor="{DynamicResource BackgroundColorAccent}">
@@ -33,18 +34,18 @@
                 <Grid Margin="5, 20, 5,0"
                       RowDefinitions="Auto, Auto">
                     <Label Grid.Row="0" Text="Name" Style="{DynamicResource ItemProperty}" />
-                    <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                    <Border Grid.Row="1" Style="{DynamicResource EntryFrame}">
                         <Entry Text="{Binding ObservableList.Name, Mode=TwoWay}"
                                AutomationId="ListNameEntry"
                                Unfocused="OnEntryUnfocused" />
-                    </Frame>
+                    </Border>
                 </Grid>
 
                 <!-- List type -->
                 <Grid Margin="5, 10, 5,0"
                       RowDefinitions="Auto, Auto">
                     <Label Grid.Row="0" Text="List type" Style="{DynamicResource ItemProperty}" />
-                    <Frame Grid.Row="1" Style="{DynamicResource EntryFrame}">
+                    <Border Grid.Row="1" Style="{DynamicResource EntryFrame}">
                         <Grid ColumnDefinitions="Auto, *"
                               VerticalOptions="Fill"
                               HorizontalOptions="Fill" ColumnSpacing="5">
@@ -59,7 +60,7 @@
                                     MinimumWidthRequest="400" MaximumWidthRequest="850"
                                     HorizontalOptions="Fill" />
                         </Grid>
-                    </Frame>
+                    </Border>
                 </Grid>
 
                 <!-- Manage categories title -->

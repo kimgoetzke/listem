@@ -68,11 +68,11 @@ public partial class MainPage
     var statusBarColor = (Color)Application.Current!.Resources["MainPageBackStatusBarColour"];
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
-    MainPageContent.CornerRadius = 20;
+    MainPageContentShape.CornerRadius = new CornerRadius(20);
     // MainPageContent.HasShadow = true; // Doesn't work yet: https://github.com/dotnet/maui/issues/11025
     MenuButton.Source = "expand_neutral.png";
-    var resize = MainPageContent.TranslateTo(Width * 0.6, 0, AnimationDuration);
-    var scaleDown = MainPageContent.ScaleTo(0.85, AnimationDuration);
+    var resize = MainPageContent.TranslateToAsync(Width * 0.6, 0, AnimationDuration);
+    var scaleDown = MainPageContent.ScaleToAsync(0.85, AnimationDuration);
     var tasks = new List<Task> { resize, scaleDown };
     await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token).ConfigureAwait(false);
 #endif
@@ -84,12 +84,12 @@ public partial class MainPage
   private async Task CloseSettings(CancellationTokenSource cancellationTokenSource)
   {
 #if __ANDROID__ || __IOS__
-    await MainPageContent.RotateYTo(0, AnimationDuration / 4);
-    var scaleBack = MainPageContent.ScaleTo(1, AnimationDuration / 4);
-    var resize = MainPageContent.TranslateTo(0, 0, AnimationDuration / 4);
+    await MainPageContent.RotateYToAsync(0, AnimationDuration / 4);
+    var scaleBack = MainPageContent.ScaleToAsync(1, AnimationDuration / 4);
+    var resize = MainPageContent.TranslateToAsync(0, 0, AnimationDuration / 4);
     var tasks = new List<Task> { scaleBack, resize };
     await Task.WhenAll(tasks).WaitAsync(cancellationTokenSource.Token);
-    MainPageContent.CornerRadius = 0;
+    MainPageContentShape.CornerRadius = new CornerRadius(0);
     // MainPageContent.HasShadow = false; // Doesn't work yet: https://github.com/dotnet/maui/issues/11025
     MenuButton.Source = "menu_neutral.png";
     var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];

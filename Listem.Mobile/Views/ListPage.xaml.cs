@@ -2,6 +2,7 @@
 using AsyncAwaitBestPractices;
 using Listem.Mobile.Models;
 using Listem.Mobile.ViewModel;
+using Microsoft.Maui.Controls.Shapes;
 #if __ANDROID__ || __IOS__
 using CommunityToolkit.Maui.Core;
 #endif
@@ -13,9 +14,9 @@ public partial class ListPage
 {
   private const uint AnimationDuration = 400u;
   private Entry EntryField { get; set; } = null!;
-  private Frame EntryFieldFrame { get; set; } = null!;
+  private Border EntryFieldFrame { get; set; } = null!;
   private Picker CategoryPicker { get; set; } = null!;
-  private Frame CategoryPickerFrame { get; set; } = null!;
+  private Border CategoryPickerFrame { get; set; } = null!;
   private Button AddButton { get; set; } = null!;
 
   private readonly ListViewModel _viewModel;
@@ -192,7 +193,7 @@ public partial class ListPage
     return categoryPicker;
   }
 
-  private Frame GetFrameForCategoryPicker()
+  private Border GetFrameForCategoryPicker()
   {
     var searchImage = new Image
     {
@@ -217,30 +218,28 @@ public partial class ListPage
     categoryPickerGrid.Add(searchImage, 0);
     categoryPickerGrid.Add(CategoryPicker, 1);
 
-    return new Frame
+    return new Border
     {
-      CornerRadius = 10,
+      StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
       HeightRequest = 40,
       Content = categoryPickerGrid,
-      BorderColor = Colors.Transparent,
+      Stroke = Colors.Transparent,
       Margin = new Thickness(10, 0),
       Padding = new Thickness(10, 0),
-      HasShadow = false,
       BackgroundColor = (Color)Application.Current!.Resources["BackgroundColor"]
     };
   }
 
-  private Frame GetFrameForEntryField()
+  private Border GetFrameForEntryField()
   {
-    return new Frame
+    return new Border
     {
-      CornerRadius = 10,
+      StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) },
       HeightRequest = 40,
       Content = EntryField,
-      BorderColor = Colors.Transparent,
+      Stroke = Colors.Transparent,
       Margin = new Thickness(10, 0),
       Padding = new Thickness(10, 0),
-      HasShadow = false,
       BackgroundColor = (Color)Application.Current!.Resources["BackgroundColor"]
     };
   }

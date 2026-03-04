@@ -5,10 +5,11 @@
            xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
            x:Class="Listem.Mobile.Views.BusyPopup"
            CanBeDismissedByTappingOutsideOfPopup="False"
-           Size="200, 200"
+           WidthRequest="200"
+           HeightRequest="200"
            HorizontalOptions="Center"
            VerticalOptions="Center"
-           Color="Transparent">
+           BackgroundColor="Transparent">
 
     <FlexLayout
         WidthRequest="200"
