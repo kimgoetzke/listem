@@ -110,7 +110,7 @@ public static class AutomationIdModel
 
     public static string DropDownItem(string name)
     {
-      return $"//android.widget.TextView[@resource-id=\"android:id/text1\" and @text=\"{name}\"]";
+      return $"//android.widget.TextView[@text=\"{name}\"] | //android.widget.CheckedTextView[@text=\"{name}\"]";
     }
   }
 }
