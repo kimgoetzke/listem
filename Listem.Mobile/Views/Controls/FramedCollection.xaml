@@ -51,6 +51,9 @@
                                     Stroke="Transparent"
                                     BackgroundColor="{DynamicResource BackgroundColorAccent}">
 
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="15" />
+                                </Border.StrokeShape>
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border"
                                                  Binding="{Binding .}"
