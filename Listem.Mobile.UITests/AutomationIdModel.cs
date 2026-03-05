@@ -84,10 +84,9 @@ public static class AutomationIdModel
     public const string CategoryPicker = "CategoryPicker";
     public const string IsImportantSwitch = "IsImportantSwitch";
     public const string QuantityStepper = "QuantityStepper";
-    public const string IncreaseQuantityButton =
-      "(//android.widget.Button[@content-desc=\"+\"])[2]";
+    public const string IncreaseQuantityButton = "//android.widget.Button[@content-desc=\"+\"]";
     public const string DecreaseQuantityButton =
-      "(//android.widget.Button[@content-desc=\"\u2212\"])[2]";
+      "//android.widget.Button[@content-desc=\"\u2212\"]";
     public const string QuantityLabel = "QuantityLabel";
   }
 
