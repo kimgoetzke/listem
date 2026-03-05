@@ -66,6 +66,7 @@ public class OrderedFeatureTest : BaseTest
     Act.OnEditListPage.ChangeListName(_testList.Name, EditedPrefix);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + EditedPrefix + _testList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.BackButton).Displayed);
     Assert.That(
       Element(EditListPage.ListNameEntry).Text,
       Is.EqualTo(EditedPrefix + _testList.Name)
@@ -80,6 +81,7 @@ public class OrderedFeatureTest : BaseTest
     Act.OnEditListPage.ChangeListType(_testList.ListType);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _testList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.BackButton).Displayed);
     Assert.That(Element(EditListPage.ListTypePicker).Text, Is.EqualTo(_testList.ListType));
   }
 
@@ -90,6 +92,7 @@ public class OrderedFeatureTest : BaseTest
     Act.OnEditListPage.AddListCategories(_testList.Categories);
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.EditButton + _testList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.BackButton).Displayed);
     AssertThat.OnEditListPage.Categories(true, _testList.Categories);
   }
 
