@@ -4,12 +4,10 @@
            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
            xmlns:mct="clr-namespace:CommunityToolkit.Maui.Views;assembly=CommunityToolkit.Maui"
            x:Class="Listem.Mobile.Views.BusyPopup"
-           CanBeDismissedByTappingOutsideOfPopup="False"
            WidthRequest="200"
            HeightRequest="200"
            HorizontalOptions="Center"
-           VerticalOptions="Center"
-           BackgroundColor="Transparent">
+           VerticalOptions="Center">
 
     <FlexLayout
         WidthRequest="200"

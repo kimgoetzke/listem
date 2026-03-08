@@ -134,6 +134,7 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
+      await Task.Delay(50);
       await _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableList.Id!);
       _listHasChanged = true;
       SortItems();

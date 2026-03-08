@@ -36,7 +36,24 @@ public static class MauiProgram
         fonts.AddFont("Mulish-Regular.ttf", "MulishRegular");
         fonts.AddFont("Mulish-Light.ttf", "MulishLight");
       })
-      .UseMauiCommunityToolkit()
+      .UseMauiCommunityToolkit(static options =>
+      {
+        options.SetPopupDefaults(
+          new DefaultPopupSettings
+          {
+            CanBeDismissedByTappingOutsideOfPopup = false,
+            BackgroundColor = Colors.Transparent,
+          }
+        );
+        options.SetPopupOptionsDefaults(
+          new DefaultPopupOptionsSettings
+          {
+            CanBeDismissedByTappingOutsideOfPopup = false,
+            Shadow = null,
+            Shape = null
+          }
+        );
+      })
       .RegisterServices()
       .RegisterViewModels()
       .RegisterViews()

@@ -1,6 +1,5 @@
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Extensions;
-using CommunityToolkit.Maui.Views;
 using Listem.Mobile.Views;
 
 namespace Listem.Mobile.Utilities;
