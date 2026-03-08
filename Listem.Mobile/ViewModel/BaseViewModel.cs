@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using AsyncAwaitBestPractices;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Listem.Mobile.Utilities;
 using Microsoft.Extensions.Logging;
 
@@ -11,44 +12,43 @@ public partial class BaseViewModel(ILogger<BaseViewModel> logger) : ObservableOb
   [ObservableProperty]
   private bool _isBusy;
 
-  private Action? _currentDismissAction;
+  private Func<Task>? _currentDismissAction;
+  private bool _isAlreadyBusy;
 
   partial void OnIsBusyChanged(bool value)
   {
+    if (_isAlreadyBusy)
+      return;
+
     if (value)
-    {
       _currentDismissAction = Notifier.ShowActivityIndicator();
-    }
     else
     {
-      _currentDismissAction?.Invoke();
+      _currentDismissAction?.Invoke().SafeFireAndForget();
       _currentDismissAction = null;
     }
   }
 
   protected async Task IsBusyWhile(Func<Task> request)
   {
+    if (_isAlreadyBusy)
+    {
+      await request.Invoke();
+      return;
+    }
+
+    _isAlreadyBusy = true;
     IsBusy = true;
+    var dismiss = Notifier.ShowActivityIndicator();
     try
     {
       await request.Invoke();
     }
     finally
     {
+      await dismiss();
       IsBusy = false;
-    }
-  }
-
-  protected T IsBusyWhile<T>(Func<T> request)
-  {
-    IsBusy = true;
-    try
-    {
-      return request.Invoke();
-    }
-    finally
-    {
-      IsBusy = false;
+      _isAlreadyBusy = false;
     }
   }
 }

@@ -13,11 +13,11 @@ public static class Notifier
     Toast.Make(message).Show(cancellationTokenSource.Token);
   }
 
-  public static Action ShowActivityIndicator()
+  public static Func<Task> ShowActivityIndicator()
   {
     var popup = new BusyPopup();
     Shell.Current.CurrentPage.ShowPopup(popup);
-    return () => popup.CloseAsync();
+    return () => Shell.Current.CurrentPage.ClosePopupAsync();
   }
 
   public static Task ShowAlertAsync(string title, string message, string button)

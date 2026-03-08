@@ -11,7 +11,7 @@ public interface IClipboardService
     string listId
   );
 
-  void CopyToClipboard(
+  Task CopyToClipboard(
     ObservableCollection<ObservableItem> items,
     ObservableCollection<ObservableCategory> categories
   );

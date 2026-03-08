@@ -210,9 +210,9 @@ public partial class MainViewModel : BaseViewModel, IDisposable
       }
 
       await _listService.DeleteAsync(list);
-      Lists.Remove(list);
-      OnPropertyChanged(nameof(Lists));
     });
+    Lists.Remove(list);
+    OnPropertyChanged(nameof(Lists));
   }
 
   private static async Task<bool> IsDeletionConfirmedByUser(string listName)
@@ -247,7 +247,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   private async Task TapList(ObservableList list)
   {
     Logger.Info("Opening list: {List}", list.ToLoggableString());
-    var listPage = IsBusyWhile(() => new ListPage(list, _serviceProvider));
+    var listPage = new ListPage(list, _serviceProvider);
     await Shell.Current.Navigation.PushAsync(listPage);
   }
 
@@ -255,7 +255,7 @@ public partial class MainViewModel : BaseViewModel, IDisposable
   private async Task EditList(ObservableList list)
   {
     Logger.Info("Editing list: {List}", list.ToLoggableString());
-    var editListPage = IsBusyWhile(() => new EditListPage(list, _serviceProvider));
+    var editListPage = new EditListPage(list, _serviceProvider);
     await Shell.Current.Navigation.PushModalAsync(editListPage);
   }
 
@@ -278,9 +278,8 @@ public partial class MainViewModel : BaseViewModel, IDisposable
           await _itemService.DeleteAllByListIdAsync(list.Id);
         await _listService.DeleteAsync(list);
       }
-
-      OnPropertyChanged(nameof(Lists));
     });
+    OnPropertyChanged(nameof(Lists));
     await Shell.Current.Navigation.PopToRootAsync();
   }
 

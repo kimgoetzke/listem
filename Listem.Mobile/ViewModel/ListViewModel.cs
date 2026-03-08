@@ -99,16 +99,13 @@ public partial class ListViewModel : BaseViewModel
   [RelayCommand]
   private async Task RemoveItem(ObservableItem i)
   {
-    var previousStage = IsBusy;
-    IsBusy = true;
-    await _itemService.DeleteAsync(i);
+    await IsBusyWhile(async () => await _itemService.DeleteAsync(i));
     ObservableList.Items.Remove(i);
     Items.Remove(i);
     var value = new ItemChangedDto(ObservableList.Id!, i);
     WeakReferenceMessenger.Default.Send(new ItemRemovedFromListMessage(value));
     OnPropertyChanged(nameof(ObservableList));
     _listHasChanged = true;
-    IsBusy = previousStage;
   }
 
   [RelayCommand]
@@ -127,9 +124,9 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
-  private void CopyToClipboard()
+  private async Task CopyToClipboard()
   {
-    _clipboardService.CopyToClipboard(Items, Categories);
+    await _clipboardService.CopyToClipboard(Items, Categories);
   }
 
   [RelayCommand]

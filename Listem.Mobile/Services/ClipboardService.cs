@@ -49,7 +49,7 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
 
   private static bool IsClipboardEmpty(string? import)
   {
-    if (import != null)
+    if (!string.IsNullOrEmpty(import))
       return false;
 
     Notifier.ShowToast("Nothing to import - your clipboard is empty");
@@ -182,13 +182,13 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
     }
   }
 
-  public void CopyToClipboard(
+  public async Task CopyToClipboard(
     ObservableCollection<ObservableItem> items,
     ObservableCollection<ObservableCategory> categories
   )
   {
     var text = BuildStringFromList(items, categories);
-    Clipboard.SetTextAsync(text);
+    await Clipboard.SetTextAsync(text);
     logger.Info("Copied to clipboard: {Text}", text.Replace(Environment.NewLine, ", "));
     Notifier.ShowToast("Copied list to clipboard");
   }
