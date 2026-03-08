@@ -48,8 +48,6 @@ public class UpgradeMauiRegression : BaseTest
       {
         // Copy empty list to clipboard (effectively clearing clipboard content)
         Element(ListPage.CopyToClipboardButton).Click();
-
-        // TODO: Remove the below once the issue is understood
         await Task.Delay(100);
 
         // Paste empty list from clipboard
