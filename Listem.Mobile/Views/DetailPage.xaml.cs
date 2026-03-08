@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Listem.Mobile.Models;
+using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
 
 namespace Listem.Mobile.Views;
@@ -14,6 +15,12 @@ public partial class DetailPage
       throw new NullReferenceException("ServiceProvider is null");
 
     BindingContext = new DetailViewModel(item, list, sp);
+  }
+
+  protected override void OnAppearing()
+  {
+    base.OnAppearing();
+    ThemeHandler.ResetStatusBarToThemeColour();
   }
 
   private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)

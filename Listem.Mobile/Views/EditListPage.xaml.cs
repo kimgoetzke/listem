@@ -1,4 +1,5 @@
 ﻿using Listem.Mobile.Models;
+using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
 
 namespace Listem.Mobile.Views;
@@ -22,6 +23,7 @@ public partial class EditListPage
   protected override void OnAppearing()
   {
     base.OnAppearing();
+    ThemeHandler.ResetStatusBarToThemeColour();
     StickyEntryCategory.SetVisibility(false);
   }
 

@@ -93,4 +93,32 @@ public static class ThemeHandler
       AndroidPlatform.CurrentActivity.Window.SetStatusBarColor(statusBarColor.ToAndroid());
 #endif
   }
+
+  /// Resets the status bar to the theme's standard background colour. Call this from
+  /// <c>OnAppearing()</c> on any page that does not manage its own custom status bar colour,
+  /// to guard against Android 14 resetting the colour to the native theme default on navigation.
+  [System.Diagnostics.CodeAnalysis.SuppressMessage(
+    "Interoperability",
+    "CA1416:Validate platform compatibility"
+  )]
+  public static void ResetStatusBarToThemeColour()
+  {
+#if __ANDROID__ || __IOS__
+    var application = Application.Current;
+    if (application == null)
+      return;
+
+    if (!application.Resources.TryGetValue("StatusBarColor", out var colorValue))
+    {
+      Logger.Warn("StatusBarColor not found in resources");
+      return;
+    }
+
+    var statusBarColor = (Color)colorValue;
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
+      CommunityToolkit.Maui.Core.StatusBarStyle.DarkContent
+    );
+#endif
+  }
 }

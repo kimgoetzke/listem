@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AsyncAwaitBestPractices;
 using Listem.Mobile.Models;
+using Listem.Mobile.Utilities;
 using Listem.Mobile.ViewModel;
 using Microsoft.Maui.Controls.Shapes;
 #if __ANDROID__ || __IOS__
@@ -55,15 +56,10 @@ public partial class ListPage
     _viewModel.SortItems();
   }
 
-  [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
   protected override void OnDisappearing()
   {
     base.OnDisappearing();
-#if __ANDROID__ || __IOS__
-    var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
-#endif
+    ThemeHandler.ResetStatusBarToThemeColour();
   }
 
   private Grid CreateGridOnDesktop(IView importantGrid)
