@@ -91,6 +91,16 @@ public abstract class TestHelper : BaseTest
         Element(StickyEntry.SubmitButton).Click();
       }
 
+      public static void ToggleRecurringList(bool enable)
+      {
+        var toggle = Element(EditListPage.RecurringListSwitch);
+        var isChecked = toggle.GetAttribute("checked").Equals("true");
+        if (isChecked != enable)
+        {
+          toggle.Click();
+        }
+      }
+
       public static void SwipeDeleteCategory(string category)
       {
         var windowSize = AppiumSetup.AppiumDriver.Manage().Window.Size;
@@ -275,6 +285,15 @@ public abstract class TestHelper : BaseTest
       public static void CategoryIsDeleted(string category)
       {
         Assert.That(OptionalElement(EditListPage.Categories.Label + category), Is.Null);
+      }
+
+      public static void RecurringListIsEnabled(bool expected)
+      {
+        var toggle = Element(EditListPage.RecurringListSwitch);
+        Assert.That(
+          toggle.GetAttribute("checked").ToLower(),
+          Is.EqualTo(expected.ToString().ToLower())
+        );
       }
     }
 

@@ -33,6 +33,7 @@ public static class AutomationIdModel
     public const string ListTypePicker = "ListTypePicker";
     public const string AddCategoryButton = "AddCategoryButton";
     public const string ResetCategoriesButton = "ResetCategoriesButton";
+    public const string RecurringListSwitch = "RecurringListSwitch";
     public const string ShareButton = "ShareButton";
     public const string UnshareButton = "UnshareButton";
 

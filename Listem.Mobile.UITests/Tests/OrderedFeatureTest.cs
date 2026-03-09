@@ -153,6 +153,46 @@ public class OrderedFeatureTest : BaseTest
   }
 
   [Test]
+  [Order(34)]
+  public void CanEnableRecurringList()
+  {
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.EditButton + _testList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.ListNameEntry).Displayed);
+    Act.OnEditListPage.ToggleRecurringList(true);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.EditButton + _testList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.ListNameEntry).Displayed);
+    AssertThat.OnEditListPage.RecurringListIsEnabled(true);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
+    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
+    TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanEnableRecurringList));
+  }
+
+  [Test]
+  [Order(35)]
+  public void CanRetainItems_TickAndLeaveRecurringList()
+  {
+    Element(ListPage.Item.DoneBox + _testList.Items[0].Name).Click();
+    Element(ListPage.Item.DoneBox + _testList.Items[1].Name).Click();
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
+    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[0]);
+    AssertThat.OnListPage.ItemIsCreated(_testList.Items[1]);
+    TakeScreenshot(nameof(OrderedFeatureTest), nameof(CanRetainItems_TickAndLeaveRecurringList));
+    // Disable recurring to restore standard behaviour for subsequent tests
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.EditButton + _testList.Name).Click();
+    Wait().Until(_ => Element(EditListPage.ListNameEntry).Displayed);
+    Act.OnEditListPage.ToggleRecurringList(false);
+    Act.NavigateBackAndAwait(MainPage.MenuButton);
+    Element(MainPage.List.ListTitle + _testList.Name).Click();
+    Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
+  }
+
+  [Test]
   [Order(37)]
   public void CanRemoveItems_TickAndLeaveList()
   {

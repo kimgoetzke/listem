@@ -63,6 +63,24 @@
                     </Border>
                 </Grid>
 
+                <!-- Recurring list -->
+                <Grid Margin="5, 10, 5, 0"
+                      RowDefinitions="Auto, Auto, Auto"
+                      ColumnDefinitions="*, Auto">
+                    <Label Grid.Row="0" Grid.ColumnSpan="2"
+                           Text="Recurring list" Style="{DynamicResource ItemProperty}" />
+                    <Label Grid.Row="1" Grid.Column="0"
+                           Text="Items ticked and left will stay in the list, ready for next time."
+                           VerticalOptions="Center"
+                           TextColor="{DynamicResource LightTextColor}"
+                           FontSize="{DynamicResource FontSizeS}" />
+                    <Switch Grid.Row="1" Grid.Column="1"
+                            AutomationId="RecurringListSwitch"
+                            IsToggled="{Binding ObservableList.IsRecurring, Mode=TwoWay}"
+                            HorizontalOptions="End"
+                            VerticalOptions="Center" />
+                </Grid>
+
                 <!-- Manage categories title -->
                 <Label Text="Manage categories" Style="{DynamicResource ItemProperty}"
                        Padding="5, 10, 5,0" />

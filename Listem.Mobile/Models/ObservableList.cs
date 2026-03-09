@@ -24,6 +24,9 @@ public partial class ObservableList : ObservableObject
   [ObservableProperty]
   private DateTime _updatedOn = DateTime.Now;
 
+  [ObservableProperty]
+  private bool _isRecurring;
+
   public static ObservableList From(List list)
   {
     return new ObservableList
@@ -31,6 +34,7 @@ public partial class ObservableList : ObservableObject
       Id = list.Id,
       Name = list.Name,
       ListType = list.ListType,
+      IsRecurring = list.IsRecurring,
       AddedOn = list.AddedOn,
       UpdatedOn = list.UpdatedOn
     };
@@ -47,6 +51,7 @@ public partial class ObservableList : ObservableObject
       Id = Id,
       Name = Name,
       ListType = ListType,
+      IsRecurring = IsRecurring,
       AddedOn = AddedOn,
       UpdatedOn = UpdatedOn
     };

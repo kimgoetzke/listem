@@ -52,6 +52,7 @@ public partial class EditListViewModel : BaseViewModel
   private bool _listHasChanged;
   private readonly string _originalListName;
   private readonly ListType _originalListType;
+  private readonly bool _originalIsRecurring;
   private readonly ICategoryService _categoryService;
   private readonly IItemService _itemService;
   private readonly IListService _listService;
@@ -65,6 +66,7 @@ public partial class EditListViewModel : BaseViewModel
     ObservableList = list;
     _originalListName = list.Name;
     _originalListType = list.ListType;
+    _originalIsRecurring = list.IsRecurring;
     ListTypes = new ObservableCollection<ListType>(
       Enum.GetValues(typeof(ListType)).Cast<ListType>()
     );
@@ -182,7 +184,9 @@ public partial class EditListViewModel : BaseViewModel
   [RelayCommand]
   private async Task SaveAndBack()
   {
-    if (_originalListName != ObservableList.Name || _originalListType != ObservableList.ListType)
+    if (_originalListName != ObservableList.Name
+        || _originalListType != ObservableList.ListType
+        || _originalIsRecurring != ObservableList.IsRecurring)
     {
       Logger.Info("Name or type of list has changed, marking list as modified");
       _listHasChanged = true;

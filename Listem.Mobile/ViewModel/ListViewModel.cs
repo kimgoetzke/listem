@@ -146,7 +146,14 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
-      await DeleteSelectedItemsIfAny();
+      if (ObservableList.IsRecurring)
+      {
+        ItemsToDelete.Clear();
+      }
+      else
+      {
+        await DeleteSelectedItemsIfAny();
+      }
 
       if (_listHasChanged)
       {

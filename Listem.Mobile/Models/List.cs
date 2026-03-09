@@ -10,6 +10,7 @@ public class List
   public ListType ListType { get; set; }
   public DateTime AddedOn { get; set; }
   public DateTime UpdatedOn { get; set; }
+  public bool IsRecurring { get; set; }
 
   public override string ToString()
   {
