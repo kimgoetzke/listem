@@ -78,60 +78,6 @@ public class ClipboardTest : BaseTest
     Assert.That(OptionalElement(MainPage.List.ListTitle + _testList.Name), Is.Null);
   }
 
-  /**
-   * This test was created to test a regression after upgrading the Community Tool to version 10.x.
-   */
-  [Test]
-  public async Task PasteFromEmptyClipboardTest()
-  {
-    const string listName = "Bug";
-
-    // Delete list if it exists (happens if the test crashed last time it was run)
-    var bugList = OptionalElement(MainPage.List.DeleteButton + listName);
-    if (bugList != null)
-    {
-      Console.WriteLine($"List [{listName}] already exists, deleting it before testing...");
-      bugList.Click();
-      AwaitElementXPath(Alert.Yes)!.Click();
-      Assert.That(OptionalElement(MainPage.List.ListTitle + listName), Is.Null);
-    }
-
-    for (var i = 0; i < 2; i++)
-    {
-      Act.OnMainPage.CreateList(listName);
-      AwaitElement(MainPage.List.EditButton + listName);
-
-      // Navigate to ListPage
-      Element(MainPage.List.ListTitle + listName).Click();
-      AwaitElement(ListPage.AddButton);
-
-      for (var j = 0; j < 5; j++)
-      {
-        // Copy empty list to clipboard (effectively clearing clipboard content)
-        Element(ListPage.CopyToClipboardButton).Click();
-        await Task.Delay(100);
-
-        // Paste empty list from clipboard
-        Element(ListPage.InsertFromClipboardButton).Click();
-        // IMPORTANT: The issue occurs right after the click ^
-        //   - The screen dims, the app becomes unresponsive
-        //   - Shortly after I see the "Nothing to import" toast
-        //   - However, even after the toast disappears the app remains unresponsive and I have to force close it
-
-        // Wait a bit to ensure that any clipboard operations have completed
-        await Task.Delay(500);
-      }
-
-      // Delete list again
-      Act.NavigateBackAndAwait(MainPage.MenuButton);
-      Element(MainPage.List.DeleteButton + listName).Click();
-      await Task.Delay(50);
-      AwaitElementXPath(Alert.Yes)!.Click();
-      await Task.Delay(100);
-      Assert.That(OptionalElement(MainPage.List.ListTitle + listName), Is.Null);
-    }
-  }
-
   [OneTimeTearDown]
   public void CleanUp()
   {

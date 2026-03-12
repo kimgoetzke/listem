@@ -70,9 +70,9 @@
                     <Label Grid.Row="0" Grid.ColumnSpan="2"
                            Text="Recurring list" Style="{DynamicResource ItemProperty}" />
                     <Label Grid.Row="1" Grid.Column="0"
-                           Text="Items ticked and left will stay in the list, ready for next time."
+                           Text="Bulk selecting items and leaving the list will no longer remove them from the list. Instead items ticked and left will stay in the list, ready for next time. You can still swipe to complete items permanently."
                            VerticalOptions="Center"
-                           TextColor="{DynamicResource LightTextColor}"
+                           Style="{DynamicResource ItemProperty}"
                            FontSize="{DynamicResource FontSizeS}" />
                     <Switch Grid.Row="1" Grid.Column="1"
                             AutomationId="RecurringListSwitch"
