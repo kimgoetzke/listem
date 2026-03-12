@@ -6,8 +6,10 @@ namespace Listem.Mobile.UITests.Tests;
 [TestFixture]
 public class MainPageOrderTest : BaseTest
 {
-  private readonly TestData.TestList _testList1 = TestData.FeatureList;
-  private readonly TestData.TestList _testList2 = TestData.StandardList;
+  private readonly TestData.TestList _testList1 =
+    new("Shopping", TestData.StoreListItems, ShoppingListType, ["Store-1", "Store-2"]);
+  private readonly TestData.TestList _testList2 =
+    new("Standard", TestData.StandardListItems, DefaultListType, ["Cat-A", "Cat-B"]);
   private const string EditedPrefix = "Edited";
 
   [SetUp]

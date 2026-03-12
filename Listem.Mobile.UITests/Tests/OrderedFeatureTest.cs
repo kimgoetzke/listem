@@ -6,7 +6,8 @@ namespace Listem.Mobile.UITests.Tests;
 [TestFixture]
 public class OrderedFeatureTest : BaseTest
 {
-  private readonly TestData.TestList _testList = TestData.FeatureList;
+  private readonly TestData.TestList _testList =
+    new("Features", TestData.StoreListItems, ShoppingListType, ["Store-1", "Store-2"]);
   private const string EditedPrefix = "Edited";
 
   [OneTimeSetUp]

@@ -5,7 +5,8 @@ namespace Listem.Mobile.UITests.Tests;
 
 public class ClipboardTest : BaseTest
 {
-  private readonly TestData.TestList _testList = TestData.ClipboardList;
+  private readonly TestData.TestList _testList =
+    new("Clipboard", TestData.StoreListItems, ShoppingListType, ["Store-1", "Store-2"]);
 
   [OneTimeSetUp]
   public void SetUp()
