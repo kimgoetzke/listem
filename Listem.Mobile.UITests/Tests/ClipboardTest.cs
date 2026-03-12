@@ -50,10 +50,8 @@ public class ClipboardTest : BaseTest
     // Clear list again
     foreach (var item in _testList.Items)
     {
-      Act.OnListPage.SwipeDeleteItem(item.Name);
-      await Task.Delay(1000);
+      Element(ListPage.Item.DoneBox + item.Name).Click();
     }
-
     Act.NavigateBackAndAwait(MainPage.MenuButton, 10);
     Element(MainPage.List.ListTitle + _testList.Name).Click();
     AwaitElement(ListPage.AddButton);
