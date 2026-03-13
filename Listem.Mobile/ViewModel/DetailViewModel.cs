@@ -22,6 +22,7 @@ public partial class DetailViewModel : BaseViewModel
   private ObservableItem _item;
 
   public ListType ListType { get; }
+  public bool IsRecurring { get; }
 
   private readonly IItemService _itemService;
   private readonly ICategoryService _categoryService;
@@ -33,6 +34,7 @@ public partial class DetailViewModel : BaseViewModel
     _categoryService = sp.GetService<ICategoryService>()!;
     Item = item;
     ListType = list.ListType;
+    IsRecurring = list.IsRecurring;
     CurrentCategory = new ObservableCategory(item.ListId);
     SetCategories();
   }

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+        <PackageReference Include="NUnit" Version="4.5.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
+        <PackageReference Include="NUnit.Analyzers" Version="4.11.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="coverlet.collector" Version="8.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Include="..\Listem.Mobile\Constants.cs" Link="Production\Constants.cs" />
+        <Compile Include="..\Listem.Mobile\Utilities\IdProvider.cs" Link="Production\Utilities\IdProvider.cs" />
+        <Compile Include="..\Listem.Mobile\Utilities\ItemSorter.cs" Link="Production\Utilities\ItemSorter.cs" />
+        <Compile Include="..\Listem.Mobile\Models\Item.cs" Link="Production\Models\Item.cs" />
+        <Compile Include="..\Listem.Mobile\Models\ObservableItem.cs" Link="Production\Models\ObservableItem.cs" />
+        <Compile Include="..\Listem.Mobile\Services\ClipboardService.Rules.cs" Link="Production\Services\ClipboardService.Rules.cs" />
+    </ItemGroup>
+
+</Project>

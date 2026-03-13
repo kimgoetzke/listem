@@ -124,14 +124,20 @@ public abstract class TestHelper : BaseTest
     {
       public static void AddItemToList(TestData.TestItem item)
       {
-        AddItemToList(item.Name, item.Category, item.Quantity, item.IsImportant);
+        AddItemToList(item, null);
+      }
+
+      public static void AddItemToList(TestData.TestItem item, bool? isActive)
+      {
+        AddItemToList(item.Name, item.Category, item.Quantity, item.IsImportant, isActive);
       }
 
       public static void AddItemToList(
         string itemName,
         string categoryName,
         int quantity,
-        bool isImportant
+        bool isImportant,
+        bool? isActive = null
       )
       {
         // Name
@@ -152,10 +158,23 @@ public abstract class TestHelper : BaseTest
         }
 
         // Importance
-        var isImportantSwitch = Element(ListPage.IsImportantSwitch);
-        if (isImportantSwitch.GetAttribute("checked").Equals("false") && isImportant)
+        var isImportantSwitch = OptionalElement(ListPage.IsImportantSwitch);
+        if (isImportantSwitch != null)
         {
-          isImportantSwitch.Click();
+          var expected = isImportant.ToString().ToLower();
+          if (!isImportantSwitch.GetAttribute("checked").ToLower().Equals(expected))
+          {
+            isImportantSwitch.Click();
+          }
+        }
+        else
+        {
+          var isActiveSwitch = Element(ListPage.IsActiveSwitch);
+          var expected = (isActive ?? true).ToString().ToLower();
+          if (!isActiveSwitch.GetAttribute("checked").ToLower().Equals(expected))
+          {
+            isActiveSwitch.Click();
+          }
         }
 
         Element(ListPage.AddButton).Click();
@@ -202,6 +221,15 @@ public abstract class TestHelper : BaseTest
       {
         var element = Element(DetailPage.IsImportantSwitch);
         if (!element.GetAttribute("checked").ToLower().Equals(isImportant.ToString().ToLower()))
+        {
+          element.Click();
+        }
+      }
+
+      public static void SetItemIsActive(bool isActive)
+      {
+        var element = Element(DetailPage.IsActiveSwitch);
+        if (!element.GetAttribute("checked").ToLower().Equals(isActive.ToString().ToLower()))
         {
           element.Click();
         }
@@ -301,18 +329,25 @@ public abstract class TestHelper : BaseTest
     {
       public static void ItemIsCreated(TestData.TestItem item)
       {
-        ItemIsCreated(item.Name, item.Category, item.Quantity, item.IsImportant);
+        ItemIsCreated(item, null);
+      }
+
+      public static void ItemIsCreated(TestData.TestItem item, bool? showImportantIcon)
+      {
+        ItemIsCreated(item.Name, item.Category, item.Quantity, item.IsImportant, showImportantIcon);
       }
 
       public static void ItemIsCreated(
         string itemName,
         string categoryName,
         int quantity,
-        bool isImportant
+        bool isImportant,
+        bool? showImportantIcon = null
       )
       {
         var label = AwaitElement(ListPage.Item.Label + itemName);
         var isImportantIcon = OptionalElement(ListPage.Item.IsImportantIcon + itemName);
+        var shouldShowImportantIcon = showImportantIcon ?? isImportant;
 
         Assert.Multiple(() =>
         {
@@ -326,7 +361,7 @@ public abstract class TestHelper : BaseTest
           QuantityIsCorrect(itemName, quantity);
 
           // Importance
-          if (isImportant)
+          if (shouldShowImportantIcon)
           {
             Assert.That(isImportantIcon!.Displayed, Is.True);
           }
@@ -384,8 +419,17 @@ public abstract class TestHelper : BaseTest
       {
         var isImportantSwitch = Element(DetailPage.IsImportantSwitch);
         Assert.That(
-          isImportantSwitch.GetAttribute("checked").ToLower(),
+          isImportantSwitch.GetAttribute("checked")?.ToLower(),
           Is.EqualTo(isImportant.ToString().ToLower())
+        );
+      }
+
+      public static void ItemIsActive(bool isActive)
+      {
+        var isActiveSwitch = Element(DetailPage.IsActiveSwitch);
+        Assert.That(
+          isActiveSwitch.GetAttribute("checked")?.ToLower(),
+          Is.EqualTo(isActive.ToString().ToLower())
         );
       }
 

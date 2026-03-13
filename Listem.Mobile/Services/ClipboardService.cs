@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Listem.Mobile.Services;
 
-public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> logger)
+public partial class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> logger)
   : IClipboardService
 {
   private readonly ICategoryService _categoryService = sp.GetService<ICategoryService>()!;
@@ -17,7 +17,8 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
   public async Task InsertFromClipboardAsync(
     ObservableCollection<ObservableItem> observableItems,
     ObservableCollection<ObservableCategory> categories,
-    string listId
+    string listId,
+    bool isRecurring
   )
   {
     var import = await Clipboard.GetTextAsync();
@@ -31,6 +32,7 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
         listId,
         import!,
         observableCategories.ToList(),
+        isRecurring,
         out var itemCount,
         out var categoryCount,
         out var itemList,
@@ -60,6 +62,7 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
     string listId,
     string import,
     List<ObservableCategory> categories,
+    bool isRecurring,
     out int itemCount,
     out int categoryCount,
     out List<ObservableItem> itemList,
@@ -83,7 +86,7 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
         continue;
       }
 
-      AddItem(ref itemCount, itemList, substring, categoryName, listId);
+      AddItem(ref itemCount, itemList, substring, categoryName, listId, isRecurring);
     }
 
     if (itemCount != 0)
@@ -98,7 +101,8 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
     List<ObservableItem> itemList,
     string substring,
     string categoryName,
-    string listId
+    string listId,
+    bool isRecurring
   )
   {
     var (title, quantity, isImportant) = StringProcessor.ExtractItem(substring);
@@ -108,7 +112,8 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
       Title = processedTitle,
       CategoryName = categoryName,
       Quantity = quantity,
-      IsImportant = isImportant
+      IsImportant = ResolveIsImportantOnImport(isRecurring, isImportant),
+      IsActive = ResolveIsActiveOnImport()
     };
     itemList.Add(item);
     itemCount++;
@@ -184,10 +189,11 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
 
   public async Task CopyToClipboard(
     ObservableCollection<ObservableItem> items,
-    ObservableCollection<ObservableCategory> categories
+    ObservableCollection<ObservableCategory> categories,
+    bool isRecurring
   )
   {
-    var text = BuildStringFromList(items, categories);
+    var text = BuildStringFromList(items, categories, isRecurring);
     await Clipboard.SetTextAsync(text);
     logger.Info("Copied to clipboard: {Text}", text.Replace(Environment.NewLine, ", "));
     Notifier.ShowToast("Copied list to clipboard");
@@ -195,13 +201,17 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
 
   private static string BuildStringFromList(
     ObservableCollection<ObservableItem> items,
-    ObservableCollection<ObservableCategory> categories
+    ObservableCollection<ObservableCategory> categories,
+    bool isRecurring
   )
   {
     var builder = new StringBuilder();
     foreach (var category in categories)
     {
-      var itemsFromStore = items.Where(item => item.CategoryName == category.Name).ToList();
+      var itemsFromStore = items
+        .Where(item => item.CategoryName == category.Name)
+        .Where(item => ShouldIncludeInExport(isRecurring, item.IsActive))
+        .ToList();
       if (itemsFromStore.Count == 0)
         continue;
       builder.AppendLine($"[{category.Name}]:");
@@ -210,7 +220,7 @@ public class ClipboardService(IServiceProvider sp, ILogger<ClipboardService> log
         builder.Append(item);
         if (item.Quantity > 1)
           builder.Append($" ({item.Quantity})");
-        if (item.IsImportant)
+        if (!isRecurring && item.IsImportant)
           builder.Append('!');
         builder.AppendLine();
       }

@@ -22,11 +22,6 @@ Listem.sln.DotSettings.user
 /Listem.Mobile/FodyWeavers.xsd
 /Listem.Mobile/bin/
 /Listem.Mobile/listem.keystore
-# Shared
-/Listem.Shared/obj/
-/Listem.Shared/bin/
 # API
-/Listem.API/obj/
-/Listem.API/bin/
-/Listem.API/Migrations/
-/Listem.API/Database/
+/Listem.Mobile.UnitTests/obj/
+/Listem.Mobile.UnitTests/bin/

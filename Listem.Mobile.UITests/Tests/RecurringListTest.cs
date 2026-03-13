@@ -75,12 +75,31 @@ public class RecurringListTest : BaseTest
     Act.NavigateBackAndAwait(MainPage.MenuButton);
     Element(MainPage.List.ListTitle + TestList.Name).Click();
     Wait(5).Until(_ => Element(ListPage.AddButton).Displayed);
-    AssertThat.OnListPage.ItemIsCreated(TestList.Items[0]);
-    AssertThat.OnListPage.ItemIsCreated(TestList.Items[1]);
+    AssertThat.OnListPage.ItemIsCreated(TestList.Items[0], false);
+    AssertThat.OnListPage.ItemIsCreated(TestList.Items[1], false);
   }
 
   [Test]
   [Order(3)]
+  public void CanEditItemActivityOnDetailPage()
+  {
+    Element(ListPage.Item.Label + TestList.Items[1].Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
+    Assert.That(OptionalElement(DetailPage.IsImportantSwitch), Is.Null);
+    Assert.That(Element(DetailPage.IsActiveSwitch), Is.Not.Null);
+    AssertThat.OnDetailPage.ItemIsActive(true);
+    Act.OnDetailPage.SetItemIsActive(false);
+    AssertThat.OnDetailPage.ItemIsActive(false);
+    Act.NavigateBackAndAwait(ListPage.AddButton);
+    Element(ListPage.Item.Label + TestList.Items[1].Name).Click();
+    Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
+    AssertThat.OnDetailPage.ItemIsActive(false);
+    Act.OnDetailPage.SetItemIsActive(true);
+    Act.NavigateBackAndAwait(ListPage.AddButton);
+  }
+
+  [Test]
+  [Order(4)]
   public async Task CanStillRemoveItems_SwipeComplete()
   {
     Act.OnListPage.SwipeDeleteItem(TestList.Items[2].Name);

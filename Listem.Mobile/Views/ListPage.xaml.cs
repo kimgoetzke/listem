@@ -36,10 +36,10 @@ public partial class ListPage
     EntryFieldFrame = GetFrameForEntryField();
     CategoryPicker = GetCategoryPicker();
     CategoryPickerFrame = GetFrameForCategoryPicker();
-    var isImportantGrid = GetImportantGrid();
+    var itemOptionGrid = _viewModel.ObservableList.IsRecurring ? GetActiveGrid() : GetImportantGrid();
     AddButton = GetAddButton();
 #if __IOS__ || __ANDROID__
-    var menuGrid = CreateGridOnMobile(isImportantGrid);
+    var menuGrid = CreateGridOnMobile(itemOptionGrid);
 #endif
     PageContentGrid.Add(menuGrid, 0, 1);
   }
@@ -62,7 +62,7 @@ public partial class ListPage
     ThemeHandler.ResetStatusBarToThemeColour();
   }
 
-  private Grid CreateGridOnDesktop(IView importantGrid)
+  private Grid CreateGridOnDesktop(IView itemOptionGrid)
   {
     var menuGrid = new Grid
     {
@@ -93,12 +93,12 @@ public partial class ListPage
       Grid.SetColumnSpan(CategoryPickerFrame, 2);
     }
 
-    menuGrid.Add(importantGrid, 4);
+    menuGrid.Add(itemOptionGrid, 4);
     menuGrid.Add(AddButton, 5);
     return menuGrid;
   }
 
-  private Grid CreateGridOnMobile(IView importantGrid)
+  private Grid CreateGridOnMobile(IView itemOptionGrid)
   {
     var menuGrid = new Grid
     {
@@ -132,7 +132,7 @@ public partial class ListPage
       Grid.SetColumnSpan(CategoryPickerFrame, 2);
     }
 
-    menuGrid.Add(importantGrid, 2, 1);
+    menuGrid.Add(itemOptionGrid, 2, 1);
     return menuGrid;
   }
 
@@ -318,5 +318,31 @@ public partial class ListPage
     isImportantSwitch.SetBinding(Switch.IsToggledProperty, "NewObservableItem.IsImportant");
     isImportantGrid.Add(isImportantSwitch, 0);
     return isImportantGrid;
+  }
+
+  private static Grid GetActiveGrid()
+  {
+    var isActiveGrid = new Grid { Margin = new Thickness(5) };
+    var isActiveLabel = new Label
+    {
+      Text = "Active",
+      FontSize = (double)Application.Current!.Resources["FontSizeS"],
+      FontFamily = "MulishSemiBold",
+      HorizontalTextAlignment = TextAlignment.Center,
+      VerticalOptions = LayoutOptions.Start,
+      Margin = new Thickness(0, 8, 0, 0)
+    };
+    isActiveGrid.Add(isActiveLabel, 0);
+    var isActiveSwitch = new Switch
+    {
+      HorizontalOptions = LayoutOptions.Center,
+      VerticalOptions = LayoutOptions.Start,
+      Scale = 0.8,
+      AutomationId = "ListPageIsActiveSwitch",
+      Margin = new Thickness(0, 15, 0, 0)
+    };
+    isActiveSwitch.SetBinding(Switch.IsToggledProperty, "NewObservableItem.IsActive");
+    isActiveGrid.Add(isActiveSwitch, 0);
+    return isActiveGrid;
   }
 }

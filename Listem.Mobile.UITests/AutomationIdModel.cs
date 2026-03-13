@@ -58,6 +58,7 @@ public static class AutomationIdModel
     public const string AddButton = "ListPageAddButton";
     public const string QuantityStepper = "ListPageQuantityStepper";
     public const string IsImportantSwitch = "ListPageIsImportantSwitch";
+    public const string IsActiveSwitch = "ListPageIsActiveSwitch";
     public const string InsertFromClipboardButton = "InsertFromClipboardButton";
     public const string CopyToClipboardButton = "CopyToClipboardButton";
 
@@ -84,6 +85,7 @@ public static class AutomationIdModel
     public const string NameEntry = "ItemNameEntry";
     public const string CategoryPicker = "CategoryPicker";
     public const string IsImportantSwitch = "IsImportantSwitch";
+    public const string IsActiveSwitch = "IsActiveSwitch";
     public const string QuantityStepper = "QuantityStepper";
     public const string IncreaseQuantityButton = "//android.widget.Button[@content-desc=\"+\"]";
     public const string DecreaseQuantityButton =

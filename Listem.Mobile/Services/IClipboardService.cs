@@ -8,11 +8,13 @@ public interface IClipboardService
   Task InsertFromClipboardAsync(
     ObservableCollection<ObservableItem> items,
     ObservableCollection<ObservableCategory> categories,
-    string listId
+    string listId,
+    bool isRecurring
   );
 
   Task CopyToClipboard(
     ObservableCollection<ObservableItem> items,
-    ObservableCollection<ObservableCategory> categories
+    ObservableCollection<ObservableCategory> categories,
+    bool isRecurring
   );
 }

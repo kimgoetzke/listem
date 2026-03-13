@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using AsyncAwaitBestPractices;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -122,6 +122,14 @@ public partial class ListViewModel : BaseViewModel
   }
 
   [RelayCommand]
+  private async Task ToggleActive(ObservableItem i)
+  {
+    i.IsActive = !i.IsActive;
+    await _itemService.CreateOrUpdateAsync(i);
+    SortItems();
+  }
+
+  [RelayCommand]
   private async Task TapItem(ObservableItem item)
   {
     Logger.Info("Opening item: {Item}", item.ToLoggableString());
@@ -131,7 +139,7 @@ public partial class ListViewModel : BaseViewModel
   [RelayCommand]
   private async Task CopyToClipboard()
   {
-    await _clipboardService.CopyToClipboard(Items, Categories);
+    await _clipboardService.CopyToClipboard(Items, Categories, ObservableList.IsRecurring);
   }
 
   [RelayCommand]
@@ -140,7 +148,12 @@ public partial class ListViewModel : BaseViewModel
     await IsBusyWhile(async () =>
     {
       await Task.Delay(50);
-      await _clipboardService.InsertFromClipboardAsync(Items, Categories, ObservableList.Id!);
+      await _clipboardService.InsertFromClipboardAsync(
+        Items,
+        Categories,
+        ObservableList.Id!,
+        ObservableList.IsRecurring
+      );
       _listHasChanged = true;
       SortItems();
     });
@@ -199,7 +212,7 @@ public partial class ListViewModel : BaseViewModel
   public void SortItems()
   {
     Items = new ObservableCollection<ObservableItem>(
-      Items.OrderBy(i => i.CategoryName).ThenByDescending(i => i.AddedOn)
+      ItemSorter.Sort(Items, ObservableList.IsRecurring)
     );
     OnPropertyChanged(nameof(Items));
   }

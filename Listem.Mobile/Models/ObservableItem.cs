@@ -21,6 +21,9 @@ public partial class ObservableItem(string listId) : ObservableObject
   private bool _isImportant;
 
   [ObservableProperty]
+  private bool _isActive = true;
+
+  [ObservableProperty]
   private string _categoryName = Constants.DefaultCategoryName;
 
   [ObservableProperty]
@@ -34,6 +37,7 @@ public partial class ObservableItem(string listId) : ObservableObject
       Title = item.Title,
       Quantity = item.Quantity,
       IsImportant = item.IsImportant,
+      IsActive = item.IsActive,
       CategoryName = item.CategoryName,
       AddedOn = item.AddedOn
     };
@@ -52,6 +56,7 @@ public partial class ObservableItem(string listId) : ObservableObject
       Title = Title,
       Quantity = Quantity,
       IsImportant = IsImportant,
+      IsActive = IsActive,
       CategoryName = CategoryName,
       AddedOn = AddedOn
     };
@@ -64,6 +69,6 @@ public partial class ObservableItem(string listId) : ObservableObject
 
   public string ToLoggableString()
   {
-    return $"[ObservableItem] '{Title}' {Id} in {ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant})";
+    return $"[ObservableItem] '{Title}' {Id} in {ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant}, active: {IsActive})";
   }
 }

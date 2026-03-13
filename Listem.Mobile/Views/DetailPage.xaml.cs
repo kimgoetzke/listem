@@ -38,4 +38,12 @@ public partial class DetailPage
 
     IsImportantProperty.Text = toggle.IsToggled ? "Yes" : "No";
   }
+
+  private void IsActiveSwitch_OnToggled(object? sender, ToggledEventArgs _)
+  {
+    if (sender is not Switch toggle)
+      return;
+
+    IsActiveProperty.Text = toggle.IsToggled ? "Yes" : "No";
+  }
 }

@@ -10,6 +10,7 @@ public class Item
   public string Title { get; init; } = null!;
   public int Quantity { get; init; }
   public bool IsImportant { get; init; }
+  public bool IsActive { get; init; }
   public DateTime AddedOn { get; init; }
   public string CategoryName { get; set; } = null!;
 
@@ -20,6 +21,6 @@ public class Item
 
   public string ToLoggableString()
   {
-    return $"[Item] '{Title}' {Id} in {ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant})";
+    return $"[Item] '{Title}' {Id} in {ListId} (category: {CategoryName}, quantity: {Quantity}, important: {IsImportant}, active: {IsActive})";
   }
 }

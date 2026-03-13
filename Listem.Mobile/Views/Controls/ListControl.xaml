@@ -52,8 +52,16 @@
                     <SwipeView.RightItems>
                         <SwipeItems SwipeBehaviorOnInvoked="Close">
                             <SwipeItemView
+                                IsVisible="False"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
                                 CommandParameter="{Binding .}">
+                                <SwipeItemView.Triggers>
+                                    <DataTrigger TargetType="SwipeItemView"
+                                                 Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}"
+                                                 Value="False">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                </SwipeItemView.Triggers>
                                 <Border BackgroundColor="{DynamicResource AccentBright}"
                                         Stroke="Transparent"
                                         StrokeShape="RoundRectangle 10"
@@ -62,6 +70,32 @@
                                         HeightRequest="100"
                                         WidthRequest="100">
                                     <Image Source="important_white.png"
+                                           Aspect="AspectFit"
+                                           WidthRequest="25"
+                                           HeightRequest="25"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                            </SwipeItemView>
+                            <SwipeItemView
+                                IsVisible="False"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ToggleActiveCommand}"
+                                CommandParameter="{Binding .}">
+                                <SwipeItemView.Triggers>
+                                    <DataTrigger TargetType="SwipeItemView"
+                                                 Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}"
+                                                 Value="True">
+                                        <Setter Property="IsVisible" Value="True" />
+                                    </DataTrigger>
+                                </SwipeItemView.Triggers>
+                                <Border BackgroundColor="{DynamicResource AccentBright}"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="0"
+                                        VerticalOptions="Center"
+                                        HeightRequest="100"
+                                        WidthRequest="100">
+                                    <Image Source="plus_white.png"
                                            Aspect="AspectFit"
                                            WidthRequest="25"
                                            HeightRequest="25"
@@ -82,6 +116,15 @@
                                Stroke="Transparent"
                                StrokeShape="RoundRectangle 10"
                                BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                            <Border.Triggers>
+                                <MultiTrigger TargetType="Border">
+                                    <MultiTrigger.Conditions>
+                                        <BindingCondition Binding="{Binding IsActive}" Value="False" />
+                                        <BindingCondition Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}" Value="True" />
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="BackgroundColor" Value="{DynamicResource InactiveItemBackgroundColor}" />
+                                </MultiTrigger>
+                            </Border.Triggers>
 
                             <!-- Contents of list: Settings -->
                             <Border.GestureRecognizers>
@@ -103,7 +146,17 @@
                                               AutomationId="{Binding Title, StringFormat='DoneBox_{0}'}"
                                               IsChecked="False" Scale="1.2"
                                               CheckedChanged="CheckBox_OnCheckChanged"
-                                              BindingContext="{Binding .}" />
+                                              BindingContext="{Binding .}">
+                                        <CheckBox.Triggers>
+                                            <MultiTrigger TargetType="CheckBox">
+                                                <MultiTrigger.Conditions>
+                                                    <BindingCondition Binding="{Binding IsActive}" Value="False" />
+                                                    <BindingCondition Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="Color" Value="{DynamicResource InactiveItemCheckboxColor}" />
+                                            </MultiTrigger>
+                                        </CheckBox.Triggers>
+                                    </CheckBox>
 
                                     <!-- Left aligned stack: Item name -->
                                     <Label Text="{Binding Title}"
@@ -122,6 +175,13 @@
                                                          Value="True">
                                                 <Setter Property="TextDecorations" Value="Strikethrough" />
                                             </DataTrigger>
+                                            <MultiTrigger TargetType="Label">
+                                                <MultiTrigger.Conditions>
+                                                    <BindingCondition Binding="{Binding IsActive}" Value="False" />
+                                                    <BindingCondition Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="TextColor" Value="{DynamicResource InactiveItemTextColor}" />
+                                            </MultiTrigger>
                                         </Label.Triggers>
                                     </Label>
 
@@ -144,6 +204,13 @@
                                                          Value="Shopping">
                                                 <Setter Property="IsVisible" Value="True" />
                                             </DataTrigger>
+                                            <MultiTrigger TargetType="Label">
+                                                <MultiTrigger.Conditions>
+                                                    <BindingCondition Binding="{Binding IsActive}" Value="False" />
+                                                    <BindingCondition Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="TextColor" Value="{DynamicResource InactiveItemTextColor}" />
+                                            </MultiTrigger>
                                         </Label.Triggers>
                                     </Label>
 
@@ -157,7 +224,17 @@
 
                                     <!-- Right aligned stack: Transparent to white gradient -->
                                     <BoxView WidthRequest="100" Style="{DynamicResource LeftTransparentToRightWhite}"
-                                             Background="{DynamicResource LeftTransparentToRightWhiteBrush2}" />
+                                             Background="{DynamicResource LeftTransparentToRightWhiteBrush2}">
+                                        <BoxView.Triggers>
+                                            <MultiTrigger TargetType="BoxView">
+                                                <MultiTrigger.Conditions>
+                                                    <BindingCondition Binding="{Binding IsActive}" Value="False" />
+                                                    <BindingCondition Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </MultiTrigger>
+                                        </BoxView.Triggers>
+                                    </BoxView>
 
                                     <!-- Right aligned stack: Category tag -->
                                     <controls:Tag TagColor="{DynamicResource Tertiary}"
@@ -177,7 +254,15 @@
 
                                     <!-- Right aligned stack: Priority icon  -->
                                     <!-- Note: Must be in a Grid as adding a BackgroundColor to the Image makes it ignore its vertical alignment -->
-                                    <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                                    <Grid BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                                          IsVisible="False">
+                                        <Grid.Triggers>
+                                            <DataTrigger TargetType="Grid"
+                                                         Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}"
+                                                         Value="False">
+                                                <Setter Property="IsVisible" Value="True" />
+                                            </DataTrigger>
+                                        </Grid.Triggers>
                                         <Image x:Name="PriorityIcon"
                                                AutomationId="{Binding Title, StringFormat='IsImportantIcon_{0}'}"
                                                Source="important_accentbright.png"
@@ -196,7 +281,17 @@
                                     </Grid>
 
                                     <BoxView WidthRequest="10"
-                                             BackgroundColor="{DynamicResource BackgroundColorAccent}" />
+                                             BackgroundColor="{DynamicResource BackgroundColorAccent}">
+                                        <BoxView.Triggers>
+                                            <MultiTrigger TargetType="BoxView">
+                                                <MultiTrigger.Conditions>
+                                                    <BindingCondition Binding="{Binding IsActive}" Value="False" />
+                                                    <BindingCondition Binding="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=ObservableList.IsRecurring}" Value="True" />
+                                                </MultiTrigger.Conditions>
+                                                <Setter Property="BackgroundColor" Value="{DynamicResource InactiveItemBackgroundColor}" />
+                                            </MultiTrigger>
+                                        </BoxView.Triggers>
+                                    </BoxView>
 
                                 </HorizontalStackLayout>
                             </Grid>

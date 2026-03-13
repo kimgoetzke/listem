@@ -42,6 +42,9 @@
     <Color x:Key="ThickLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="ThinLineSeparatorColor">#0E3C53</Color>
     <Color x:Key="CheckboxColor">#3CADD3</Color>
+    <Color x:Key="InactiveItemBackgroundColor">#E5E5E5</Color>
+    <Color x:Key="InactiveItemTextColor">#919191</Color>
+    <Color x:Key="InactiveItemCheckboxColor">#919191</Color>
     <Color x:Key="DisabledColor">#D8D8D8</Color>
     <Color x:Key="SimpleButtonBackgroundColor">White</Color>
     <Color x:Key="PickerTitleColor">#ACACAC</Color>
