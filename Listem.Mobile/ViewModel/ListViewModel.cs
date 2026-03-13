@@ -99,7 +99,12 @@ public partial class ListViewModel : BaseViewModel
   [RelayCommand]
   private async Task RemoveItem(ObservableItem i)
   {
-    await IsBusyWhile(async () => await _itemService.DeleteAsync(i));
+    await IsBusyWhile(async () =>
+    {
+      await Task.Delay(50);
+      await _itemService.DeleteAsync(i);
+      await Task.Delay(50);
+    });
     ObservableList.Items.Remove(i);
     Items.Remove(i);
     var value = new ItemChangedDto(ObservableList.Id!, i);
