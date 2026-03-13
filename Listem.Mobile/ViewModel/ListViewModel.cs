@@ -166,7 +166,7 @@ public partial class ListViewModel : BaseViewModel
     {
       if (ObservableList.IsRecurring)
       {
-        ItemsToDelete.Clear();
+        await MarkSelectedItemsAsInactiveIfAny();
       }
       else
       {
@@ -180,6 +180,19 @@ public partial class ListViewModel : BaseViewModel
       }
     });
     await Shell.Current.Navigation.PopAsync();
+  }
+
+  private async Task MarkSelectedItemsAsInactiveIfAny()
+  {
+    if (ItemsToDelete.Count == 0)
+      return;
+
+    foreach (var item in new List<ObservableItem>(ItemsToDelete))
+    {
+      await ToggleActive(item);
+    }
+    ItemsToDelete.Clear();
+    _listHasChanged = true;
   }
 
   private async Task DeleteSelectedItemsIfAny()
