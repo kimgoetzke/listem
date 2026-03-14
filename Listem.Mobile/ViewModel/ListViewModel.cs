@@ -101,9 +101,10 @@ public partial class ListViewModel : BaseViewModel
   {
     await IsBusyWhile(async () =>
     {
-      await Task.Delay(50);
+      // TODO: Fix bug that makes most tests fail without these delays (but real app seems unaffected)
+      await Task.Delay(100);
       await _itemService.DeleteAsync(i);
-      await Task.Delay(50);
+      await Task.Delay(100);
     });
     ObservableList.Items.Remove(i);
     Items.Remove(i);

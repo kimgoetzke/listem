@@ -48,9 +48,9 @@
                         </SwipeItems>
                     </SwipeView.LeftItems>
 
-                    <!-- List of added items: Swipe from right to left to reveal prioritisation button -->
+                    <!-- List of added items: Swipe from right to left to trigger prioritisation/active toggle -->
                     <SwipeView.RightItems>
-                        <SwipeItems SwipeBehaviorOnInvoked="Close">
+                        <SwipeItems Mode="Execute">
                             <SwipeItemView
                                 IsVisible="False"
                                 Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:ListViewModel}}, Path=TogglePriorityCommand}"
@@ -88,19 +88,32 @@
                                         <Setter Property="IsVisible" Value="True" />
                                     </DataTrigger>
                                 </SwipeItemView.Triggers>
-                                <Border BackgroundColor="{DynamicResource AccentBright}"
+                                <Border BackgroundColor="{DynamicResource Green}"
                                         Stroke="Transparent"
                                         StrokeShape="RoundRectangle 10"
                                         Padding="0"
                                         VerticalOptions="Center"
                                         HeightRequest="100"
                                         WidthRequest="100">
-                                    <Image Source="plus_white.png"
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource Secondary}" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Image Source="plus_button_white.png"
                                            Aspect="AspectFit"
                                            WidthRequest="25"
                                            HeightRequest="25"
                                            HorizontalOptions="Center"
-                                           VerticalOptions="Center" />
+                                           VerticalOptions="Center">
+                                        <Image.Triggers>
+                                            <DataTrigger TargetType="Image"
+                                                         Binding="{Binding IsActive}"
+                                                         Value="True">
+                                                <Setter Property="Source" Value="minus_button_white.png" />
+                                            </DataTrigger>
+                                        </Image.Triggers>
+                                    </Image>
                                 </Border>
                             </SwipeItemView>
                         </SwipeItems>
@@ -238,7 +251,7 @@
 
                                     <!-- Right aligned stack: Category tag -->
                                     <controls:Tag TagColor="{DynamicResource Tertiary}"
-                                                  TextColor="{DynamicResource TextColorInverted}"
+                                                  TextColor="{DynamicResource LightTextColor}"
                                                   BackgroundColor="{DynamicResource BackgroundColorAccent}"
                                                   VerticalOptions="Center"
                                                   AutomationId="{Binding Title, StringFormat='CategoryTag_{0}'}"
