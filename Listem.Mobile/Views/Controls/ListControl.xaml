@@ -252,7 +252,7 @@
                                     <!-- Right aligned stack: Category tag -->
                                     <controls:Tag TagColor="{DynamicResource Tertiary}"
                                                   TextColor="{DynamicResource LightTextColor}"
-                                                  BackgroundColor="{DynamicResource BackgroundColorAccent}"
+                                                  BackgroundColor="Transparent"
                                                   VerticalOptions="Center"
                                                   AutomationId="{Binding Title, StringFormat='CategoryTag_{0}'}"
                                                   Text="{Binding CategoryName}">
