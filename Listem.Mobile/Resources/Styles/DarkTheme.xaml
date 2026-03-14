@@ -42,7 +42,7 @@
     <Color x:Key="ThickLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="ThinLineSeparatorColor">#D8D8D8</Color>
     <Color x:Key="CheckboxColor">#3CADD3</Color>
-    <Color x:Key="InactiveItemBackgroundColor">#404040</Color>
+    <Color x:Key="InactiveItemBackgroundColor">#313131</Color>
     <Color x:Key="InactiveItemTextColor">#ACACAC</Color>
     <Color x:Key="InactiveItemCheckboxColor">#919191</Color>
     <Color x:Key="DisabledColor">#D8D8D8</Color>
