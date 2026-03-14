@@ -1,7 +1,7 @@
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 
-namespace Listem.Mobile.UnitTests;
+namespace Listem.Mobile.UnitTests.Utilities;
 
 [TestFixture]
 public class ListViewModelTest

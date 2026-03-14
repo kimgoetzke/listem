@@ -16,7 +16,7 @@ public partial class ObservableCategory(string listId) : ObservableObject
 
   public static ObservableCategory From(Category category)
   {
-    return new ObservableCategory(category.Name) { Id = category.Id, Name = category.Name };
+    return new ObservableCategory(category.ListId) { Id = category.Id, Name = category.Name };
   }
 
   public Category ToCategory()

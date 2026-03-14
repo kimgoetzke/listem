@@ -21,16 +21,31 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
         <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     </ItemGroup>
 
     <ItemGroup>
         <Compile Include="..\Listem.Mobile\Constants.cs" Link="Production\Constants.cs" />
+        <Compile Include="..\Listem.Mobile\Models\Category.cs" Link="Production\Models\Category.cs" />
+        <Compile Include="..\Listem.Mobile\Models\List.cs" Link="Production\Models\List.cs" />
+        <Compile Include="..\Listem.Mobile\Models\ListType.cs" Link="Production\Models\ListType.cs" />
+        <Compile Include="..\Listem.Mobile\Models\ObservableCategory.cs" Link="Production\Models\ObservableCategory.cs" />
         <Compile Include="..\Listem.Mobile\Utilities\IdProvider.cs" Link="Production\Utilities\IdProvider.cs" />
         <Compile Include="..\Listem.Mobile\Utilities\ItemSorter.cs" Link="Production\Utilities\ItemSorter.cs" />
+        <Compile Include="..\Listem.Mobile\Utilities\StringProcessor.cs" Link="Production\Utilities\StringProcessor.cs" />
         <Compile Include="..\Listem.Mobile\Models\Item.cs" Link="Production\Models\Item.cs" />
         <Compile Include="..\Listem.Mobile\Models\ObservableItem.cs" Link="Production\Models\ObservableItem.cs" />
+        <Compile Include="..\Listem.Mobile\Models\ObservableList.cs" Link="Production\Models\ObservableList.cs" />
+        <Compile Include="..\Listem.Mobile\Services\IDatabaseProvider.cs" Link="Production\Services\IDatabaseProvider.cs" />
+        <Compile Include="..\Listem.Mobile\Services\IListService.cs" Link="Production\Services\IListService.cs" />
+        <Compile Include="..\Listem.Mobile\Services\IItemService.cs" Link="Production\Services\IItemService.cs" />
+        <Compile Include="..\Listem.Mobile\Services\ICategoryService.cs" Link="Production\Services\ICategoryService.cs" />
+        <Compile Include="..\Listem.Mobile\Services\ListService.cs" Link="Production\Services\ListService.cs" />
+        <Compile Include="..\Listem.Mobile\Services\ItemService.cs" Link="Production\Services\ItemService.cs" />
+        <Compile Include="..\Listem.Mobile\Services\CategoryService.cs" Link="Production\Services\CategoryService.cs" />
         <Compile Include="..\Listem.Mobile\Services\ClipboardService.Rules.cs" Link="Production\Services\ClipboardService.Rules.cs" />
+        <Compile Include="..\Listem.Mobile\Utilities\LoggerExtensions.cs" Link="Production\Utilities\LoggerExtensions.cs" />
     </ItemGroup>
 
 </Project>

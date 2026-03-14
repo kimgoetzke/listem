@@ -8,23 +8,26 @@ namespace Listem.Mobile.Services;
 public class CategoryService(IDatabaseProvider db, ILogger<CategoryService> logger)
   : ICategoryService
 {
-  private ObservableCategory? _defaultCategory;
+  private readonly Dictionary<string, ObservableCategory> _defaultCategories = [];
 
   public async Task<ObservableCategory> GetDefaultCategory(string listId)
   {
-    if (_defaultCategory == null)
-    {
-      var connection = await db.GetConnection();
-      var loaded = await connection
-        .Table<Category>()
-        .FirstAsync(l => l.Name == DefaultCategoryName && l.ListId == listId);
-      _defaultCategory = ObservableCategory.From(loaded);
-    }
+    if (_defaultCategories.TryGetValue(listId, out var defaultCategory))
+      return defaultCategory;
 
-    if (_defaultCategory == null)
+    var connection = await db.GetConnection();
+    var loaded = await connection
+      .Table<Category>()
+      .FirstOrDefaultAsync(category =>
+        category.Name == DefaultCategoryName && category.ListId == listId
+      );
+
+    if (loaded == null)
       throw new NullReferenceException("This list does not have default category");
 
-    return _defaultCategory;
+    defaultCategory = ObservableCategory.From(loaded);
+    _defaultCategories[listId] = defaultCategory;
+    return defaultCategory;
   }
 
   public async Task<List<ObservableCategory>> GetAllByListIdAsync(string listId)

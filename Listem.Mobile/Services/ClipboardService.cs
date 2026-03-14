@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Text;
 using CommunityToolkit.Mvvm.Messaging;
 using Listem.Mobile.Events;
 using Listem.Mobile.Models;
@@ -197,41 +196,5 @@ public partial class ClipboardService(IServiceProvider sp, ILogger<ClipboardServ
     await Clipboard.SetTextAsync(text);
     logger.Info("Copied to clipboard: {Text}", text.Replace(Environment.NewLine, ", "));
     Notifier.ShowToast("Copied list to clipboard");
-  }
-
-  private static string BuildStringFromList(
-    ObservableCollection<ObservableItem> items,
-    ObservableCollection<ObservableCategory> categories,
-    bool isRecurring
-  )
-  {
-    var builder = new StringBuilder();
-    foreach (var category in categories)
-    {
-      var itemsFromStore = items
-        .Where(item => item.CategoryName == category.Name)
-        .Where(item => ShouldIncludeInExport(isRecurring, item.IsActive))
-        .ToList();
-      if (itemsFromStore.Count == 0)
-        continue;
-      builder.AppendLine($"[{category.Name}]:");
-      foreach (var item in itemsFromStore)
-      {
-        builder.Append(item);
-        if (item.Quantity > 1)
-          builder.Append($" ({item.Quantity})");
-        if (!isRecurring && item.IsImportant)
-          builder.Append('!');
-        builder.AppendLine();
-      }
-
-      builder.AppendLine();
-    }
-
-    // Remove last two line breaks as they are only needed to separate stores
-    if (builder.Length >= 2)
-      builder.Length -= 2;
-
-    return builder.ToString();
   }
 }

@@ -3,6 +3,7 @@ using static Listem.Mobile.UITests.TestHelper;
 
 namespace Listem.Mobile.UITests.Tests;
 
+// TODO: Fix tests based on new functionality
 [TestFixture]
 public class RecurringListTest : BaseTest
 {

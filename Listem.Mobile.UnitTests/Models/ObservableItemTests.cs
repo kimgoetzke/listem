@@ -1,6 +1,6 @@
 using Listem.Mobile.Models;
 
-namespace Listem.Mobile.UnitTests;
+namespace Listem.Mobile.UnitTests.Models;
 
 [TestFixture]
 public class ObservableItemTests
