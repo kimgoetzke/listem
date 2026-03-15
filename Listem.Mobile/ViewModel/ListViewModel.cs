@@ -225,9 +225,14 @@ public partial class ListViewModel : BaseViewModel
 
   public void SortItems()
   {
-    Items = new ObservableCollection<ObservableItem>(
-      ItemSorter.Sort(Items, ObservableList.IsRecurring)
-    );
-    OnPropertyChanged(nameof(Items));
+    var sorted = ItemSorter.Sort(Items, ObservableList.IsRecurring).ToList();
+    for (var i = 0; i < sorted.Count; i++)
+    {
+      var currentIndex = Items.IndexOf(sorted[i]);
+      if (currentIndex != i)
+      {
+        Items.Move(currentIndex, i);
+      }
+    }
   }
 }

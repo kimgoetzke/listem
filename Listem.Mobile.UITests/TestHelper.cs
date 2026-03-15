@@ -345,7 +345,7 @@ public abstract class TestHelper : BaseTest
         bool? showImportantIcon = null
       )
       {
-        var label = AwaitElement(ListPage.Item.Label + itemName);
+        var label = AwaitElement(ListPage.Item.Label + itemName, 8);
         var isImportantIcon = OptionalElement(ListPage.Item.IsImportantIcon + itemName);
         var shouldShowImportantIcon = showImportantIcon ?? isImportant;
 

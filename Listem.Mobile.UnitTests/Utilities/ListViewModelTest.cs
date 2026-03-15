@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using Listem.Mobile.Models;
 using Listem.Mobile.Utilities;
 
@@ -75,6 +76,50 @@ public class ListViewModelTest
     Assert.That(
       sorted.Select(item => item.Title).ToArray(),
       Is.EqualTo(["Active-2", "Active-1", "Inactive-1"])
+    );
+  }
+
+  [Test]
+  public void SortInPlace_PreservesCollectionInstance_AndSortsCorrectly()
+  {
+    var items = new ObservableCollection<ObservableItem>(
+    [
+      new ObservableItem("list-1")
+      {
+        Title = "Item-1",
+        CategoryName = "B",
+        AddedOn = new DateTime(2026, 3, 13, 1, 0, 0, DateTimeKind.Utc)
+      },
+      new ObservableItem("list-1")
+      {
+        Title = "Item-2",
+        CategoryName = "A",
+        AddedOn = new DateTime(2026, 3, 13, 2, 0, 0, DateTimeKind.Utc)
+      },
+      new ObservableItem("list-1")
+      {
+        Title = "Item-3",
+        CategoryName = "A",
+        AddedOn = new DateTime(2026, 3, 13, 3, 0, 0, DateTimeKind.Utc)
+      }
+    ]);
+
+    var originalReference = items;
+
+    var sorted = ItemSorter.Sort(items, false).ToList();
+    for (var i = 0; i < sorted.Count; i++)
+    {
+      var currentIndex = items.IndexOf(sorted[i]);
+      if (currentIndex != i)
+      {
+        items.Move(currentIndex, i);
+      }
+    }
+
+    Assert.That(items, Is.SameAs(originalReference), "Collection instance should be preserved");
+    Assert.That(
+      items.Select(item => item.Title).ToArray(),
+      Is.EqualTo(["Item-3", "Item-2", "Item-1"])
     );
   }
 }
