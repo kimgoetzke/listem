@@ -54,6 +54,7 @@
     <Color x:Key="SettingsMenuGradientStop2">#378CD1</Color>
     <Color x:Key="SwitchOnColor">#378CD1</Color>
     <Color x:Key="SwitchOnThumbColor">#3CADD3</Color>
+    <Color x:Key="SwitchOffColor">#C8C8C8</Color>
     <Color x:Key="SwitchOffThumbColor">#919191</Color>
     <Color x:Key="NavigationPageBarBackgroundColor">#D8D8D8</Color>
     <Color x:Key="NavigationPageBarTextColor">#C8C8C8</Color>

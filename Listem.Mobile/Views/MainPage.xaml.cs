@@ -94,7 +94,9 @@ public partial class MainPage
     MenuButton.Source = "menu_neutral.png";
     var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
+      ThemeHandler.GetStatusBarStyleForCurrentTheme()
+    );
 #endif
     _isMenuOpen = false;
   }

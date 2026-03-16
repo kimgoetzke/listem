@@ -94,6 +94,13 @@ public static class ThemeHandler
 #endif
   }
 
+  public static CommunityToolkit.Maui.Core.StatusBarStyle GetStatusBarStyleForCurrentTheme()
+  {
+    return Settings.CurrentTheme == Theme.Dark
+      ? CommunityToolkit.Maui.Core.StatusBarStyle.LightContent
+      : CommunityToolkit.Maui.Core.StatusBarStyle.DarkContent;
+  }
+
   /// Resets the status bar to the theme's standard background colour. Call this from
   /// <c>OnAppearing()</c> on any page that does not manage its own custom status bar colour,
   /// to guard against Android 14 resetting the colour to the native theme default on navigation.
@@ -116,9 +123,7 @@ public static class ThemeHandler
 
     var statusBarColor = (Color)colorValue;
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
-      CommunityToolkit.Maui.Core.StatusBarStyle.DarkContent
-    );
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(GetStatusBarStyleForCurrentTheme());
 #endif
   }
 }

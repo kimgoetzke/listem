@@ -51,7 +51,9 @@ public partial class ListPage
 #if __ANDROID__ || __IOS__
     var statusBarColor = (Color)Application.Current!.Resources["BackgroundColorAccent"];
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.DarkContent);
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
+      ThemeHandler.GetStatusBarStyleForCurrentTheme()
+    );
 #endif
     _viewModel.SortItems();
   }

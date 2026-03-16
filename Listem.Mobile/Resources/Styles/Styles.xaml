@@ -218,6 +218,7 @@
                     </VisualState>
                     <VisualState x:Name="Off">
                         <VisualState.Setters>
+                            <Setter Property="OnColor" Value="{DynamicResource SwitchOffColor}" />
                             <Setter Property="ThumbColor" Value="{DynamicResource SwitchOffThumbColor}" />
                         </VisualState.Setters>
                     </VisualState>
