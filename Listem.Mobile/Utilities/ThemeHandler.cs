@@ -71,7 +71,6 @@ public static class ThemeHandler
     mergedDictionaries.Add(new Styles());
   }
 
-  // ReSharper disable once UnusedParameter.Local
   private static void SetStatusBarColorOnAndroid(Application application)
   {
 #if __ANDROID__
@@ -103,7 +102,7 @@ public static class ThemeHandler
 
   /// Resets the status bar to the theme's standard background colour. Call this from
   /// <c>OnAppearing()</c> on any page that does not manage its own custom status bar colour,
-  /// to guard against Android 14 resetting the colour to the native theme default on navigation.
+  /// to guard against Android resetting the colour to the native theme default on navigation.
   [System.Diagnostics.CodeAnalysis.SuppressMessage(
     "Interoperability",
     "CA1416:Validate platform compatibility"
