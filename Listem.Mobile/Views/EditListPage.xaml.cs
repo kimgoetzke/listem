@@ -23,7 +23,7 @@ public partial class EditListPage
   protected override void OnAppearing()
   {
     base.OnAppearing();
-    ThemeHandler.ResetStatusBarToThemeColour();
+    ThemeHandler.SetStatusBarToThemeColour();
     StickyEntryCategory.SetVisibility(false);
   }
 

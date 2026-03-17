@@ -20,7 +20,7 @@ public partial class DetailPage
   protected override void OnAppearing()
   {
     base.OnAppearing();
-    ThemeHandler.ResetStatusBarToThemeColour();
+    ThemeHandler.SetStatusBarToThemeColour();
   }
 
   private void QuantityStepper_OnValueChanged(object? sender, ValueChangedEventArgs e)

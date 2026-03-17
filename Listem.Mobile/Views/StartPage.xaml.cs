@@ -21,7 +21,7 @@ public partial class StartPage
   protected override void OnAppearing()
   {
     base.OnAppearing();
-    ThemeHandler.ResetStatusBarToThemeColour();
+    ThemeHandler.SetStatusBarToThemeColour();
 
     if (!Settings.FirstRun)
       return;

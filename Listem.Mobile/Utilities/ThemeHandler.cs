@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using Listem.Mobile.Models;
 using Listem.Mobile.Resources.Styles;
 using Microsoft.Extensions.Logging;
@@ -103,25 +104,38 @@ public static class ThemeHandler
   /// Resets the status bar to the theme's standard background colour. Call this from
   /// <c>OnAppearing()</c> on any page that does not manage its own custom status bar colour,
   /// to guard against Android resetting the colour to the native theme default on navigation.
-  [System.Diagnostics.CodeAnalysis.SuppressMessage(
-    "Interoperability",
-    "CA1416:Validate platform compatibility"
-  )]
-  public static void ResetStatusBarToThemeColour()
+  [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+  public static void SetStatusBarToThemeColour()
   {
 #if __ANDROID__ || __IOS__
     var application = Application.Current;
     if (application == null)
+    {
+      Logger.Warn(
+        "Application.Current not found, ignoring status bar theming request to prevent crash..."
+      );
       return;
+    }
 
     if (!application.Resources.TryGetValue("StatusBarColor", out var colorValue))
     {
-      Logger.Warn("StatusBarColor not found in resources");
+      Logger.Warn(
+        "StatusBarColor not found in resources, ignoring status bar theming request to prevent crash..."
+      );
       return;
     }
 
     var statusBarColor = (Color)colorValue;
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(GetStatusBarStyleForCurrentTheme());
+#endif
+  }
+
+  [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
+  public static void SetStatusBarTheme(Color colour)
+  {
+#if __ANDROID__ || __IOS__
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(colour);
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(GetStatusBarStyleForCurrentTheme());
 #endif
   }

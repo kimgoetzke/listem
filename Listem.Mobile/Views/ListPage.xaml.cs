@@ -36,7 +36,9 @@ public partial class ListPage
     EntryFieldFrame = GetFrameForEntryField();
     CategoryPicker = GetCategoryPicker();
     CategoryPickerFrame = GetFrameForCategoryPicker();
-    var itemOptionGrid = _viewModel.ObservableList.IsRecurring ? GetActiveGrid() : GetImportantGrid();
+    var itemOptionGrid = _viewModel.ObservableList.IsRecurring
+      ? GetActiveGrid()
+      : GetImportantGrid();
     AddButton = GetAddButton();
 #if __IOS__ || __ANDROID__
     var menuGrid = CreateGridOnMobile(itemOptionGrid);
@@ -48,20 +50,15 @@ public partial class ListPage
   protected override void OnAppearing()
   {
     base.OnAppearing();
-#if __ANDROID__ || __IOS__
     var statusBarColor = (Color)Application.Current!.Resources["BackgroundColorAccent"];
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
-      ThemeHandler.GetStatusBarStyleForCurrentTheme()
-    );
-#endif
+    ThemeHandler.SetStatusBarTheme(statusBarColor);
     _viewModel.SortItems();
   }
 
   protected override void OnDisappearing()
   {
     base.OnDisappearing();
-    ThemeHandler.ResetStatusBarToThemeColour();
+    ThemeHandler.SetStatusBarToThemeColour();
   }
 
   private Grid CreateGridOnDesktop(IView itemOptionGrid)
