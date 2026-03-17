@@ -1,11 +1,10 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Listem.Mobile.Models;
 using Listem.Mobile.Resources.Styles;
 using Microsoft.Extensions.Logging;
 #if __ANDROID__
 using Android.OS;
-using Microsoft.Maui.Controls.Compatibility.Platform.Android;
 using AndroidPlatform = Microsoft.Maui.ApplicationModel.Platform;
 #endif
 
@@ -46,8 +45,13 @@ public static class ThemeHandler
     var application = Application.Current!;
     ArgumentNullException.ThrowIfNull(application);
     UpdateDictionaries(application, theme);
-    SetStatusBarColorOnAndroid(application);
     Settings.CurrentTheme = theme;
+    application.UserAppTheme = theme switch
+    {
+      Theme.Dark => AppTheme.Dark,
+      _ => AppTheme.Light
+    };
+    SetStatusBarToThemeColour();
     Logger.Info("Current app theme is: {Theme}", Settings.CurrentTheme);
   }
 
@@ -72,36 +76,21 @@ public static class ThemeHandler
     mergedDictionaries.Add(new Styles());
   }
 
-  private static void SetStatusBarColorOnAndroid(Application application)
-  {
-#if __ANDROID__
-    if (!application.Resources.TryGetValue("StatusBarColor", out var colorValue))
-    {
-      Logger.Warn("StatusBarColor not found in MergedDictionaries");
-      return;
-    }
-    var statusBarColor = (Color)colorValue;
-
-    if (
-      AndroidPlatform.CurrentActivity?.Window == null
-      || Build.VERSION.SdkInt < BuildVersionCodes.O
-    )
-    {
-      return;
-    }
-    if (!OperatingSystem.IsAndroidVersionAtLeast(35))
-      AndroidPlatform.CurrentActivity.Window.SetStatusBarColor(statusBarColor.ToAndroid());
-#endif
-  }
-
   public static CommunityToolkit.Maui.Core.StatusBarStyle GetStatusBarStyleForCurrentTheme()
   {
-    return Settings.CurrentTheme == Theme.Dark
-      ? CommunityToolkit.Maui.Core.StatusBarStyle.LightContent
-      : CommunityToolkit.Maui.Core.StatusBarStyle.DarkContent;
+    return StatusBarStyleResolver.ShouldUseDarkStatusBarIcons(Settings.CurrentTheme == Theme.Dark)
+      ? CommunityToolkit.Maui.Core.StatusBarStyle.DarkContent
+      : CommunityToolkit.Maui.Core.StatusBarStyle.LightContent;
   }
 
-  /// Resets the status bar to the theme's standard background colour. Call this from
+  public static CommunityToolkit.Maui.Core.StatusBarStyle GetStatusBarStyleForTheme(Theme theme)
+  {
+    return StatusBarStyleResolver.ShouldUseDarkStatusBarIcons(theme == Theme.Dark)
+      ? CommunityToolkit.Maui.Core.StatusBarStyle.DarkContent
+      : CommunityToolkit.Maui.Core.StatusBarStyle.LightContent;
+  }
+
+  /// Sets the status bar to the theme's standard background colour. If required, call this from
   /// <c>OnAppearing()</c> on any page that does not manage its own custom status bar colour,
   /// to guard against Android resetting the colour to the native theme default on navigation.
   [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
@@ -126,17 +115,25 @@ public static class ThemeHandler
     }
 
     var statusBarColor = (Color)colorValue;
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(GetStatusBarStyleForCurrentTheme());
+    SetStatusBarTheme(statusBarColor);
 #endif
   }
 
   [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility")]
-  public static void SetStatusBarTheme(Color colour)
+  public static void SetStatusBarTheme(
+    Color colour,
+    CommunityToolkit.Maui.Core.StatusBarStyle? statusBarStyle = null
+  )
   {
+#if __ANDROID__
+    if (AndroidPlatform.CurrentActivity?.Window == null)
+      return;
+#endif
 #if __ANDROID__ || __IOS__
     CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(colour);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(GetStatusBarStyleForCurrentTheme());
+    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
+      statusBarStyle ?? GetStatusBarStyleForCurrentTheme()
+    );
 #endif
   }
 }

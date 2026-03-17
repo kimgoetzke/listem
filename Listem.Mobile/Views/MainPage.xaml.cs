@@ -66,8 +66,7 @@ public partial class MainPage
   {
 #if __ANDROID__ || __IOS__
     var statusBarColor = (Color)Application.Current!.Resources["MainPageBackStatusBarColour"];
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(StatusBarStyle.LightContent);
+    ThemeHandler.SetStatusBarTheme(statusBarColor, StatusBarStyle.LightContent);
     MainPageContentShape.CornerRadius = new CornerRadius(20);
     // MainPageContent.HasShadow = true; // Doesn't work yet: https://github.com/dotnet/maui/issues/11025
     MenuButton.Source = "expand_neutral.png";
@@ -92,11 +91,7 @@ public partial class MainPage
     MainPageContentShape.CornerRadius = new CornerRadius(0);
     // MainPageContent.HasShadow = false; // Doesn't work yet: https://github.com/dotnet/maui/issues/11025
     MenuButton.Source = "menu_neutral.png";
-    var statusBarColor = (Color)Application.Current!.Resources["StatusBarColor"];
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetColor(statusBarColor);
-    CommunityToolkit.Maui.Core.Platform.StatusBar.SetStyle(
-      ThemeHandler.GetStatusBarStyleForCurrentTheme()
-    );
+    ThemeHandler.SetStatusBarToThemeColour();
 #endif
     _isMenuOpen = false;
   }

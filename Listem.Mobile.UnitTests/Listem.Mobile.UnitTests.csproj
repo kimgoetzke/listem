@@ -46,6 +46,7 @@
         <Compile Include="..\Listem.Mobile\Services\CategoryService.cs" Link="Production\Services\CategoryService.cs" />
         <Compile Include="..\Listem.Mobile\Services\ClipboardService.Rules.cs" Link="Production\Services\ClipboardService.Rules.cs" />
         <Compile Include="..\Listem.Mobile\Utilities\LoggerExtensions.cs" Link="Production\Utilities\LoggerExtensions.cs" />
+        <Compile Include="..\Listem.Mobile\Utilities\StatusBarStyleResolver.cs" Link="Production\Utilities\StatusBarStyleResolver.cs" />
     </ItemGroup>
 
 </Project>
