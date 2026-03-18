@@ -70,7 +70,8 @@
                     <Label Grid.Row="0" Grid.ColumnSpan="2"
                            Text="Recurring list" Style="{DynamicResource ItemProperty}" />
                     <Label Grid.Row="1" Grid.Column="0"
-                           Text="Bulk selecting items and leaving the list will no longer remove them from the list. Instead items ticked and left will stay in the list, ready for next time. You can still swipe to complete items permanently."
+                           Text="Swipe from the left to toggle an item's active state, and from the right to complete it permanently. Bulk select items and leave the list to mark them as inactive again, ready for next time."
+                            HorizontalOptions="Start"
                            VerticalOptions="Center"
                            Style="{DynamicResource ItemProperty}"
                            FontSize="{DynamicResource FontSizeS}" />

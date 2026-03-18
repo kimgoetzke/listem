@@ -21,19 +21,33 @@ created to learn how to create and publish an Android app.
 ## Overview
 
 - A super basic, minimalist app for lists, targeting Android
-- Lists can be somewhat customised by adding categories or list types (e.g. changing type to shopping list exposes a
-  quantity control in the UI)
+- Supports two list types: standard lists and shopping lists (the latter includes a quantity control for list items)
+- Each list type can be set to recurring, allowing you to mark items as active/inactive for the current period
+- Items can be assigned to categories, which can be configured freely per list (e.g. to group items by type or where to
+  buy them)
 - A list's content can be exported to the clipboard as text
 - List items can be imported from a comma-separated string from the clipboard and merged with the current list
 - Native confirmation prompts are used for destructive actions
-- The app features a light theme (default) and an initial dark theme
+- The app features a light theme (default) and a dark theme
+
+## Attribution
+
 - Icons used are CC0 from [iconsDB.com](https://www.iconsdb.com/) or self-made
-- Colour scheme and topography inspired by Mailin
+- Light colour scheme and topography inspired by Mailin
   Hülsmann's [Tennis App - UX/UI Design Case Study](https://www.behance.net/gallery/124361333/Tennis-App-UXUI-Design-Case-Study)
 
 ## Demo
 
-![Demo GIF](./docs/assets/demo.gif)
+<table>
+   <tr>
+      <th>Standard list (light theme)</th>
+      <th>Recurring shopping list (dark theme)</th>
+   </tr>
+  <tr>
+      <td><img src="./docs/assets/demo-1.gif" alt="Standard list light theme" height="700px"></td>
+      <td><img src="./docs/assets/demo-2.gif" alt="Recurring shopping list dark theme" height="700px"></td>
+  </tr>
+</table>
 
 _This demo is captured on an emulator. It does not show many of Listem's features. Its purpose is to give a first
 visual impression only._
