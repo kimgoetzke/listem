@@ -49,8 +49,7 @@ created to learn how to create and publish an Android app.
   </tr>
 </table>
 
-_This demo is captured on an emulator. It does not show many of Listem's features. Its purpose is to give a first
-visual impression only._
+_The demos are captured on different emulators._
 
 ## Development
 
