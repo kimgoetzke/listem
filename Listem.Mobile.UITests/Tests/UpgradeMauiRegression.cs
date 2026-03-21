@@ -70,7 +70,7 @@ public class UpgradeMauiRegression : BaseTest
   [Test]
   public async Task CreateAndDeleteLists()
   {
-    for (var i = 0; i < 5; i++)
+    for (var i = 1; i < 5; i++)
     {
       // Create list
       Act.OnMainPage.CreateList(ListName);

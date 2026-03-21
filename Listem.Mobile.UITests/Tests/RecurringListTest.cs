@@ -3,7 +3,6 @@ using static Listem.Mobile.UITests.TestHelper;
 
 namespace Listem.Mobile.UITests.Tests;
 
-// TODO: Fix tests based on new functionality
 [TestFixture]
 public class RecurringListTest : BaseTest
 {
@@ -84,7 +83,7 @@ public class RecurringListTest : BaseTest
   [Order(3)]
   public void CanEditItemActivityOnDetailPage()
   {
-    Element(ListPage.Item.Label + TestList.Items[1].Name).Click();
+    Element(ListPage.Item.Label + TestList.Items[2].Name).Click();
     Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
     Assert.That(OptionalElement(DetailPage.IsImportantSwitch), Is.Null);
     Assert.That(Element(DetailPage.IsActiveSwitch), Is.Not.Null);
@@ -92,7 +91,7 @@ public class RecurringListTest : BaseTest
     Act.OnDetailPage.SetItemIsActive(false);
     AssertThat.OnDetailPage.ItemIsActive(false);
     Act.NavigateBackAndAwait(ListPage.AddButton);
-    Element(ListPage.Item.Label + TestList.Items[1].Name).Click();
+    Element(ListPage.Item.Label + TestList.Items[2].Name).Click();
     Wait().Until(_ => Element(DetailPage.NameEntry).Displayed);
     AssertThat.OnDetailPage.ItemIsActive(false);
     Act.OnDetailPage.SetItemIsActive(true);
