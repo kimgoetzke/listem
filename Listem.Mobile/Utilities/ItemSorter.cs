@@ -4,6 +4,14 @@ namespace Listem.Mobile.Utilities;
 
 public static class ItemSorter
 {
+  public static IEnumerable<ObservableItem> FilterForPreview(
+    IEnumerable<ObservableItem> items,
+    bool isRecurring
+  )
+  {
+    return isRecurring ? items.Where(item => item.IsActive) : items;
+  }
+
   public static IOrderedEnumerable<ObservableItem> Sort(
     IEnumerable<ObservableItem> items,
     bool isRecurring
