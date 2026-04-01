@@ -71,6 +71,31 @@ public class ObservableListTests
   }
 
   [Test]
+  public void PreviewItems_WhenRecurring_ReturnsOnlyActiveItems()
+  {
+    var list = new ObservableList { IsRecurring = true };
+    list.Items.Add(new ObservableItem("lst-1") { Title = "Active", IsActive = true });
+    list.Items.Add(new ObservableItem("lst-1") { Title = "Inactive", IsActive = false });
+    list.Items.Add(new ObservableItem("lst-1") { Title = "Also Active", IsActive = true });
+
+    var preview = list.PreviewItems.ToList();
+
+    Assert.That(preview.Select(i => i.Title).ToArray(), Is.EqualTo(new[] { "Active", "Also Active" }));
+  }
+
+  [Test]
+  public void PreviewItems_WhenNotRecurring_ReturnsAllItems()
+  {
+    var list = new ObservableList { IsRecurring = false };
+    list.Items.Add(new ObservableItem("lst-1") { Title = "Item-1", IsActive = true });
+    list.Items.Add(new ObservableItem("lst-1") { Title = "Item-2", IsActive = false });
+
+    var preview = list.PreviewItems.ToList();
+
+    Assert.That(preview.Select(i => i.Title).ToArray(), Is.EqualTo(new[] { "Item-1", "Item-2" }));
+  }
+
+  [Test]
   public void ToLoggableString_ContainsNameAndItemCount()
   {
     var observableList = new ObservableList { Name = "Groceries", Id = "lst-1" };

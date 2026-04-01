@@ -6,6 +6,11 @@ namespace Listem.Mobile.Models;
 
 public partial class ObservableList : ObservableObject
 {
+  public ObservableList()
+  {
+    _items.CollectionChanged += (_, _) => OnPropertyChanged(nameof(PreviewItems));
+  }
+
   [ObservableProperty]
   private string? _id;
 
@@ -26,6 +31,14 @@ public partial class ObservableList : ObservableObject
 
   [ObservableProperty]
   private bool _isRecurring;
+
+  public IEnumerable<ObservableItem> PreviewItems =>
+    IsRecurring ? Items.Where(item => item.IsActive) : Items;
+
+  partial void OnIsRecurringChanged(bool value)
+  {
+    OnPropertyChanged(nameof(PreviewItems));
+  }
 
   public static ObservableList From(List list)
   {

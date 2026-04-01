@@ -64,7 +64,7 @@
 
                             <!-- List summary: Items inside the list -->
                             <CollectionView Grid.Row="2"
-                                            ItemsSource="{Binding Items}"
+                                            ItemsSource="{Binding PreviewItems}"
                                             VerticalOptions="Fill"
                                             Margin="0,15,0,0"
                                             BackgroundColor="Transparent"

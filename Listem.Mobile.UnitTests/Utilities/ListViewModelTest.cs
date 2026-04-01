@@ -80,37 +80,6 @@ public class ListViewModelTest
   }
 
   [Test]
-  public void FilterForPreview_RecurringList_ExcludesInactiveItems()
-  {
-    var items = new[]
-    {
-      new ObservableItem("list-1") { Title = "Active-1", IsActive = true },
-      new ObservableItem("list-1") { Title = "Inactive-1", IsActive = false },
-      new ObservableItem("list-1") { Title = "Active-2", IsActive = true },
-      new ObservableItem("list-1") { Title = "Inactive-2", IsActive = false }
-    };
-
-    var filtered = ItemSorter.FilterForPreview(items, isRecurring: true).ToList();
-
-    Assert.That(filtered.Select(i => i.Title).ToArray(), Is.EqualTo(new[] { "Active-1", "Active-2" }));
-  }
-
-  [Test]
-  public void FilterForPreview_NonRecurringList_IncludesAllItems()
-  {
-    var items = new[]
-    {
-      new ObservableItem("list-1") { Title = "Item-1", IsActive = true },
-      new ObservableItem("list-1") { Title = "Item-2", IsActive = false },
-      new ObservableItem("list-1") { Title = "Item-3", IsActive = true }
-    };
-
-    var filtered = ItemSorter.FilterForPreview(items, isRecurring: false).ToList();
-
-    Assert.That(filtered.Select(i => i.Title).ToArray(), Is.EqualTo(new[] { "Item-1", "Item-2", "Item-3" }));
-  }
-
-  [Test]
   public void SortInPlace_PreservesCollectionInstance_AndSortsCorrectly()
   {
     var items = new ObservableCollection<ObservableItem>(
